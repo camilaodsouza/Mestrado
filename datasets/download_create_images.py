@@ -1,0 +1,166 @@
+# insert this to the top of your scripts (usually main.py)
+# import sys, warnings, traceback, torch
+# def warn_with_traceback(message, category, filename, lineno, file=None, line=None):
+#     sys.stderr.write(warnings.formatwarning(message, category, filename, lineno, line))
+#     traceback.print_stack(sys._getframe(2))
+# warnings.showwarning = warn_with_traceback; warnings.simplefilter('always', UserWarning);
+# torch.utils.backcompat.broadcast_warning.enabled = True
+# torch.utils.backcompat.keepdim_warning.enabled = True
+
+import argparse
+import os
+import torchvision
+import torch
+# import numpy as np
+
+dataset_names = ('cifar10', 'cifar100', 'mnist')
+
+parser = argparse.ArgumentParser(description='Download Create Images')
+
+parser.add_argument('-d', '--dataset', metavar='DATA', default='cifar10', choices=dataset_names,
+                    help='dataset to be used: ' + ' | '.join(dataset_names) + ' (default: cifar10)')
+parser.add_argument('-bs', '--batch-size', default=128, type=int,
+                    metavar='N', help='mini-batch size (default: 128)')
+parser.add_argument('-w', '--workers', default=4, type=int, metavar='N',
+                    help='number of data loading workers (default: 4)')
+
+args = parser.parse_args()
+
+data_dir = os.path.join('.', args.dataset)
+images_dir = os.path.join(data_dir, "images")
+train_dir = os.path.join(images_dir, "train")
+val_dir = os.path.join(images_dir, "val")
+
+print(args.dataset)
+
+
+def create_directories():
+    os.makedirs(images_dir)
+    os.makedirs(train_dir)
+    os.makedirs(val_dir)
+    for i in range(nclasses):
+        os.makedirs(os.path.join(train_dir, "class"+str(i)))
+        os.makedirs(os.path.join(val_dir, "class"+str(i)))
+
+
+def build_images(loader, dir):
+    for batch_idx, (input, target) in enumerate(loader):
+        print(input.size())
+        print(type(input[0]))
+        for i in range(input.size(0)):
+            torchvision.utils.save_image(input[i], os.path.join(dir, "class"+str(target[i]),
+                                                                "image"+str(batch_idx * args.batch_size + i)+".jpg"))
+
+
+if args.dataset == "cifar10":
+    nclasses = 10
+    create_directories()
+
+    train_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
+    train_set = torchvision.datasets.CIFAR10(root=data_dir, train=True, download=True, transform=train_transform)
+    train_loader = torch.utils.data.DataLoader(train_set, batch_size=args.batch_size, shuffle=True,
+                                               num_workers=args.workers, pin_memory=True)
+
+    test_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
+    test_set = torchvision.datasets.CIFAR10(root=data_dir, train=False, transform=test_transform)
+    test_loader = torch.utils.data.DataLoader(test_set, batch_size=args.batch_size, shuffle=True,
+                                              num_workers=args.workers, pin_memory=True)
+
+    build_images(train_loader, train_dir)
+    build_images(test_loader, val_dir)
+
+if args.dataset == "cifar100":
+    nclasses = 100
+    create_directories()
+
+    train_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
+    train_set = torchvision.datasets.CIFAR100(root=data_dir, train=True, download=True, transform=train_transform)
+    train_loader = torch.utils.data.DataLoader(train_set, batch_size=args.batch_size, shuffle=True,
+                                               num_workers=args.workers, pin_memory=True)
+
+    test_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
+    test_set = torchvision.datasets.CIFAR100(root=data_dir, train=False, transform=test_transform)
+    test_loader = torch.utils.data.DataLoader(test_set, batch_size=args.batch_size, shuffle=True,
+                                              num_workers=args.workers, pin_memory=True)
+
+    build_images(train_loader, train_dir)
+    build_images(test_loader, val_dir)
+
+
+def mnist_save_image(tensor, filename):
+    from PIL import Image
+    tensor = tensor.cpu()
+    grid = torchvision.utils.make_grid(tensor)
+    ndarr = grid.mul(255).clamp(0, 255).byte().permute(1, 2, 0).numpy()
+    # new_ndarr = np.expand_dims(ndarr[:,:,0], axis=2)
+    new_ndarr = ndarr[:, :, 0]
+    print(new_ndarr.shape)
+    im = Image.fromarray(new_ndarr, mode='L')
+    # im = im.convert('L')
+    im.save(filename)  # Maybe bmp is not working for MNIST... Try png...
+
+
+def mnist_build_images(loader, dir):
+    for batch_idx, (input, target) in enumerate(loader):
+        print(input.size())
+        print(type(input[0]))
+        for i in range(input.size(0)):
+            mnist_save_image(input[i], os.path.join(dir, "class"+str(target[i]),
+                                                    "image"+str(batch_idx * args.batch_size + i)+".jpg"))
+
+
+if args.dataset == "mnist":
+    nclasses = 10
+    create_directories()
+
+    train_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
+    train_set = torchvision.datasets.MNIST(root=data_dir, train=True, download=True, transform=train_transform)
+    train_loader = torch.utils.data.DataLoader(train_set, batch_size=args.batch_size, shuffle=True,
+                                               num_workers=args.workers, pin_memory=True)
+
+    test_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
+    test_set = torchvision.datasets.MNIST(root=data_dir, train=False, transform=test_transform)
+    test_loader = torch.utils.data.DataLoader(test_set, batch_size=args.batch_size, shuffle=True,
+                                              num_workers=args.workers, pin_memory=True)
+
+    mnist_build_images(train_loader, train_dir)
+    mnist_build_images(test_loader, val_dir)
+
+
+"""
+import os
+from shutil import copyfile
+
+sourceDir = "101_ObjectCategories"
+destinationDir = "caltech101"
+
+if not os.path.exists(os.path.join(destinationDir, "train")):
+    os.makedirs(os.path.join(destinationDir, "train"))
+
+if not os.path.exists(os.path.join(destinationDir, "test")):
+    os.makedirs(os.path.join(destinationDir, "test"))
+
+for dirName, subdirList, fileList in os.walk(sourceDir):
+    print('\nFOUND DIRECTORY: ', dirName)
+    for fname in fileList:
+        if int(fname[6:10]) <= 30:
+            print('\tTRAIN: ', fname)
+            print(os.path.join(dirName, fname))
+            processingDir = os.path.join(destinationDir, "train", dirName[len(sourceDir)+1:])
+            print(processingDir)
+            if not os.path.exists(processingDir):
+                os.makedirs(processingDir)
+            print(os.path.join(processingDir, fname))
+            copyfile(os.path.join(dirName, fname),
+                     os.path.join(processingDir, fname))
+        else:
+            print('\tTEST:  ', fname)
+            print(os.path.join(dirName, fname))
+            processingDir = os.path.join(destinationDir, "test", dirName[len(sourceDir)+1:])
+            print(processingDir)
+            if not os.path.exists(processingDir):
+                os.makedirs(processingDir)
+            print(os.path.join(processingDir, fname))
+            copyfile(os.path.join(dirName, fname),
+                     os.path.join(processingDir, fname))
+"""

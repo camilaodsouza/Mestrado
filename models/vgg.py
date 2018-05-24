@@ -1,0 +1,91 @@
+import torch.nn as nn
+
+__all__ = ['VGG', 'vgg11', 'vgg11bn', 'vgg13', 'vgg13bn', 'vgg16', 'vgg16bn', 'vgg19bn', 'vgg19', ]
+
+
+class VGG(nn.Module):
+    def __init__(self, features, num_classes=10):
+        super(VGG, self).__init__()
+        self.features = features
+        self.classifier = nn.Sequential(
+            nn.Linear(512, num_classes)
+        )
+
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                nn.init.kaiming_normal(m.weight, mode='fan_out')
+                # nn.init.xavier_normal(m.weight, gain=1)
+                if m.bias is not None:
+                    nn.init.constant(m.bias, 0)
+            elif isinstance(m, nn.BatchNorm2d):
+                nn.init.constant(m.weight, 1)
+                nn.init.constant(m.bias, 0)
+            elif isinstance(m, nn.Linear):
+                nn.init.normal(m.weight, 0, 1/num_classes)
+                # nn.init.normal(m.weight, 0, 1e-3)
+                nn.init.constant(m.bias, 0)
+
+    def forward(self, x):
+        x = self.features(x)
+        x = x.view(x.size(0), -1)
+        x = self.classifier(x)
+        return x
+
+
+def make_layers(config, batch_norm=False):
+    layers = []
+    in_channels = 3
+    for v in config:
+        if v == 'M':
+            layers += [nn.MaxPool2d(kernel_size=2, stride=2)]
+        else:
+            conv2d = nn.Conv2d(in_channels, v, kernel_size=3, padding=1)
+            if batch_norm:
+                layers += [conv2d, nn.BatchNorm2d(v), nn.ReLU(inplace=True)]
+            else:
+                layers += [conv2d, nn.ReLU(inplace=True)]
+            in_channels = v
+    # layers = layers[:-1]  # <<-- optional VGG desing number #1
+    # layers += [nn.AvgPool2d(kernel_size=2, stride=2)]  # <<-- optional VGG desing number #1
+    layers += [nn.AvgPool2d(kernel_size=1, stride=1)]  # <<-- optional VGG desing number #2
+    return nn.Sequential(*layers)
+
+
+cfg = {
+    'A': [64, 'M', 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M'],
+    'B': [64, 64, 'M', 128, 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M'],
+    'D': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512, 'M', 512, 512, 512, 'M'],
+    'E': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512, 'M'],
+}
+
+
+def vgg11(num_classes=10):
+    return VGG(make_layers(cfg['A']), num_classes)
+
+
+def vgg11bn(num_classes=10):
+    return VGG(make_layers(cfg['A'], batch_norm=True), num_classes)
+
+
+def vgg13(num_classes=10):
+    return VGG(make_layers(cfg['B']), num_classes)
+
+
+def vgg13bn(num_classes=10):
+    return VGG(make_layers(cfg['B'], batch_norm=True), num_classes)
+
+
+def vgg16(num_classes=10):
+    return VGG(make_layers(cfg['D']), num_classes)
+
+
+def vgg16bn(num_classes=10):
+    return VGG(make_layers(cfg['D'], batch_norm=True), num_classes)
+
+
+def vgg19(num_classes=10):
+    return VGG(make_layers(cfg['E']), num_classes)
+
+
+def vgg19bn(num_classes=10):
+    return VGG(make_layers(cfg['E'], batch_norm=True), num_classes)

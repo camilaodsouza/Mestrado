@@ -1,2 +1,3 @@
-# SqueezeNetDSC
-A PyTorch implementation of SqueezeNetDSC
+# Deep Learning Lab
+
+Deep Learning Lab.
