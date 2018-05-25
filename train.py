@@ -27,19 +27,20 @@ import csv
 
 
 from tqdm import tqdm
-from torch.autograd import Variable
+# from torch.autograd import Variable
 from tensorboardX import SummaryWriter
 from torch.utils.data.sampler import SubsetRandomSampler
 from torch.utils.data import DataLoader
 
 import models
-from folder import ImageFolder
+# from folder import ImageFolder
+from datasets import ImageFolder
 
 cudnn.benchmark = False
 cudnn.deterministic = True
 
-numpy.set_printoptions(formatter={'float': '{:0.8f}'.format})
-torch.set_printoptions(precision=8)
+numpy.set_printoptions(formatter={'float': '{:0.4f}'.format})
+torch.set_printoptions(precision=4)
 pd.set_option('display.width', 160)
 
 dataset_names = ('mnist', 'cifar10', 'cifar100', 'imagenet2012')
@@ -89,16 +90,22 @@ parser.add_argument('-wd', '--weight-decay', default=5*1e-4, type=float, metavar
                     help='weight decay (default: 5*1e-4)')
 parser.add_argument('-pf', '--print-freq', default=16, type=int, metavar='N',
                     help='print frequency (default: 16)')
+parser.add_argument('-gpu', '--gpu-id', default='0', type=str,
+                    help='id for CUDA_VISIBLE_DEVICES')
 parser.add_argument('-tr', '--train', const=True, nargs='?', type=bool,
                     help='if true, train the model')
 parser.add_argument('-el', '--extract-logits', const=True, nargs='?', type=bool,
                     help='if true, extract logits')
+parser.add_argument('-cit', '--compute-inference-times', const=True, nargs='?', type=bool,
+                    help='if true, compute inference times')
 
 args = parser.parse_args()
 args.learning_rate_decay_epochs = sorted([int(item) for item in args.learning_rate_decay_epochs.split()])
 args.experiments = args.experiments.split("_")
 
-"""
+# cuda device to use...
+os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu_id)
+
 raw_results = {
     'train_loss': [{} for item in range(args.epochs)],
     'train_entropy': [{} for item in range(args.epochs)],
@@ -106,7 +113,6 @@ raw_results = {
     'val_entropy': [{} for item in range(args.epochs)],
     'val_acc1': [{} for item in range(args.epochs)]
 }
-"""
 
 
 def execute():
@@ -119,14 +125,16 @@ def execute():
 
     if args.dataset == "mnist":
         args.number_of_dataset_classes = 10
-        dataset_path = args.dataset_dir if args.dataset_dir else "../datasets/mnist/images"
+        args.number_of_model_classes = args.number_of_model_classes if args.number_of_model_classes else 10
+        dataset_path = args.dataset_dir if args.dataset_dir else "datasets/mnist/images"
         normalize = transforms.Normalize(mean=[0.1307], std=[0.3081])
         train_transform = transforms.Compose(
             [transforms.ToTensor(), normalize])
         inference_transform = transforms.Compose([transforms.ToTensor(), normalize])
     elif args.dataset == "cifar10":
         args.number_of_dataset_classes = 10
-        dataset_path = args.dataset_dir if args.dataset_dir else "../datasets/cifar10/images"
+        args.number_of_model_classes = args.number_of_model_classes if args.number_of_model_classes else 10
+        dataset_path = args.dataset_dir if args.dataset_dir else "datasets/cifar10/images"
         normalize = transforms.Normalize(mean=[0.491, 0.482, 0.446], std=[0.247, 0.243, 0.261])
         train_transform = transforms.Compose(
             [transforms.RandomCrop(32, padding=4),
@@ -135,7 +143,8 @@ def execute():
         inference_transform = transforms.Compose([transforms.ToTensor(), normalize])
     elif args.dataset == "cifar100":
         args.number_of_dataset_classes = 100
-        dataset_path = args.dataset_dir if args.dataset_dir else "../datasets/cifar100/images"
+        args.number_of_model_classes = args.number_of_model_classes if args.number_of_model_classes else 100
+        dataset_path = args.dataset_dir if args.dataset_dir else "datasets/cifar100/images"
         normalize = transforms.Normalize(mean=[0.507, 0.486, 0.440], std=[0.267, 0.256, 0.276])
         train_transform = transforms.Compose(
             [transforms.RandomCrop(32, padding=4),
@@ -144,7 +153,8 @@ def execute():
         inference_transform = transforms.Compose([transforms.ToTensor(), normalize])
     else:
         args.number_of_dataset_classes = 1000
-        dataset_path = args.dataset_dir if args.dataset_dir else "../datasets/imagenet2012/images"
+        args.number_of_model_classes = args.number_of_model_classes if args.number_of_model_classes else 1000
+        dataset_path = args.dataset_dir if args.dataset_dir else "datasets/imagenet2012/images"
         if args.arch.startswith('inception'):
             size = (299, 299)
         else:
@@ -226,11 +236,13 @@ def execute():
     final_train_loss = None
     final_train_entropy = None
     final_val_entropy = None
+    cpu_mean_inference_time = 0
+    gpu_mean_inference_time = 0
 
     if args.train:
-        ###################
+        #########################################
         # Training...
-        ###################
+        #########################################
 
         # define loss function (criterion)...
         criterion = nn.CrossEntropyLoss().cuda()
@@ -263,9 +275,9 @@ def execute():
         writer.export_scalars_to_json(os.path.join(args.execution_path, 'log.json'))
 
     if args.extract_logits:
-        ######################
+        ############################################
         # Extracting logits...
-        ######################
+        ############################################
 
         print("\n################ EXTRACTING LOGITS ################")
         best_model_file_path = os.path.join(args.execution_path, 'best_model.pth.tar')
@@ -297,7 +309,58 @@ def execute():
         extract_logits_from_file(best_model_file_path, model, args.number_of_model_classes, args.execution_path,
                                  train_loader, val_loader, test_loader, "best_model")
 
-    return best_val_acc1, best_train_acc1, final_train_loss, final_train_entropy, final_val_entropy
+    if args.compute_inference_times:
+        ############################################
+        # Computing inference times...
+        ############################################
+
+        if args.train_set_split is None:
+            val_loader = DataLoader(val_set, batch_size=1, num_workers=args.workers,
+                                    pin_memory=True, shuffle=True, worker_init_fn=worker_init)
+        else:
+            val_loader = DataLoader(val_set, batch_size=1, num_workers=args.workers,
+                                    pin_memory=True, sampler=val_sampler, worker_init_fn=worker_init)
+
+        gpu_mean_inference_time = compute_total_inference_time(model, val_loader, "cpu") / len(val_loader.sampler)
+        cpu_mean_inference_time = compute_total_inference_time(model, val_loader, "gpu") / len(val_loader.sampler)
+
+        print(cpu_mean_inference_time)
+        print(gpu_mean_inference_time)
+
+    return (best_val_acc1, best_train_acc1, final_train_loss, final_train_entropy, final_val_entropy,
+            cpu_mean_inference_time, gpu_mean_inference_time)
+
+
+def compute_total_inference_time(model, val_loader, mode):
+
+    total_inference_time = 0
+
+    if mode == "cpu":
+        model.cpu()
+    elif mode == "gpu":
+        model.cuda()
+
+    # switch to evaluate mode
+    model.eval()
+
+    with torch.no_grad():
+
+        for input_tensor, _ in tqdm(val_loader):
+
+            if mode == "cpu":
+                input_tensor = input_tensor.cpu()
+            elif mode == "gpu":
+                input_tensor = input_tensor.cuda()
+
+            # compute output
+            initial_time = time.time()
+            _ = model(input_tensor)
+            final_time = time.time()
+
+            instance_inference_time = final_time - initial_time
+            total_inference_time += instance_inference_time
+
+    return total_inference_time
 
 
 def train_val(train_loader, val_loader, model, criterion, optimizer, scheduler,
@@ -323,13 +386,12 @@ def train_val(train_loader, val_loader, model, criterion, optimizer, scheduler,
         train_acc1, train_loss, train_entropy = train(train_loader, model, criterion, optimizer, epoch, writer)
         val_acc1, val_entropy = validate(val_loader, model, epoch, writer)
 
-        """
-        raw_results['train_acc1'][epoch][args.experiment] = train_acc1
-        raw_results['train_loss'][epoch][args.experiment] = train_loss
-        raw_results['train_entropy'][epoch][args.experiment] = train_entropy
-        raw_results['val_acc1'][epoch][args.experiment] = val_acc1
-        raw_results['val_entropy'][epoch][args.experiment] = val_entropy
-        """
+        # Saving raw results...
+        raw_results['train_acc1'][epoch-1][args.execution] = train_acc1
+        raw_results['train_loss'][epoch-1][args.execution] = train_loss
+        raw_results['train_entropy'][epoch-1][args.execution] = train_entropy
+        raw_results['val_acc1'][epoch-1][args.execution] = val_acc1
+        raw_results['val_entropy'][epoch-1][args.execution] = val_entropy
 
         # remember best acc1...
         # best_train_acc1 = max(train_acc1, best_train_acc1)
@@ -402,11 +464,11 @@ def compute_train_val_samplers(train_set_to_split, split_fraction):
     return SubsetRandomSampler(train_indexes), SubsetRandomSampler(val_indexes)
 
 
-def compute_entropy(variable, dim=1):
+def compute_entropy(tensor, dim=1):
     softmax = nn.Softmax(dim=dim)
     logsoftmax = nn.LogSoftmax(dim=dim)
-    softmax_output = softmax(variable)  # .data)#.data
-    logsoftmax_output = logsoftmax(variable)  # .data)#.data
+    softmax_output = softmax(tensor)  # .data)#.data
+    logsoftmax_output = logsoftmax(tensor)  # .data)#.data
     return -(softmax_output * logsoftmax_output).sum(dim=dim)
 
 
@@ -416,14 +478,17 @@ def worker_init(worker_id):
 
 
 def create_model():
+    print("=> creating model '{}'".format(args.arch))
+    model = models.__dict__[args.arch](num_classes=args.number_of_model_classes)
+    model.cuda()
+
+    """
     if args.dataset in ["mnist", "cifar10", "cifar100"]:
-        # arch = args.local_model
         print("=> creating model '{}'".format(args.arch))
         model = models.__dict__[args.arch](num_classes=args.number_of_model_classes)
         model.cuda()
         model = torch.nn.DataParallel(model, device_ids=range(torch.cuda.device_count()))
-    else:  # args.dataset == "imagenet2012":
-        # arch = args.remote_model
+    else:
         print("=> creating model '{}'".format(args.arch))
         model = models.__dict__[args.arch](num_classes=args.number_of_model_classes)
         if args.arch.startswith('alexnet') or args.arch.startswith('vgg'):
@@ -431,6 +496,8 @@ def create_model():
             model.cuda()
         else:
             model = torch.nn.DataParallel(model).cuda()
+    """
+
     return model
 
 
@@ -472,21 +539,26 @@ def extract_logits(model, number_of_classes, loader, path):
     # switch to evaluate mode
     model.eval()
 
-    for batch_id, batch in enumerate(tqdm(loader)):
-        img = batch[0]
-        # target = batch[2]
-        target = batch[1]
-        current_bsize = img.size(0)
-        from_ = int(batch_id * loader.batch_size)
-        to_ = int(from_ + current_bsize)
+    with torch.no_grad():
 
-        img = img.cuda(async=True)
+        for batch_id, (input_tensor, target_tensor) in enumerate(tqdm(loader)):
+            # input_tensor = batch[0]
+            # target_tensor = batch[1]
 
-        input_var = Variable(img, requires_grad=False)
-        output = model(input_var)
+            # moving to GPU...
+            input_tensor = input_tensor.cuda()
+            target_tensor = target_tensor.cuda(non_blocking=True)
 
-        logits[from_:to_] = output.data.cpu()
-        targets[from_:to_] = target
+            # compute output
+            output = model(input_tensor)
+
+            current_bsize = input_tensor.size(0)
+            from_ = int(batch_id * loader.batch_size)
+            to_ = int(from_ + current_bsize)
+
+            # logits[from_:to_] = output.data.cpu()
+            logits[from_:to_] = output.cpu()
+            targets[from_:to_] = target_tensor
 
     os.system('mkdir -p {}'.format(os.path.dirname(path)))
     print('save ' + path)
@@ -514,40 +586,48 @@ def train(train_loader, model, criterion, optimizer, epoch, writer):
         # measure data loading time
         train_data_time = time.time() - train_batch_start_time
 
+        """
         input_var = torch.autograd.Variable(input_tensor)
         target_tensor = target_tensor.cuda(async=True)
-        target_var = torch.autograd.Variable(target_tensor)
+        target_tensor = torch.autograd.Variable(target_tensor)
+        """
+
+        # moving to GPU...
+        input_tensor = input_tensor.cuda()
+        target_tensor = target_tensor.cuda(non_blocking=True)
 
         # compute output
-        output_var = model(input_var)
+        output_tensor = model(input_tensor)
 
         # Working with entropy...
-        entropy = compute_entropy(output_var, dim=1)
+        entropy = compute_entropy(output_tensor, dim=1)
         mean_entropy = entropy.sum()/entropy.size(0)
 
         # compute loss
         if args.regularization_type == "l2":
             # print("L2 REGULARIZATION\t", args.regularization_value)
-            loss_var = criterion(output_var, target_var) + (args.regularization_value * torch.norm(output_var, 2))
+            loss = criterion(output_tensor, target_tensor) + (args.regularization_value * torch.norm(output_tensor, 2))
         elif args.regularization_type == "ne":
             # print("NEGATIVE ENTROPIC REGULARIZATION\t", args.regularization_value)
-            loss_var = criterion(output_var, target_var) - (args.regularization_value * mean_entropy)
+            loss = criterion(output_tensor, target_tensor) - (args.regularization_value * mean_entropy)
         elif args.regularization_type == "pie":
             # print("POSITIVE INVERTED ENTROPIC REGULARIZATION\t", args.regularization_value)
-            loss_var = criterion(output_var, target_var) + (args.regularization_value / mean_entropy)
+            loss = criterion(output_tensor, target_tensor) + (args.regularization_value / mean_entropy)
         else:
             # print("NO REGULARIZATION")
-            loss_var = criterion(output_var, target_var)
+            loss = criterion(output_tensor, target_tensor)
 
         # accumulate metrics over epoch
-        train_loss.add(loss_var.data[0])
-        train_entropy.add(mean_entropy.data[0])
-        train_acc.add(output_var.data, target_var.data)
-        train_conf.add(output_var.data, target_var.data)
+        train_loss.add(loss.item())
+        train_entropy.add(mean_entropy.item())
+        train_acc.add(output_tensor.data, target_tensor.data)
+        train_conf.add(output_tensor.data, target_tensor.data)
+        # train_acc.add(output_tensor, target_tensor)
+        # train_conf.add(output_tensor, target_tensor)
 
         # zero grads, compute gradients and do optimizer step
         optimizer.zero_grad()
-        loss_var.backward()
+        loss.backward()
         optimizer.step()
 
         # measure elapsed time
@@ -574,21 +654,16 @@ def train(train_loader, model, criterion, optimizer, epoch, writer):
         # Restart timer...
         train_batch_start_time = time.time()
 
-    print("\nEPOCH TRAIN RESULTS")
-    print("LOSS:\t\t", train_loss.value())
-    print("ENTROPY:\t", train_entropy.value())
-    print("ACCURACY:\t", train_acc.value())
     print("\nCONFUSION:\n", train_conf.value())
+    print('\n#### TRAIN: {acc1:.3f}\n\n'.format(acc1=train_acc.value()[0]))
 
+    # confusion = dict(np.ndenumerate(train_conf.value()))
+    # confusion = {str(key):float(value) for key,value in confusion.items()}
+    # writer.add_scalars('train/confusion', confusion, epoch)
     writer.add_scalar('train/loss', train_loss.value()[0], epoch)
     writer.add_scalar('train/entropy', train_entropy.value()[0], epoch)
     writer.add_scalar('train/acc1', train_acc.value()[0], epoch)
     writer.add_scalar('train/acc5', train_acc.value()[1], epoch)
-
-    print('\n#### TRAIN: {acc1:.3f}\n\n'.format(acc1=train_acc.value()[0]))
-    # confusion = dict(np.ndenumerate(train_conf.value()))
-    # confusion = {str(key):float(value) for key,value in confusion.items()}
-    # writer.add_scalars('train/confusion', confusion, epoch)
 
     return train_acc.value()[0], train_loss.value()[0], train_entropy.value()[0]
 
@@ -605,63 +680,70 @@ def validate(val_loader, model, epoch, writer):
     # Start timer...
     val_batch_start_time = time.time()
 
-    for batch_index, (input_tensor, target_tensor) in enumerate(val_loader):
-        batch_index += 1
+    with torch.no_grad():
 
-        # measure data loading time
-        val_data_time = time.time()-val_batch_start_time
+        for batch_index, (input_tensor, target_tensor) in enumerate(val_loader):
+            batch_index += 1
 
-        input_var = torch.autograd.Variable(input_tensor, volatile=True)
-        target_tensor = target_tensor.cuda(async=True)
-        target_var = torch.autograd.Variable(target_tensor, volatile=True)
+            # measure data loading time
+            val_data_time = time.time()-val_batch_start_time
 
-        # compute output
-        output_var = model(input_var)
+            """
+            input_tensor = torch.autograd.Variable(input_tensor, volatile=True)
+            target_tensor = target_tensor.cuda(async=True)
+            target_tensor = torch.autograd.Variable(target_tensor, volatile=True)
+            """
 
-        # Working with entropy...
-        entropy = compute_entropy(output_var, dim=1)
-        mean_entropy = entropy.data.sum()/entropy.data.size(0)
+            # moving to GPU...
+            input_tensor = input_tensor.cuda()
+            target_tensor = target_tensor.cuda(non_blocking=True)
 
-        # accumulate metrics over epoch
-        val_entropy.add(mean_entropy)
-        val_acc.add(output_var.data, target_var.data)
-        val_conf.add(output_var.data, target_var.data)
+            # compute output
+            output_tensor = model(input_tensor)
 
-        # measure elapsed time
-        val_batch_time = time.time()-val_batch_start_time
+            # Working with entropy...
+            entropy = compute_entropy(output_tensor, dim=1)
+            mean_entropy = entropy.sum()/entropy.size(0)
+            # mean_entropy = entropy.sum()/entropy.size(0)
 
-        if batch_index % args.print_freq == 0:
-            print('Valid Epoch: [{0}][{1}/{2}]\t'
-                  'Data {val_data_time:.6f}\t'
-                  'Time {val_batch_time:.6f}\t'
-                  'Entropy {entropy:.4f}\t\t'
-                  'Acc1 {acc1_meter:.2f}\t'
-                  'Acc5 {acc5_meter:.2f}'
-                  .format(epoch, batch_index, len(val_loader),
-                          val_data_time=val_data_time,
-                          val_batch_time=val_batch_time,
-                          entropy=val_entropy.value()[0],
-                          acc1_meter=val_acc.value()[0],
-                          acc5_meter=val_acc.value()[1],
-                          )
-                  )
+            # accumulate metrics over epoch
+            val_entropy.add(mean_entropy.item())
+            val_acc.add(output_tensor.data, target_tensor.data)
+            val_conf.add(output_tensor.data, target_tensor.data)
+            # val_acc.add(output_tensor, target_tensor)
+            # val_conf.add(output_tensor, target_tensor)
 
-        # Restart timer...
-        val_batch_start_time = time.time()
+            # measure elapsed time
+            val_batch_time = time.time()-val_batch_start_time
 
-    print("\nEPOCH VALID RESULTS")
-    print("ENTROPY:\t", val_entropy.value())
-    print("ACCURACY:\t", val_acc.value())
+            if batch_index % args.print_freq == 0:
+                print('Valid Epoch: [{0}][{1}/{2}]\t'
+                      'Data {val_data_time:.6f}\t'
+                      'Time {val_batch_time:.6f}\t'
+                      'Entropy {entropy:.4f}\t\t'
+                      'Acc1 {acc1_meter:.2f}\t'
+                      'Acc5 {acc5_meter:.2f}'
+                      .format(epoch, batch_index, len(val_loader),
+                              val_data_time=val_data_time,
+                              val_batch_time=val_batch_time,
+                              entropy=val_entropy.value()[0],
+                              acc1_meter=val_acc.value()[0],
+                              acc5_meter=val_acc.value()[1],
+                              )
+                      )
+
+            # Restart timer...
+            val_batch_start_time = time.time()
+
     print("\nCONFUSION:\n", val_conf.value())
-
-    writer.add_scalar('val/entropy', val_entropy.value()[0], epoch)
-    writer.add_scalar('val/acc1', val_acc.value()[0], epoch)
-    writer.add_scalar('val/acc5', val_acc.value()[1], epoch)
-
     print('\n#### VALID: {acc1:.3f}\n'.format(acc1=val_acc.value()[0]))
+
     # confusion = dict(np.ndenumerate(val_conf.value()))
     # confusion = {str(key):float(value) for key,value in confusion.items()}
     # writer.add_scalars('val/confusion', confusion, epoch)
+    writer.add_scalar('val/entropy', val_entropy.value()[0], epoch)
+    writer.add_scalar('val/acc1', val_acc.value()[0], epoch)
+    writer.add_scalar('val/acc5', val_acc.value()[1], epoch)
 
     return val_acc.value()[0], val_entropy.value()[0]
 
@@ -694,6 +776,10 @@ def main():
 
         experiment_configs = experiment.split("+")
 
+        args.number_of_model_classes = None
+        args.regularization_type = None
+        args.regularization_value = 0
+
         for config in experiment_configs:
             config = config.split("~")
             if config[0] == "nmc":
@@ -702,7 +788,7 @@ def main():
             elif config[0] == "rt":
                 args.regularization_type = str(config[1])
                 print("REGULARIZATION TYPE:", args.regularization_type)
-            if config[0] == "rv":
+            elif config[0] == "rv":
                 args.regularization_value = float(config[1])
                 print("REGULARIZATION VALUE:", args.regularization_value)
 
@@ -718,7 +804,7 @@ def main():
             print("\n################ EXECUTION:", args.execution, "OF", args.executions, "################")
 
             # execute experiment...
-            val_acc1, train_acc1, train_loss, train_entropy, val_entropy = execute()
+            val_acc1, train_acc1, train_loss, train_entropy, val_entropy, _, _ = execute()
 
             # results and auc_statistics...
             (acc1_results["BEST VALID [ACC1]"], acc1_results["BEST TRAIN [ACC1]"],
@@ -738,17 +824,21 @@ def main():
 
         all_acc1_stats[experiment] = acc1_stats
 
-        """
+        # """
         csv.register_dialect('unixpwd', delimiter='\t', quoting=csv.QUOTE_NONE)
         for key in raw_results:
-            file_path = os.join(args.experiment_path, key + '.csv') 
+            file_path = os.path.join(args.experiment_path, key + '.csv')
             with open(file_path, 'w', newline='') as csvfile:
-                fieldnames = [str(item) for item in range(args.executions)]
+                fieldnames = [item for item in range(1, args.executions+1)]
+                # print(fieldnames)
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames, dialect='unixpwd')
                 writer.writeheader()
-                for epoch in raw_results[key]:
+                for epoch in range(len(raw_results[key])):
+                    # print(raw_results[key])
+                    # print(epoch)
+                    # print(raw_results[key][epoch])
                     writer.writerow(raw_results[key][epoch])
-        """
+        # """
 
     print("\n\n\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n", "OVERALL STATISTICS", "\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n")
     for key in all_acc1_stats:

@@ -11,7 +11,6 @@ import argparse
 import os
 import torchvision
 import torch
-# import numpy as np
 
 dataset_names = ('cifar10', 'cifar100', 'mnist')
 
@@ -48,8 +47,33 @@ def build_images(loader, dir):
         print(input.size())
         print(type(input[0]))
         for i in range(input.size(0)):
-            torchvision.utils.save_image(input[i], os.path.join(dir, "class"+str(target[i]),
-                                                                "image"+str(batch_idx * args.batch_size + i)+".jpg"))
+            torchvision.utils.save_image(input[i], os.path.join(
+                # dir, "class"+str(target[i]), "image"+str(batch_idx * args.batch_size + i)+".jpg"))
+                dir, "class" + str(target[i].item()), "image" + str(batch_idx * args.batch_size + i) + ".jpg"))
+
+
+def mnist_build_images(loader, dir):
+    for batch_idx, (input, target) in enumerate(loader):
+        print(input.size())
+        print(type(input[0]))
+        for i in range(input.size(0)):
+            mnist_save_image(input[i], os.path.join(
+                # dir, "class"+str(target[i]), "image"+str(batch_idx * args.batch_size + i)+".png"))
+                dir, "class" + str(target[i].item()), "image" + str(batch_idx * args.batch_size + i) + ".png"))
+
+
+def mnist_save_image(tensor, filename):
+    from PIL import Image
+    tensor = tensor.cpu()
+    grid = torchvision.utils.make_grid(tensor)
+    ndarr = grid.mul(255).clamp(0, 255).byte().permute(1, 2, 0).numpy()
+    # new_ndarr = np.expand_dims(ndarr[:,:,0], axis=2)
+    new_ndarr = ndarr[:, :, 0]
+    print(new_ndarr.shape)
+    im = Image.fromarray(new_ndarr, mode='L')
+    # im = im.convert('L')
+    print("FILENAME:", filename)
+    im.save(filename)  # Maybe bmp is not working for MNIST... Try png...
 
 
 if args.dataset == "cifar10":
@@ -87,28 +111,6 @@ if args.dataset == "cifar100":
     build_images(test_loader, val_dir)
 
 
-def mnist_save_image(tensor, filename):
-    from PIL import Image
-    tensor = tensor.cpu()
-    grid = torchvision.utils.make_grid(tensor)
-    ndarr = grid.mul(255).clamp(0, 255).byte().permute(1, 2, 0).numpy()
-    # new_ndarr = np.expand_dims(ndarr[:,:,0], axis=2)
-    new_ndarr = ndarr[:, :, 0]
-    print(new_ndarr.shape)
-    im = Image.fromarray(new_ndarr, mode='L')
-    # im = im.convert('L')
-    im.save(filename)  # Maybe bmp is not working for MNIST... Try png...
-
-
-def mnist_build_images(loader, dir):
-    for batch_idx, (input, target) in enumerate(loader):
-        print(input.size())
-        print(type(input[0]))
-        for i in range(input.size(0)):
-            mnist_save_image(input[i], os.path.join(dir, "class"+str(target[i]),
-                                                    "image"+str(batch_idx * args.batch_size + i)+".jpg"))
-
-
 if args.dataset == "mnist":
     nclasses = 10
     create_directories()
@@ -125,42 +127,3 @@ if args.dataset == "mnist":
 
     mnist_build_images(train_loader, train_dir)
     mnist_build_images(test_loader, val_dir)
-
-
-"""
-import os
-from shutil import copyfile
-
-sourceDir = "101_ObjectCategories"
-destinationDir = "caltech101"
-
-if not os.path.exists(os.path.join(destinationDir, "train")):
-    os.makedirs(os.path.join(destinationDir, "train"))
-
-if not os.path.exists(os.path.join(destinationDir, "test")):
-    os.makedirs(os.path.join(destinationDir, "test"))
-
-for dirName, subdirList, fileList in os.walk(sourceDir):
-    print('\nFOUND DIRECTORY: ', dirName)
-    for fname in fileList:
-        if int(fname[6:10]) <= 30:
-            print('\tTRAIN: ', fname)
-            print(os.path.join(dirName, fname))
-            processingDir = os.path.join(destinationDir, "train", dirName[len(sourceDir)+1:])
-            print(processingDir)
-            if not os.path.exists(processingDir):
-                os.makedirs(processingDir)
-            print(os.path.join(processingDir, fname))
-            copyfile(os.path.join(dirName, fname),
-                     os.path.join(processingDir, fname))
-        else:
-            print('\tTEST:  ', fname)
-            print(os.path.join(dirName, fname))
-            processingDir = os.path.join(destinationDir, "test", dirName[len(sourceDir)+1:])
-            print(processingDir)
-            if not os.path.exists(processingDir):
-                os.makedirs(processingDir)
-            print(os.path.join(processingDir, fname))
-            copyfile(os.path.join(dirName, fname),
-                     os.path.join(processingDir, fname))
-"""

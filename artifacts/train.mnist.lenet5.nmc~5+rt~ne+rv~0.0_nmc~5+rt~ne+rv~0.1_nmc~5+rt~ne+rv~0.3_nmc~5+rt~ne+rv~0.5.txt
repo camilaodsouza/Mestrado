@@ -1,0 +1,161 @@
+
+
+
+****************************************************************
+EXPERIMENT: NMC~5+RT~NE+RV~0.0
+****************************************************************
+
+EXPERIMENT PATH: artifacts/mnist/lenet5/nmc~5+rt~ne+rv~0.0
+NUMBER OF MODEL CLASSES: 5
+REGULARIZATION TYPE: ne
+REGULARIZATION VALUE: 0.0
+
+################ EXECUTION: 1 OF 2 ################
+
+ARGUMENTS:  {'artifact_dir': None, 'dataset_dir': None, 'executions': 2, 'dataset': 'mnist', 'local_model': 'lenet5', 'remote_model': None, 'workers': 4, 'epochs': 3, 'batch_size': 128, 'train_set_split': None, 'original_learning_rate': 0.1, 'learning_rate_decay_rate': 0.2, 'learning_rate_decay_period': 30, 'learning_rate_decay_epochs': [60, 80, 90], 'experiments': ['nmc~5+rt~ne+rv~0.0', 'nmc~5+rt~ne+rv~0.1', 'nmc~5+rt~ne+rv~0.3', 'nmc~5+rt~ne+rv~0.5'], 'momentum': 0.9, 'weight_decay': 0.0005, 'print_freq': 16, 'train': True, 'extract_logits': True, 'arch': 'lenet5', 'experiment_path': 'artifacts/mnist/lenet5/nmc~5+rt~ne+rv~0.0', 'number_of_model_classes': 5, 'regularization_type': 'ne', 'regularization_value': 0.0, 'execution': 1, 'number_of_dataset_classes': 10, 'normal_classes': [0, 2, 4, 6, 9], 'execution_path': 'artifacts/mnist/lenet5/nmc~5+rt~ne+rv~0.0/exec1'}
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+TRAINSET LOADER SIZE: ====>>>>  29590
+VALIDSET LOADER SIZE: ====>>>>  4961
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+DATASET: mnist
+=> creating model 'lenet5'
+
+MODEL: DataParallel(
+  (module): LeNet5(
+    (features): Sequential(
+      (0): Conv2d(1, 6, kernel_size=(5, 5), stride=(1, 1), padding=(2, 2))
+      (1): BatchNorm2d(6, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (2): ReLU(inplace)
+      (3): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+      (4): Conv2d(6, 16, kernel_size=(5, 5), stride=(1, 1))
+      (5): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (6): ReLU(inplace)
+      (7): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+    )
+    (classifier): Sequential(
+      (0): Linear(in_features=400, out_features=120, bias=True)
+      (1): ReLU(inplace)
+      (2): Linear(in_features=120, out_features=5, bias=True)
+    )
+  )
+)
+
+################ TRAINING ################
+
+######## EPOCH: 1 OF 3 ########
+
+LEARNING RATE:	 0.1
+Train Epoch: [1][16/232]	Data 0.073552	Time 0.085917	Loss 9.4143	Entropy 0.9817		Acc1 41.70	Acc5 100.00
+Train Epoch: [1][32/232]	Data 0.000222	Time 0.011974	Loss 4.9626	Entropy 0.6644		Acc1 63.26	Acc5 100.00
+Train Epoch: [1][48/232]	Data 0.303427	Time 0.319546	Loss 3.4063	Entropy 0.5232		Acc1 72.14	Acc5 100.00
+Train Epoch: [1][64/232]	Data 0.610207	Time 0.619501	Loss 2.6060	Entropy 0.4382		Acc1 77.32	Acc5 100.00
+Train Epoch: [1][80/232]	Data 0.459836	Time 0.471443	Loss 2.1152	Entropy 0.3773		Acc1 80.75	Acc5 100.00
+Train Epoch: [1][96/232]	Data 0.000346	Time 0.016451	Loss 1.7860	Entropy 0.3352		Acc1 83.21	Acc5 100.00
+Train Epoch: [1][112/232]	Data 0.037755	Time 0.056429	Loss 1.5538	Entropy 0.3064		Acc1 84.88	Acc5 100.00
+Train Epoch: [1][128/232]	Data 0.281520	Time 0.301527	Loss 1.3731	Entropy 0.2813		Acc1 86.33	Acc5 100.00
+Train Epoch: [1][144/232]	Data 0.000410	Time 0.012203	Loss 1.2335	Entropy 0.2607		Acc1 87.44	Acc5 100.00
+Train Epoch: [1][160/232]	Data 0.000351	Time 0.016109	Loss 1.1202	Entropy 0.2432		Acc1 88.34	Acc5 100.00
+Train Epoch: [1][176/232]	Data 0.000288	Time 0.008321	Loss 1.0294	Entropy 0.2288		Acc1 89.09	Acc5 100.00
+Train Epoch: [1][192/232]	Data 0.674660	Time 0.691636	Loss 0.9521	Entropy 0.2168		Acc1 89.74	Acc5 100.00
+Train Epoch: [1][208/232]	Data 1.159045	Time 1.175484	Loss 0.8863	Entropy 0.2066		Acc1 90.28	Acc5 100.00
+Train Epoch: [1][224/232]	Data 0.355611	Time 0.371606	Loss 0.8302	Entropy 0.1977		Acc1 90.73	Acc5 100.00
+
+EPOCH TRAIN RESULTS
+LOSS:		 (tensor(0.80485559, device='cuda:0'), 5.990783606525514)
+ENTROPY:	 (tensor(0.19361895, device='cuda:0'), 0.2507103573191912)
+ACCURACY:	 [90.92936802973978, 100.0]
+
+CONFUSION:
+ [[0.93584335 0.01840284 0.01485734 0.01013000 0.02076650]
+ [0.02433703 0.90886205 0.02534408 0.01141323 0.03004364]
+ [0.01763095 0.02430674 0.86391646 0.02242383 0.07172202]
+ [0.02179790 0.01723555 0.01943224 0.93376142 0.00777290]
+ [0.02101194 0.01966717 0.05009245 0.00571525 0.90351319]]
+
+#### TRAIN: 90.929
+
+
+Valid Epoch: [1][16/39]	Data 0.000065	Time 0.001680	Entropy 0.0862		Acc1 96.63	Acc5 100.00
+Valid Epoch: [1][32/39]	Data 0.000017	Time 0.002283	Entropy 0.0843		Acc1 96.63	Acc5 100.00
+
+EPOCH VALID RESULTS
+ENTROPY:	 (tensor(1.00000e-02 *
+       8.58380422, device='cuda:0'), 0.015364600000315183)
+ACCURACY:	 [96.43217093327958, 100.0]
+
+CONFUSION:
+ [[0.97959185 0.00204082 0.00714286 0.00816326 0.00306122]
+ [0.01065892 0.97480619 0.00678295 0.00290698 0.00484496]
+ [0.00000000 0.00509165 0.97759676 0.00814664 0.00916497]
+ [0.01043841 0.00417537 0.00626305 0.97912318 0.00000000]
+ [0.00297324 0.00495540 0.07928642 0.00099108 0.91179383]]
+
+#### VALID: 96.432
+
+!+NEW BEST+ 96.432 IN EPOCH 1!!! SAVING... artifacts/mnist/lenet5/nmc~5+rt~ne+rv~0.0/exec1/best_model.pth.tar
+
+!$$$$ BEST: 96.432
+
+
+######## EPOCH: 2 OF 3 ########
+
+LEARNING RATE:	 0.1
+Train Epoch: [2][16/232]	Data 0.000117	Time 0.004388	Loss 0.0750	Entropy 0.0716		Acc1 97.71	Acc5 100.00
+Train Epoch: [2][32/232]	Data 0.000077	Time 0.003370	Loss 0.0720	Entropy 0.0690		Acc1 97.78	Acc5 100.00
+Train Epoch: [2][48/232]	Data 0.000079	Time 0.003988	Loss 0.0670	Entropy 0.0648		Acc1 97.92	Acc5 100.00
+Train Epoch: [2][64/232]	Data 0.000112	Time 0.004140	Loss 0.0677	Entropy 0.0624		Acc1 97.81	Acc5 100.00
+Train Epoch: [2][80/232]	Data 0.000087	Time 0.004018	Loss 0.0743	Entropy 0.0618		Acc1 97.72	Acc5 100.00
+Train Epoch: [2][96/232]	Data 0.000473	Time 0.004049	Loss 0.0758	Entropy 0.0639		Acc1 97.69	Acc5 100.00
+Train Epoch: [2][112/232]	Data 0.002434	Time 0.005745	Loss 0.0709	Entropy 0.0640		Acc1 97.84	Acc5 100.00
+Train Epoch: [2][128/232]	Data 0.005842	Time 0.009597	Loss 0.0699	Entropy 0.0628		Acc1 97.83	Acc5 100.00
+Train Epoch: [2][144/232]	Data 0.000158	Time 0.005466	Loss 0.0680	Entropy 0.0619		Acc1 97.85	Acc5 100.00
+Train Epoch: [2][160/232]	Data 0.000088	Time 0.003632	Loss 0.0676	Entropy 0.0615		Acc1 97.88	Acc5 100.00
+Train Epoch: [2][176/232]	Data 0.000103	Time 0.005457	Loss 0.0686	Entropy 0.0618		Acc1 97.87	Acc5 100.00
+Train Epoch: [2][192/232]	Data 0.000079	Time 0.004437	Loss 0.0679	Entropy 0.0620		Acc1 97.88	Acc5 100.00
+Train Epoch: [2][208/232]	Data 0.000079	Time 0.003865	Loss 0.0662	Entropy 0.0611		Acc1 97.95	Acc5 100.00
+Train Epoch: [2][224/232]	Data 0.000386	Time 0.006814	Loss 0.0650	Entropy 0.0601		Acc1 97.99	Acc5 100.00
+
+EPOCH TRAIN RESULTS
+LOSS:		 (tensor(1.00000e-02 *
+       6.45789281, device='cuda:0'), 0.04002716742577521)
+ENTROPY:	 (tensor(1.00000e-02 *
+       5.98368198, device='cuda:0'), 0.01713707222225086)
+ACCURACY:	 [98.01284217641096, 100.0]
+
+CONFUSION:
+ [[0.98649335 0.00253250 0.00101300 0.00472733 0.00523383]
+ [0.00436388 0.98489428 0.00369251 0.00251762 0.00453172]
+ [0.00102705 0.00410818 0.96627867 0.00616227 0.02242383]
+ [0.00506928 0.00236566 0.00337952 0.98817170 0.00101386]
+ [0.00453858 0.00403429 0.01630526 0.00050429 0.97461760]]
+
+#### TRAIN: 98.013
+
+
+Valid Epoch: [2][16/39]	Data 0.000063	Time 0.002246	Entropy 0.0711		Acc1 97.85	Acc5 100.00
+Valid Epoch: [2][32/39]	Data 0.000010	Time 0.002173	Entropy 0.0704		Acc1 97.66	Acc5 100.00
+
+EPOCH VALID RESULTS
+ENTROPY:	 (tensor(1.00000e-02 *
+       7.03273565, device='cuda:0'), 0.021547183701352248)
+ACCURACY:	 [97.70207619431565, 100.0]
+
+CONFUSION:
+ [[0.98673469 0.00306122 0.00510204 0.00306122 0.00204082]
+ [0.00581395 0.98740309 0.00193798 0.00096899 0.00387597]
+ [0.00000000 0.00203666 0.98879838 0.00610998 0.00305499]
+ [0.00835073 0.00313152 0.00939457 0.97807932 0.00104384]
+ [0.00198216 0.00594648 0.04757185 0.00000000 0.94449949]]
+
+#### VALID: 97.702
+
+!+NEW BEST+ 97.702 IN EPOCH 2!!! SAVING... artifacts/mnist/lenet5/nmc~5+rt~ne+rv~0.0/exec1/best_model.pth.tar
+
+!$$$$ BEST: 97.702
+
+
+######## EPOCH: 3 OF 3 ########
+
+LEARNING RATE:	 0.1

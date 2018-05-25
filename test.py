@@ -616,7 +616,7 @@ def main():
             # elif config[0] == "rt":
             #     args.regularization_type = str(config[1])
             #     print("REGULARIZATION TYPE:", args.regularization_type)
-            # if config[0] == "rv":
+            # elif config[0] == "rv":
             #     args.regularization_value = float(config[1])
             #     print("REGULARIZATION VALUE:", args.regularization_value)
 
