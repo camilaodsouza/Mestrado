@@ -8,7 +8,7 @@
 # torch.utils.backcompat.keepdim_warning.enabled = True
 
 import argparse
-import sys
+# import sys
 import os
 import time
 import random
@@ -29,6 +29,7 @@ import csv
 from tqdm import tqdm
 # from torch.autograd import Variable
 from tensorboardX import SummaryWriter
+from torch.nn.modules.module import _addindent
 from torch.utils.data.sampler import SubsetRandomSampler
 from torch.utils.data import DataLoader
 
@@ -90,14 +91,14 @@ parser.add_argument('-wd', '--weight-decay', default=5*1e-4, type=float, metavar
                     help='weight decay (default: 5*1e-4)')
 parser.add_argument('-pf', '--print-freq', default=16, type=int, metavar='N',
                     help='print frequency (default: 16)')
-parser.add_argument('-gpu', '--gpu-id', default='0', type=str,
+parser.add_argument('-gpu', '--gpu-id', default='1', type=str,
                     help='id for CUDA_VISIBLE_DEVICES')
-parser.add_argument('-tr', '--train', const=True, nargs='?', type=bool,
-                    help='if true, train the model')
-parser.add_argument('-el', '--extract-logits', const=True, nargs='?', type=bool,
-                    help='if true, extract logits')
-parser.add_argument('-cit', '--compute-inference-times', const=True, nargs='?', type=bool,
-                    help='if true, compute inference times')
+# parser.add_argument('-tr', '--train', const=True, nargs='?', type=bool,
+#                    help='if true, train the model')
+# parser.add_argument('-el', '--extract-logits', const=True, nargs='?', type=bool,
+#                    help='if true, extract logits')
+# parser.add_argument('-cit', '--compute-inference-times', const=True, nargs='?', type=bool,
+#                    help='if true, compute inference times')
 
 args = parser.parse_args()
 args.learning_rate_decay_epochs = sorted([int(item) for item in args.learning_rate_decay_epochs.split()])
@@ -117,12 +118,17 @@ raw_results = {
 
 def execute():
 
+    ######################################
+    # Initial configuration...
+    ######################################
+
     # Using seeds...
     random.seed(0)
     numpy.random.seed(0)
     torch.manual_seed(0)
     torch.cuda.manual_seed(0)
 
+    # Configuring args and dataset...
     if args.dataset == "mnist":
         args.number_of_dataset_classes = 10
         args.number_of_model_classes = args.number_of_model_classes if args.number_of_model_classes else 10
@@ -177,16 +183,16 @@ def execute():
     if not os.path.exists(args.execution_path):
         os.makedirs(args.execution_path)
 
+    # Printing args...
+    print("\nARGUMENTS: ", vars(args))
+
     # Preparing logger...
     writer = SummaryWriter(log_dir=args.execution_path)
     writer.add_text(str(vars(args)), str(vars(args)))
 
-    # Printing args...
-    print("\nARGUMENTS: ", vars(args))
-
-    ###################
+    ######################################
     # Preparing data...
-    ###################
+    ######################################
 
     train_path = os.path.join(dataset_path, 'train')
     val_path = os.path.join(dataset_path, 'val')
@@ -199,9 +205,11 @@ def execute():
                               target_transform=args.normal_classes.index)
 
         train_loader = DataLoader(train_set, batch_size=args.batch_size, num_workers=args.workers,
-                                  pin_memory=True, shuffle=True, worker_init_fn=worker_init)
+                                  # pin_memory=True, shuffle=True, worker_init_fn=worker_init)
+                                  pin_memory=True, shuffle=True)
         val_loader = DataLoader(val_set, batch_size=args.batch_size, num_workers=args.workers,
-                                pin_memory=True, shuffle=True, worker_init_fn=worker_init)
+                                # pin_memory=True, shuffle=True, worker_init_fn=worker_init)
+                                pin_memory=True, shuffle=True)
     else:
         train_set = ImageFolder(train_path, transform=train_transform, selected_classes=args.normal_classes,
                                 target_transform=args.normal_classes.index)
@@ -211,9 +219,11 @@ def execute():
         train_sampler, val_sampler = compute_train_val_samplers(train_set, args.train_set_split)
 
         train_loader = DataLoader(train_set, batch_size=args.batch_size, num_workers=args.workers,
-                                  pin_memory=True, sampler=train_sampler, worker_init_fn=worker_init)
+                                  # pin_memory=True, sampler=train_sampler, worker_init_fn=worker_init)
+                                  pin_memory=True, sampler=train_sampler)
         val_loader = DataLoader(val_set, batch_size=args.batch_size, num_workers=args.workers,
-                                pin_memory=True, sampler=val_sampler, worker_init_fn=worker_init)
+                                # pin_memory=True, sampler=val_sampler, worker_init_fn=worker_init)
+                                pin_memory=True, sampler=val_sampler)
 
     print("\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
     print("TRAINSET LOADER SIZE: ====>>>> ", len(train_loader.sampler))
@@ -231,136 +241,105 @@ def execute():
     torch.manual_seed(0)
     torch.cuda.manual_seed(0)
 
-    best_train_acc1 = 0
-    best_val_acc1 = 0
-    final_train_loss = None
-    final_train_entropy = None
-    final_val_entropy = None
-    cpu_mean_inference_time = 0
-    gpu_mean_inference_time = 0
+    #########################################
+    # Training...
+    #########################################
 
-    if args.train:
-        #########################################
-        # Training...
-        #########################################
+    # define loss function (criterion)...
+    criterion = nn.CrossEntropyLoss().cuda()
 
-        # define loss function (criterion)...
-        criterion = nn.CrossEntropyLoss().cuda()
+    # define optimizer...
+    optimizer = torch.optim.SGD(model.parameters(), lr=args.original_learning_rate, momentum=args.momentum,
+                                weight_decay=args.weight_decay, nesterov=True)
 
-        # define optimizer...
-        optimizer = torch.optim.SGD(model.parameters(), lr=args.original_learning_rate, momentum=args.momentum,
-                                    weight_decay=args.weight_decay, nesterov=True)
+    # define optimizer...
+    # optimizer = torch.optim.Adam(model.parameters(), lr=args.original_learning_rate)
+    # optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=args.weight_decay)
 
-        # define optimizer...
-        # optimizer = torch.optim.Adam(model.parameters(), lr=args.original_learning_rate)
-        # optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=args.weight_decay)
+    # define scheduler...
+    # scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=args.learning_rate_decay_epochs,
+    #                                                  gamma=args.learning_rate_decay_rate)
 
-        # define scheduler...
-        # scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=args.learning_rate_decay_epochs,
-        #                                                  gamma=args.learning_rate_decay_rate)
+    # define scheduler...
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=10, factor=0.2, verbose=True)
 
-        # define scheduler...
-        scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=10, factor=0.2, verbose=True)
+    # model.initialize_parameters() ####### It works for AlexNet, LeNet and VGG...
+    # initialize_parameters(model)
 
-        # model.initialize_parameters() ####### It works for AlexNet, LeNet and VGG...
-        # initialize_parameters(model)
+    print("\n################ TRAINING ################")
+    best_model_file_path = os.path.join(args.execution_path, 'best_model.pth.tar')
+    best_train_acc1, best_val_acc1, final_train_loss, final_train_entropy, final_val_entropy = \
+        train_val(train_loader, val_loader, model, criterion, optimizer,
+                  scheduler, args.epochs, writer, best_model_file_path)
 
-        print("\n################ TRAINING ################")
-        best_model_file_path = os.path.join(args.execution_path, 'best_model.pth.tar')
-        best_train_acc1, best_val_acc1, final_train_loss, final_train_entropy, final_val_entropy = \
-            train_val(train_loader, val_loader, model, criterion, optimizer,
-                      scheduler, args.epochs, writer, best_model_file_path)
+    # save to json file
+    writer.export_scalars_to_json(os.path.join(args.execution_path, 'log.json'))
 
-        # save to json file
-        writer.export_scalars_to_json(os.path.join(args.execution_path, 'log.json'))
+    ############################################
+    # Extracting logits...
+    ############################################
 
-    if args.extract_logits:
-        ############################################
-        # Extracting logits...
-        ############################################
+    print("\n################ EXTRACTING LOGITS ################")
+    best_model_file_path = os.path.join(args.execution_path, 'best_model.pth.tar')
 
-        print("\n################ EXTRACTING LOGITS ################")
-        best_model_file_path = os.path.join(args.execution_path, 'best_model.pth.tar')
+    # We need to use inference transform to extract... Even for trainset...
+    if args.train_set_split is None:
+        train_set = ImageFolder(train_path, transform=inference_transform, selected_classes=args.normal_classes)
+        val_set = ImageFolder(val_path, transform=inference_transform, selected_classes=args.normal_classes)
+        test_set = ImageFolder(val_path, transform=inference_transform)
 
-        # We need to use inference transform to extract... Even for trainset...
-        if args.train_set_split is None:
-            train_set = ImageFolder(train_path, transform=inference_transform, selected_classes=args.normal_classes)
-            val_set = ImageFolder(val_path, transform=inference_transform, selected_classes=args.normal_classes)
-            test_set = ImageFolder(val_path, transform=inference_transform)
+        train_loader = DataLoader(train_set, batch_size=args.batch_size, num_workers=args.workers,
+                                  # pin_memory=True, shuffle=True, worker_init_fn=worker_init)
+                                  pin_memory=True, shuffle=True)
+        val_loader = DataLoader(val_set, batch_size=args.batch_size, num_workers=args.workers,
+                                # pin_memory=True, shuffle=True, worker_init_fn=worker_init)
+                                pin_memory=True, shuffle=True)
+        test_loader = DataLoader(test_set, batch_size=args.batch_size, num_workers=args.workers,
+                                 # pin_memory=True, shuffle=True, worker_init_fn=worker_init)
+                                 pin_memory=True, shuffle=True)
+    else:
+        train_set = ImageFolder(train_path, transform=inference_transform, selected_classes=args.normal_classes)
+        val_set = ImageFolder(train_path, transform=inference_transform, selected_classes=args.normal_classes)
+        test_set = ImageFolder(val_path, transform=inference_transform)
 
-            train_loader = DataLoader(train_set, batch_size=args.batch_size, num_workers=args.workers,
-                                      pin_memory=True, shuffle=True, worker_init_fn=worker_init)
-            val_loader = DataLoader(val_set, batch_size=args.batch_size, num_workers=args.workers,
-                                    pin_memory=True, shuffle=True, worker_init_fn=worker_init)
-            test_loader = DataLoader(test_set, batch_size=args.batch_size, num_workers=args.workers,
-                                     pin_memory=True, shuffle=True, worker_init_fn=worker_init)
-        else:
-            train_set = ImageFolder(train_path, transform=inference_transform, selected_classes=args.normal_classes)
-            val_set = ImageFolder(train_path, transform=inference_transform, selected_classes=args.normal_classes)
-            test_set = ImageFolder(val_path, transform=inference_transform)
+        train_loader = DataLoader(train_set, batch_size=args.batch_size, num_workers=args.workers,
+                                  # pin_memory=True, sampler=train_sampler, worker_init_fn=worker_init)
+                                  pin_memory=True, sampler=train_sampler)
+        val_loader = DataLoader(val_set, batch_size=args.batch_size, num_workers=args.workers,
+                                # pin_memory=True, sampler=val_sampler, worker_init_fn=worker_init)
+                                pin_memory=True, sampler=val_sampler)
+        test_loader = DataLoader(test_set, batch_size=args.batch_size, num_workers=args.workers,
+                                 # pin_memory=True, shuffle=True, worker_init_fn=worker_init)
+                                 pin_memory=True, shuffle=True)
 
-            train_loader = DataLoader(train_set, batch_size=args.batch_size, num_workers=args.workers,
-                                      pin_memory=True, sampler=train_sampler, worker_init_fn=worker_init)
-            val_loader = DataLoader(val_set, batch_size=args.batch_size, num_workers=args.workers,
-                                    pin_memory=True, sampler=val_sampler, worker_init_fn=worker_init)
-            test_loader = DataLoader(test_set, batch_size=args.batch_size, num_workers=args.workers,
-                                     pin_memory=True, shuffle=True, worker_init_fn=worker_init)
+    extract_logits_from_file(best_model_file_path, model, args.number_of_model_classes, args.execution_path,
+                             train_loader, val_loader, test_loader, "best_model")
 
-        extract_logits_from_file(best_model_file_path, model, args.number_of_model_classes, args.execution_path,
-                                 train_loader, val_loader, test_loader, "best_model")
+    ############################################
+    # Computing inference times...
+    ############################################
 
-    if args.compute_inference_times:
-        ############################################
-        # Computing inference times...
-        ############################################
+    print("\n################ COMPUTING INFERENCE TIMES AND MODEL WEIGHTS, BIAS AND PARAMETERS ################")
 
-        if args.train_set_split is None:
-            val_loader = DataLoader(val_set, batch_size=1, num_workers=args.workers,
-                                    pin_memory=True, shuffle=True, worker_init_fn=worker_init)
-        else:
-            val_loader = DataLoader(val_set, batch_size=1, num_workers=args.workers,
-                                    pin_memory=True, sampler=val_sampler, worker_init_fn=worker_init)
+    if args.train_set_split is None:
+        val_loader = DataLoader(val_set, batch_size=1, num_workers=args.workers,
+                                # pin_memory=True, shuffle=True, worker_init_fn=worker_init)
+                                pin_memory=True, shuffle=True)
+    else:
+        val_loader = DataLoader(val_set, batch_size=1, num_workers=args.workers,
+                                # pin_memory=True, sampler=val_sampler, worker_init_fn=worker_init)
+                                pin_memory=True, sampler=val_sampler)
 
-        gpu_mean_inference_time = compute_total_inference_time(model, val_loader, "cpu") / len(val_loader.sampler)
-        cpu_mean_inference_time = compute_total_inference_time(model, val_loader, "gpu") / len(val_loader.sampler)
+    mean_cpu_inference_time = 1000 * compute_total_inference_time(model, val_loader, "cpu") / len(val_loader.sampler)
+    mean_gpu_inference_time = 1000 * compute_total_inference_time(model, val_loader, "gpu") / len(val_loader.sampler)
 
-        print(cpu_mean_inference_time)
-        print(gpu_mean_inference_time)
+    print("\nMEAN CPU INFERENCE TIME (MILISECONDS):\t{:.4f}".format(mean_cpu_inference_time))
+    print("MEAN GPU INFERENCE TIME (MILISECONDS):\t{:.4f}".format(mean_gpu_inference_time))
+    print("\nNUMBER OF WEIGHTS, BIAS AND PARAMETERS:")
+    print(torch_summarize(model), "\n")
 
     return (best_val_acc1, best_train_acc1, final_train_loss, final_train_entropy, final_val_entropy,
-            cpu_mean_inference_time, gpu_mean_inference_time)
-
-
-def compute_total_inference_time(model, val_loader, mode):
-
-    total_inference_time = 0
-
-    if mode == "cpu":
-        model.cpu()
-    elif mode == "gpu":
-        model.cuda()
-
-    # switch to evaluate mode
-    model.eval()
-
-    with torch.no_grad():
-
-        for input_tensor, _ in tqdm(val_loader):
-
-            if mode == "cpu":
-                input_tensor = input_tensor.cpu()
-            elif mode == "gpu":
-                input_tensor = input_tensor.cuda()
-
-            # compute output
-            initial_time = time.time()
-            _ = model(input_tensor)
-            final_time = time.time()
-
-            instance_inference_time = final_time - initial_time
-            total_inference_time += instance_inference_time
-
-    return total_inference_time
+            mean_cpu_inference_time, mean_gpu_inference_time, )
 
 
 def train_val(train_loader, val_loader, model, criterion, optimizer, scheduler,
@@ -387,18 +366,13 @@ def train_val(train_loader, val_loader, model, criterion, optimizer, scheduler,
         val_acc1, val_entropy = validate(val_loader, model, epoch, writer)
 
         # Saving raw results...
-        raw_results['train_acc1'][epoch-1][args.execution] = train_acc1
-        raw_results['train_loss'][epoch-1][args.execution] = train_loss
-        raw_results['train_entropy'][epoch-1][args.execution] = train_entropy
-        raw_results['val_acc1'][epoch-1][args.execution] = val_acc1
-        raw_results['val_entropy'][epoch-1][args.execution] = val_entropy
+        raw_results['train_acc1'][epoch - 1][args.execution] = train_acc1
+        raw_results['train_loss'][epoch - 1][args.execution] = train_loss
+        raw_results['train_entropy'][epoch - 1][args.execution] = train_entropy
+        raw_results['val_acc1'][epoch - 1][args.execution] = val_acc1
+        raw_results['val_entropy'][epoch - 1][args.execution] = val_entropy
 
-        # remember best acc1...
-        # best_train_acc1 = max(train_acc1, best_train_acc1)
-        # is_best = val_acc1 > best_val_acc1
-        # best_val_acc1 = max(val_acc1, best_val_acc1)
-
-        # if is_best:
+        # if is best...
         if val_acc1 > best_model_val_acc1:
 
             best_model_train_acc1 = train_acc1
@@ -408,163 +382,17 @@ def train_val(train_loader, val_loader, model, criterion, optimizer, scheduler,
             best_model_val_entropy = val_entropy
 
             print("!+NEW BEST+ {0:.3f} IN EPOCH {1}!!! SAVING... {2}\n".format(val_acc1, epoch, best_model_file_path))
-            # torch.save({'epoch': epoch, 'arch': args.arch, 'state_dict': model.state_dict(),
-            #            'best_val_acc1': best_val_acc1, 'optimizer': optimizer.state_dict()},
-            #           best_model_file_path)
             full_state = {'epoch': epoch, 'arch': args.arch, 'model_state_dict': model.state_dict(),
-                          # 'best_val_acc1': best_val_acc1, 'optimizer_state_dict': optimizer.state_dict()}
                           'best_val_acc1': best_model_val_acc1, 'optimizer_state_dict': optimizer.state_dict()}
             torch.save(full_state, best_model_file_path)
 
-        # print('$$$$ BEST: {0:.3f}\n'.format(best_val_acc1))
         print('!$$$$ BEST: {0:.3f}\n'.format(best_model_val_acc1))
 
         # Adjusting learning rate (if using reduce on plateau)...
         scheduler.step(val_acc1)
 
-    # return best_train_acc1, best_val_acc1, train_loss, train_entropy, val_entropy
-    return best_model_train_acc1, best_model_val_acc1, best_model_train_loss,\
-        best_model_train_entropy, best_model_val_entropy
-
-
-def compute_train_val_samplers(train_set_to_split, split_fraction):
-    # Preparing train and validation samplers...
-    total_examples = {}
-    for index in range(len(train_set_to_split)):
-        _, label = train_set_to_split[index]
-        if label not in total_examples:
-            total_examples[label] = 1
-        else:
-            total_examples[label] += 1
-    train_indexes = []
-    val_indexes = []
-    train_indexes_count = {}
-    val_indexes_count = {}
-    indexes_count = {}
-    for index in range(len(train_set_to_split)):
-        _, label = train_set_to_split[index]
-        if label not in indexes_count:
-            indexes_count[label] = 1
-            train_indexes.append(index)
-            train_indexes_count[label] = 1
-            val_indexes_count[label] = 0
-        else:
-            indexes_count[label] += 1
-            # if indexes_count[label] <= int(total_examples[label] * args.train_set_split):
-            if indexes_count[label] <= int(total_examples[label] * split_fraction):
-                train_indexes.append(index)
-                train_indexes_count[label] += 1
-            else:
-                val_indexes.append(index)
-                val_indexes_count[label] += 1
-    print("TRAIN SET INDEXES TOTALS:", train_indexes_count)
-    print("VALID SET INDEXES TOTALS:", val_indexes_count)
-    # train_sampler = SubsetRandomSampler(train_indexes)
-    # val_sampler = SubsetRandomSampler(val_indexes)
-    return SubsetRandomSampler(train_indexes), SubsetRandomSampler(val_indexes)
-
-
-def compute_entropy(tensor, dim=1):
-    softmax = nn.Softmax(dim=dim)
-    logsoftmax = nn.LogSoftmax(dim=dim)
-    softmax_output = softmax(tensor)  # .data)#.data
-    logsoftmax_output = logsoftmax(tensor)  # .data)#.data
-    return -(softmax_output * logsoftmax_output).sum(dim=dim)
-
-
-def worker_init(worker_id):
-    # random.seed(args.execution)
-    random.seed(0)
-
-
-def create_model():
-    print("=> creating model '{}'".format(args.arch))
-    model = models.__dict__[args.arch](num_classes=args.number_of_model_classes)
-    model.cuda()
-
-    """
-    if args.dataset in ["mnist", "cifar10", "cifar100"]:
-        print("=> creating model '{}'".format(args.arch))
-        model = models.__dict__[args.arch](num_classes=args.number_of_model_classes)
-        model.cuda()
-        model = torch.nn.DataParallel(model, device_ids=range(torch.cuda.device_count()))
-    else:
-        print("=> creating model '{}'".format(args.arch))
-        model = models.__dict__[args.arch](num_classes=args.number_of_model_classes)
-        if args.arch.startswith('alexnet') or args.arch.startswith('vgg'):
-            model.features = torch.nn.DataParallel(model.features)
-            model.cuda()
-        else:
-            model = torch.nn.DataParallel(model).cuda()
-    """
-
-    return model
-
-
-def extract_logits_from_file(model_file, model, number_of_classes, path,
-                             train_loader, val_loader, test_loader, suffix):
-
-    if os.path.isfile(model_file):
-        print("\n=> loading checkpoint '{}'".format(model_file))
-        checkpoint = torch.load(model_file)
-        model.load_state_dict(checkpoint['model_state_dict'])
-        print("=> loaded checkpoint '{}' (epoch {})".format(model_file, checkpoint['epoch']))
-    else:
-        print("=> no checkpoint found at '{}'".format(model_file))
-        return
-
-    logits_train_file = '{}/{}/{}.pth'.format(path, 'logits', suffix + '_train')
-    logits_val_file = '{}/{}/{}.pth'.format(path, 'logits', suffix + '_val')
-    logits_test_file = '{}/{}/{}.pth'.format(path, 'logits', suffix + '_test')
-
-    # logits_train_set = extract_logits(model, number_of_classes, train_loader, logits_train_file)
-    extract_logits(model, number_of_classes, train_loader, logits_train_file)
-    # logits_val_set = extract_logits(model, number_of_classes, val_loader, logits_val_file)
-    extract_logits(model, number_of_classes, val_loader, logits_val_file)
-    # logits_test_set = extract_logits(model, number_of_classes, test_loader, logits_test_file)
-    extract_logits(model, number_of_classes, test_loader, logits_test_file)
-
-
-def extract_logits(model, number_of_classes, loader, path):
-
-    # print('\nExtract logits on {}set'.format(loader.dataset.set))
-    print('Extract logits on {}'.format(loader.dataset))
-
-    logits = torch.Tensor(len(loader.sampler), number_of_classes)
-    # logits = torch.Tensor(len(loader.sampler), len(loader.dataset.classes))
-    targets = torch.Tensor(len(loader.sampler))
-    print("LOGITS:\t\t", logits.size())
-    print("TARGETS:\t", targets.size())
-
-    # switch to evaluate mode
-    model.eval()
-
-    with torch.no_grad():
-
-        for batch_id, (input_tensor, target_tensor) in enumerate(tqdm(loader)):
-            # input_tensor = batch[0]
-            # target_tensor = batch[1]
-
-            # moving to GPU...
-            input_tensor = input_tensor.cuda()
-            target_tensor = target_tensor.cuda(non_blocking=True)
-
-            # compute output
-            output = model(input_tensor)
-
-            current_bsize = input_tensor.size(0)
-            from_ = int(batch_id * loader.batch_size)
-            to_ = int(from_ + current_bsize)
-
-            # logits[from_:to_] = output.data.cpu()
-            logits[from_:to_] = output.cpu()
-            targets[from_:to_] = target_tensor
-
-    os.system('mkdir -p {}'.format(os.path.dirname(path)))
-    print('save ' + path)
-    torch.save((logits, targets), path)
-    print('')
-    return logits, targets
+    return (best_model_train_acc1, best_model_val_acc1, best_model_train_loss,
+            best_model_train_entropy, best_model_val_entropy)
 
 
 def train(train_loader, model, criterion, optimizer, epoch, writer):
@@ -586,12 +414,6 @@ def train(train_loader, model, criterion, optimizer, epoch, writer):
         # measure data loading time
         train_data_time = time.time() - train_batch_start_time
 
-        """
-        input_var = torch.autograd.Variable(input_tensor)
-        target_tensor = target_tensor.cuda(async=True)
-        target_tensor = torch.autograd.Variable(target_tensor)
-        """
-
         # moving to GPU...
         input_tensor = input_tensor.cuda()
         target_tensor = target_tensor.cuda(non_blocking=True)
@@ -605,25 +427,21 @@ def train(train_loader, model, criterion, optimizer, epoch, writer):
 
         # compute loss
         if args.regularization_type == "l2":
-            # print("L2 REGULARIZATION\t", args.regularization_value)
             loss = criterion(output_tensor, target_tensor) + (args.regularization_value * torch.norm(output_tensor, 2))
         elif args.regularization_type == "ne":
-            # print("NEGATIVE ENTROPIC REGULARIZATION\t", args.regularization_value)
             loss = criterion(output_tensor, target_tensor) - (args.regularization_value * mean_entropy)
         elif args.regularization_type == "pie":
-            # print("POSITIVE INVERTED ENTROPIC REGULARIZATION\t", args.regularization_value)
             loss = criterion(output_tensor, target_tensor) + (args.regularization_value / mean_entropy)
         else:
-            # print("NO REGULARIZATION")
             loss = criterion(output_tensor, target_tensor)
 
         # accumulate metrics over epoch
         train_loss.add(loss.item())
         train_entropy.add(mean_entropy.item())
-        train_acc.add(output_tensor.data, target_tensor.data)
-        train_conf.add(output_tensor.data, target_tensor.data)
-        # train_acc.add(output_tensor, target_tensor)
-        # train_conf.add(output_tensor, target_tensor)
+        # train_acc.add(output_tensor.data, target_tensor.data)
+        # train_conf.add(output_tensor.data, target_tensor.data)
+        train_acc.add(output_tensor.detach(), target_tensor.detach())
+        train_conf.add(output_tensor.detach(), target_tensor.detach())
 
         # zero grads, compute gradients and do optimizer step
         optimizer.zero_grad()
@@ -704,14 +522,13 @@ def validate(val_loader, model, epoch, writer):
             # Working with entropy...
             entropy = compute_entropy(output_tensor, dim=1)
             mean_entropy = entropy.sum()/entropy.size(0)
-            # mean_entropy = entropy.sum()/entropy.size(0)
 
             # accumulate metrics over epoch
             val_entropy.add(mean_entropy.item())
-            val_acc.add(output_tensor.data, target_tensor.data)
-            val_conf.add(output_tensor.data, target_tensor.data)
-            # val_acc.add(output_tensor, target_tensor)
-            # val_conf.add(output_tensor, target_tensor)
+            # val_acc.add(output_tensor.data, target_tensor.data)
+            # val_conf.add(output_tensor.data, target_tensor.data)
+            val_acc.add(output_tensor.detach(), target_tensor.detach())
+            val_conf.add(output_tensor.detach(), target_tensor.detach())
 
             # measure elapsed time
             val_batch_time = time.time()-val_batch_start_time
@@ -748,13 +565,213 @@ def validate(val_loader, model, epoch, writer):
     return val_acc.value()[0], val_entropy.value()[0]
 
 
+def compute_train_val_samplers(train_set_to_split, split_fraction):
+    # Preparing train and validation samplers...
+    total_examples = {}
+    for index in range(len(train_set_to_split)):
+        _, label = train_set_to_split[index]
+        if label not in total_examples:
+            total_examples[label] = 1
+        else:
+            total_examples[label] += 1
+    train_indexes = []
+    val_indexes = []
+    train_indexes_count = {}
+    val_indexes_count = {}
+    indexes_count = {}
+    for index in range(len(train_set_to_split)):
+        _, label = train_set_to_split[index]
+        if label not in indexes_count:
+            indexes_count[label] = 1
+            train_indexes.append(index)
+            train_indexes_count[label] = 1
+            val_indexes_count[label] = 0
+        else:
+            indexes_count[label] += 1
+            # if indexes_count[label] <= int(total_examples[label] * args.train_set_split):
+            if indexes_count[label] <= int(total_examples[label] * split_fraction):
+                train_indexes.append(index)
+                train_indexes_count[label] += 1
+            else:
+                val_indexes.append(index)
+                val_indexes_count[label] += 1
+    print("TRAIN SET INDEXES TOTALS:", train_indexes_count)
+    print("VALID SET INDEXES TOTALS:", val_indexes_count)
+    train_sampler = SubsetRandomSampler(train_indexes)
+    val_sampler = SubsetRandomSampler(val_indexes)
+    # return SubsetRandomSampler(train_indexes), SubsetRandomSampler(val_indexes)
+    return train_sampler, val_sampler
+
+
+def compute_entropy(tensor, dim=1):
+    softmax = nn.Softmax(dim=dim)
+    logsoftmax = nn.LogSoftmax(dim=dim)
+    softmax_output = softmax(tensor)  # .data)#.data
+    logsoftmax_output = logsoftmax(tensor)  # .data)#.data
+    return -(softmax_output * logsoftmax_output).sum(dim=dim)
+
+
+"""
+def worker_init(worker_id):
+    # random.seed(args.execution)
+    random.seed(0)
+"""
+
+
+def create_model():
+    print("=> creating model '{}'".format(args.arch))
+    model = models.__dict__[args.arch](num_classes=args.number_of_model_classes)
+    model.cuda()
+
+    """
+    if args.dataset in ["mnist", "cifar10", "cifar100"]:
+        print("=> creating model '{}'".format(args.arch))
+        model = models.__dict__[args.arch](num_classes=args.number_of_model_classes)
+        model.cuda()
+        model = torch.nn.DataParallel(model, device_ids=range(torch.cuda.device_count()))
+    else:
+        print("=> creating model '{}'".format(args.arch))
+        model = models.__dict__[args.arch](num_classes=args.number_of_model_classes)
+        if args.arch.startswith('alexnet') or args.arch.startswith('vgg'):
+            model.features = torch.nn.DataParallel(model.features)
+            model.cuda()
+        else:
+            model = torch.nn.DataParallel(model).cuda()
+    """
+
+    return model
+
+
+def extract_logits_from_file(model_file, model, number_of_classes, path,
+                             train_loader, val_loader, test_loader, suffix):
+
+    # Loading best model...
+    if os.path.isfile(model_file):
+        print("\n=> loading checkpoint '{}'".format(model_file))
+        checkpoint = torch.load(model_file)
+        model.load_state_dict(checkpoint['model_state_dict'])
+        print("=> loaded checkpoint '{}' (epoch {})".format(model_file, checkpoint['epoch']))
+    else:
+        print("=> no checkpoint found at '{}'".format(model_file))
+        return
+
+    logits_train_file = '{}/{}/{}.pth'.format(path, 'logits', suffix + '_train')
+    logits_val_file = '{}/{}/{}.pth'.format(path, 'logits', suffix + '_val')
+    logits_test_file = '{}/{}/{}.pth'.format(path, 'logits', suffix + '_test')
+
+    extract_logits(model, number_of_classes, train_loader, logits_train_file)
+    extract_logits(model, number_of_classes, val_loader, logits_val_file)
+    extract_logits(model, number_of_classes, test_loader, logits_test_file)
+
+
+def extract_logits(model, number_of_classes, loader, path):
+
+    # print('\nExtract logits on {}set'.format(loader.dataset.set))
+    print('Extract logits on {}'.format(loader.dataset))
+
+    logits = torch.Tensor(len(loader.sampler), number_of_classes)
+    # logits = torch.Tensor(len(loader.sampler), len(loader.dataset.classes))
+    targets = torch.Tensor(len(loader.sampler))
+    print("LOGITS:\t\t", logits.size())
+    print("TARGETS:\t", targets.size())
+
+    # switch to evaluate mode
+    model.eval()
+
+    with torch.no_grad():
+
+        for batch_id, (input_tensor, target_tensor) in enumerate(tqdm(loader)):
+            # input_tensor = batch[0]
+            # target_tensor = batch[1]
+
+            # moving to GPU...
+            input_tensor = input_tensor.cuda()
+            # target_tensor = target_tensor.cuda(non_blocking=True)
+
+            # compute output
+            output = model(input_tensor)
+
+            current_bsize = input_tensor.size(0)
+            from_ = int(batch_id * loader.batch_size)
+            to_ = int(from_ + current_bsize)
+
+            # logits[from_:to_] = output.data.cpu()
+            logits[from_:to_] = output.cpu()
+            targets[from_:to_] = target_tensor
+
+    os.system('mkdir -p {}'.format(os.path.dirname(path)))
+    print('save ' + path)
+    torch.save((logits, targets), path)
+    print('')
+    return logits, targets
+
+
+def compute_total_inference_time(model, val_loader, mode):
+
+    total_inference_time = 0
+
+    if mode == "cpu":
+        model.cpu()
+    elif mode == "gpu":
+        model.cuda()
+
+    print("\nCOMPUTING INFERENCE TIME: {}".format(mode.upper()))
+
+    # switch to evaluate mode
+    model.eval()
+
+    with torch.no_grad():
+
+        for input_tensor, _ in tqdm(val_loader):
+
+            if mode == "cpu":
+                input_tensor = input_tensor.cpu()
+            elif mode == "gpu":
+                input_tensor = input_tensor.cuda()
+
+            # compute output
+            initial_time = time.time()
+            _ = model(input_tensor)
+            final_time = time.time()
+
+            instance_inference_time = final_time - initial_time
+            total_inference_time += instance_inference_time
+
+    return total_inference_time
+
+
+def torch_summarize(model, show_weights=True, show_parameters=True):
+    """Summarizes torch model by showing trainable parameters and weights."""
+    tmpstr = model.__class__.__name__ + ' (\n'
+
+    for key, module in model._modules.items():
+        # if it contains layers let call it recursively to get params and weights
+        if type(module) in [
+            torch.nn.modules.container.Container,
+            torch.nn.modules.container.Sequential
+        ]:
+            modstr = torch_summarize(module)
+        else:
+            modstr = module.__repr__()
+        modstr = _addindent(modstr, 2)
+
+        params = sum([numpy.prod(p.size()) for p in module.parameters()])
+        weights = tuple([tuple(p.size()) for p in module.parameters()])
+
+        tmpstr += '  (' + key + '): ' + modstr
+        if show_weights:
+            tmpstr += ', weights={}'.format(weights)
+        if show_parameters:
+            tmpstr += ', parameters={}'.format(params)
+        tmpstr += '\n'
+
+    tmpstr = tmpstr + ')'
+    return tmpstr
+
+
 def main():
 
-    if not (args.train or args.extract_logits):
-        print("\nNOTHING TO DO!!!\n")
-        sys.exit()
-
-    all_acc1_stats = {}
+    overall_stats = {}
 
     for experiment in args.experiments:
 
@@ -763,8 +780,8 @@ def main():
         print("EXPERIMENT:", experiment.upper())
         print("****************************************************************")
 
-        acc1_results = {}
-        acc1_stats = pd.DataFrame()
+        execution_results = {}
+        experiment_stats = pd.DataFrame()
 
         if args.local_model is not None:
             args.arch = args.local_model
@@ -774,12 +791,12 @@ def main():
         args.experiment_path = os.path.join("artifacts", args.dataset, args.arch, experiment)
         print("\nEXPERIMENT PATH:", args.experiment_path)
 
-        experiment_configs = experiment.split("+")
-
+        # Configuring the args variables...
         args.number_of_model_classes = None
         args.regularization_type = None
         args.regularization_value = 0
 
+        experiment_configs = experiment.split("+")
         for config in experiment_configs:
             config = config.split("~")
             if config[0] == "nmc":
@@ -792,59 +809,47 @@ def main():
                 args.regularization_value = float(config[1])
                 print("REGULARIZATION VALUE:", args.regularization_value)
 
-        for execution in range(1, args.executions + 1):
+        # for execution in range(1, args.executions + 1):
+        for args.execution in range(1, args.executions + 1):
 
-            # Using seeds
-            args.execution = execution
-            # random.seed(args.execution)
-            # numpy.random.seed(args.execution)
-            # torch.manual_seed(args.execution)
-            # torch.cuda.manual_seed(args.execution)
+            # args.execution = execution
 
             print("\n################ EXECUTION:", args.execution, "OF", args.executions, "################")
 
-            # execute experiment...
-            val_acc1, train_acc1, train_loss, train_entropy, val_entropy, _, _ = execute()
+            # execution_results and auc_statistics...
+            (execution_results["BEST VALID [ACC1]"], execution_results["BEST TRAIN [ACC1]"],
+             execution_results["TRAIN LOSS"], execution_results["TRAIN ENTROPY"], execution_results["VALID ENTROPY"],
+             execution_results["CPU TIME [MILISECONDS]"], execution_results["GPU TIME [MILISECONDS]"]) = execute()
 
-            # results and auc_statistics...
-            (acc1_results["BEST VALID [ACC1]"], acc1_results["BEST TRAIN [ACC1]"],
-             acc1_results["TRAIN LOSS"], acc1_results["TRAIN ENTROPY"], acc1_results["VALID ENTROPY"]) =\
-                (val_acc1, train_acc1,
-                 train_loss, train_entropy, val_entropy)
-
-            # appending results...
-            acc1_stats = acc1_stats.append(acc1_results, ignore_index=True)
-            acc1_stats = acc1_stats[["BEST VALID [ACC1]", "BEST TRAIN [ACC1]",
-                                     "TRAIN LOSS", "TRAIN ENTROPY", "VALID ENTROPY"]]
+            # appending execution_results...
+            experiment_stats = experiment_stats.append(execution_results, ignore_index=True)
+            experiment_stats = experiment_stats[["BEST VALID [ACC1]", "BEST TRAIN [ACC1]",
+                                                 "TRAIN LOSS", "TRAIN ENTROPY", "VALID ENTROPY",
+                                                 "CPU TIME [MILISECONDS]", "GPU TIME [MILISECONDS]"]]
 
         # print("\n################################\n", "EXPERIMENT STATISTICS", "\n################################\n")
         # print("\n", experiment.upper())
-        # print("\n", acc1_stats.transpose())
-        # print("\n", acc1_stats.describe())
+        # print("\n", experiment_stats.transpose())
+        # print("\n", experiment_stats.describe())
 
-        all_acc1_stats[experiment] = acc1_stats
+        overall_stats[experiment] = experiment_stats
 
-        # """
+        # Saving tab separeted files...
         csv.register_dialect('unixpwd', delimiter='\t', quoting=csv.QUOTE_NONE)
         for key in raw_results:
-            file_path = os.path.join(args.experiment_path, key + '.csv')
+            file_path = os.path.join(args.experiment_path, key + '.data')
             with open(file_path, 'w', newline='') as csvfile:
                 fieldnames = [item for item in range(1, args.executions+1)]
-                # print(fieldnames)
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames, dialect='unixpwd')
                 writer.writeheader()
                 for epoch in range(len(raw_results[key])):
-                    # print(raw_results[key])
-                    # print(epoch)
-                    # print(raw_results[key][epoch])
                     writer.writerow(raw_results[key][epoch])
-        # """
 
     print("\n\n\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n", "OVERALL STATISTICS", "\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n")
-    for key in all_acc1_stats:
+    for key in overall_stats:
         print("\n", key.upper())
-        print("\n", all_acc1_stats[key].transpose())
-        print("\n", all_acc1_stats[key].describe())
+        print("\n", overall_stats[key].transpose())
+        print("\n", overall_stats[key].describe())
 
     print("\n\n\n")
 
