@@ -8,7 +8,6 @@
 # torch.utils.backcompat.keepdim_warning.enabled = True
 
 import argparse
-# import sys
 import os
 import time
 import random
@@ -133,7 +132,8 @@ def execute():
         args.number_of_dataset_classes = 10
         args.number_of_model_classes = args.number_of_model_classes if args.number_of_model_classes else 10
         dataset_path = args.dataset_dir if args.dataset_dir else "datasets/mnist/images"
-        normalize = transforms.Normalize(mean=[0.1307], std=[0.3081])
+        # normalize = transforms.Normalize(mean=[0.1307], std=[0.3081])
+        normalize = transforms.Normalize((0.1307,), (0.3081,))
         train_transform = transforms.Compose(
             [transforms.ToTensor(), normalize])
         inference_transform = transforms.Compose([transforms.ToTensor(), normalize])
@@ -141,7 +141,8 @@ def execute():
         args.number_of_dataset_classes = 10
         args.number_of_model_classes = args.number_of_model_classes if args.number_of_model_classes else 10
         dataset_path = args.dataset_dir if args.dataset_dir else "datasets/cifar10/images"
-        normalize = transforms.Normalize(mean=[0.491, 0.482, 0.446], std=[0.247, 0.243, 0.261])
+        # normalize = transforms.Normalize(mean=[0.491, 0.482, 0.446], std=[0.247, 0.243, 0.261])
+        normalize = transforms.Normalize((0.491, 0.482, 0.446), (0.247, 0.243, 0.261))
         train_transform = transforms.Compose(
             [transforms.RandomCrop(32, padding=4),
              transforms.RandomHorizontalFlip(),
@@ -151,7 +152,8 @@ def execute():
         args.number_of_dataset_classes = 100
         args.number_of_model_classes = args.number_of_model_classes if args.number_of_model_classes else 100
         dataset_path = args.dataset_dir if args.dataset_dir else "datasets/cifar100/images"
-        normalize = transforms.Normalize(mean=[0.507, 0.486, 0.440], std=[0.267, 0.256, 0.276])
+        # normalize = transforms.Normalize(mean=[0.507, 0.486, 0.440], std=[0.267, 0.256, 0.276])
+        normalize = transforms.Normalize((0.507, 0.486, 0.440), (0.267, 0.256, 0.276))
         train_transform = transforms.Compose(
             [transforms.RandomCrop(32, padding=4),
              transforms.RandomHorizontalFlip(),
@@ -165,7 +167,8 @@ def execute():
             size = (299, 299)
         else:
             size = (224, 256)
-        normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        # normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        normalize = transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
         train_transform = transforms.Compose(
             [transforms.RandomSizedCrop(size[0]),  # 224 , 299
              transforms.RandomHorizontalFlip(),
@@ -205,11 +208,11 @@ def execute():
                               target_transform=args.normal_classes.index)
 
         train_loader = DataLoader(train_set, batch_size=args.batch_size, num_workers=args.workers,
-                                  # pin_memory=True, shuffle=True, worker_init_fn=worker_init)
-                                  pin_memory=True, shuffle=True)
+                                  pin_memory=True, shuffle=True, worker_init_fn=worker_init)
+                                  # pin_memory=True, shuffle=True)
         val_loader = DataLoader(val_set, batch_size=args.batch_size, num_workers=args.workers,
-                                # pin_memory=True, shuffle=True, worker_init_fn=worker_init)
-                                pin_memory=True, shuffle=True)
+                                pin_memory=True, shuffle=True, worker_init_fn=worker_init)
+                                # pin_memory=True, shuffle=True)
     else:
         train_set = ImageFolder(train_path, transform=train_transform, selected_classes=args.normal_classes,
                                 target_transform=args.normal_classes.index)
@@ -219,11 +222,11 @@ def execute():
         train_sampler, val_sampler = compute_train_val_samplers(train_set, args.train_set_split)
 
         train_loader = DataLoader(train_set, batch_size=args.batch_size, num_workers=args.workers,
-                                  # pin_memory=True, sampler=train_sampler, worker_init_fn=worker_init)
-                                  pin_memory=True, sampler=train_sampler)
+                                  pin_memory=True, sampler=train_sampler, worker_init_fn=worker_init)
+                                  # pin_memory=True, sampler=train_sampler)
         val_loader = DataLoader(val_set, batch_size=args.batch_size, num_workers=args.workers,
-                                # pin_memory=True, sampler=val_sampler, worker_init_fn=worker_init)
-                                pin_memory=True, sampler=val_sampler)
+                                pin_memory=True, sampler=val_sampler, worker_init_fn=worker_init)
+                                # pin_memory=True, sampler=val_sampler)
 
     print("\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
     print("TRAINSET LOADER SIZE: ====>>>> ", len(train_loader.sampler))
@@ -236,7 +239,10 @@ def execute():
     # create model
     torch.manual_seed(args.execution)
     torch.cuda.manual_seed(args.execution)
-    model = create_model()
+    print("=> creating model '{}'".format(args.arch))
+    # model = create_model()
+    model = models.__dict__[args.arch](num_classes=args.number_of_model_classes)
+    model.cuda()
     print("\nMODEL:", model)
     torch.manual_seed(0)
     torch.cuda.manual_seed(0)
@@ -254,7 +260,8 @@ def execute():
 
     # define optimizer...
     # optimizer = torch.optim.Adam(model.parameters(), lr=args.original_learning_rate)
-    # optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=args.weight_decay)
+    # optimizer = torch.optim.Adam(model.parameters(), weight_decay=args.weight_decay)
+    # optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=5e-4)
 
     # define scheduler...
     # scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=args.learning_rate_decay_epochs,
@@ -262,6 +269,7 @@ def execute():
 
     # define scheduler...
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=10, factor=0.2, verbose=True)
+    # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=1000, verbose=True)
 
     # model.initialize_parameters() ####### It works for AlexNet, LeNet and VGG...
     # initialize_parameters(model)
@@ -289,28 +297,28 @@ def execute():
         test_set = ImageFolder(val_path, transform=inference_transform)
 
         train_loader = DataLoader(train_set, batch_size=args.batch_size, num_workers=args.workers,
-                                  # pin_memory=True, shuffle=True, worker_init_fn=worker_init)
-                                  pin_memory=True, shuffle=True)
+                                  pin_memory=True, shuffle=True, worker_init_fn=worker_init)
+                                  # pin_memory=True, shuffle=True)
         val_loader = DataLoader(val_set, batch_size=args.batch_size, num_workers=args.workers,
-                                # pin_memory=True, shuffle=True, worker_init_fn=worker_init)
-                                pin_memory=True, shuffle=True)
+                                pin_memory=True, shuffle=True, worker_init_fn=worker_init)
+                                # pin_memory=True, shuffle=True)
         test_loader = DataLoader(test_set, batch_size=args.batch_size, num_workers=args.workers,
-                                 # pin_memory=True, shuffle=True, worker_init_fn=worker_init)
-                                 pin_memory=True, shuffle=True)
+                                 pin_memory=True, shuffle=True, worker_init_fn=worker_init)
+                                 # pin_memory=True, shuffle=True)
     else:
         train_set = ImageFolder(train_path, transform=inference_transform, selected_classes=args.normal_classes)
         val_set = ImageFolder(train_path, transform=inference_transform, selected_classes=args.normal_classes)
         test_set = ImageFolder(val_path, transform=inference_transform)
 
         train_loader = DataLoader(train_set, batch_size=args.batch_size, num_workers=args.workers,
-                                  # pin_memory=True, sampler=train_sampler, worker_init_fn=worker_init)
-                                  pin_memory=True, sampler=train_sampler)
+                                  pin_memory=True, sampler=train_sampler, worker_init_fn=worker_init)
+                                  # pin_memory=True, sampler=train_sampler)
         val_loader = DataLoader(val_set, batch_size=args.batch_size, num_workers=args.workers,
-                                # pin_memory=True, sampler=val_sampler, worker_init_fn=worker_init)
-                                pin_memory=True, sampler=val_sampler)
+                                pin_memory=True, sampler=val_sampler, worker_init_fn=worker_init)
+                                # pin_memory=True, sampler=val_sampler)
         test_loader = DataLoader(test_set, batch_size=args.batch_size, num_workers=args.workers,
-                                 # pin_memory=True, shuffle=True, worker_init_fn=worker_init)
-                                 pin_memory=True, shuffle=True)
+                                 pin_memory=True, shuffle=True, worker_init_fn=worker_init)
+                                 # pin_memory=True, shuffle=True)
 
     extract_logits_from_file(best_model_file_path, model, args.number_of_model_classes, args.execution_path,
                              train_loader, val_loader, test_loader, "best_model")
@@ -338,7 +346,7 @@ def execute():
     print("\nNUMBER OF WEIGHTS, BIAS AND PARAMETERS:")
     print(torch_summarize(model), "\n")
 
-    return (best_val_acc1, best_train_acc1, final_train_loss, final_train_entropy, final_val_entropy,
+    return (best_train_acc1, best_val_acc1, final_train_loss, final_train_entropy, final_val_entropy,
             mean_cpu_inference_time, mean_gpu_inference_time, )
 
 
@@ -611,19 +619,15 @@ def compute_entropy(tensor, dim=1):
     return -(softmax_output * logsoftmax_output).sum(dim=dim)
 
 
-"""
+# """
 def worker_init(worker_id):
     # random.seed(args.execution)
     random.seed(0)
-"""
+# """
 
 
 def create_model():
-    print("=> creating model '{}'".format(args.arch))
-    model = models.__dict__[args.arch](num_classes=args.number_of_model_classes)
-    model.cuda()
 
-    """
     if args.dataset in ["mnist", "cifar10", "cifar100"]:
         print("=> creating model '{}'".format(args.arch))
         model = models.__dict__[args.arch](num_classes=args.number_of_model_classes)
@@ -637,7 +641,6 @@ def create_model():
             model.cuda()
         else:
             model = torch.nn.DataParallel(model).cuda()
-    """
 
     return model
 
@@ -780,7 +783,7 @@ def main():
         print("EXPERIMENT:", experiment.upper())
         print("****************************************************************")
 
-        execution_results = {}
+        # execution_results = {}
         experiment_stats = pd.DataFrame()
 
         if args.local_model is not None:
@@ -813,19 +816,20 @@ def main():
         for args.execution in range(1, args.executions + 1):
 
             # args.execution = execution
+            execution_results = {}
 
             print("\n################ EXECUTION:", args.execution, "OF", args.executions, "################")
 
             # execution_results and auc_statistics...
-            (execution_results["BEST VALID [ACC1]"], execution_results["BEST TRAIN [ACC1]"],
-             execution_results["TRAIN LOSS"], execution_results["TRAIN ENTROPY"], execution_results["VALID ENTROPY"],
-             execution_results["CPU TIME [MILISECONDS]"], execution_results["GPU TIME [MILISECONDS]"]) = execute()
+            (execution_results["TRAIN ACC1"], execution_results["VAL ACC1"],
+             execution_results["TRAIN LOSS"], execution_results["TRAIN ENTROPY"], execution_results["VAL ENTROPY"],
+             execution_results["CPU TIME"], execution_results["GPU TIME"]) = execute()
 
             # appending execution_results...
             experiment_stats = experiment_stats.append(execution_results, ignore_index=True)
-            experiment_stats = experiment_stats[["BEST VALID [ACC1]", "BEST TRAIN [ACC1]",
-                                                 "TRAIN LOSS", "TRAIN ENTROPY", "VALID ENTROPY",
-                                                 "CPU TIME [MILISECONDS]", "GPU TIME [MILISECONDS]"]]
+            experiment_stats = experiment_stats[["TRAIN ACC1", "VAL ACC1",
+                                                 "TRAIN LOSS", "TRAIN ENTROPY", "VAL ENTROPY",
+                                                 "CPU TIME", "GPU TIME"]]
 
         # print("\n################################\n", "EXPERIMENT STATISTICS", "\n################################\n")
         # print("\n", experiment.upper())
@@ -850,6 +854,7 @@ def main():
         print("\n", key.upper())
         print("\n", overall_stats[key].transpose())
         print("\n", overall_stats[key].describe())
+        # print("\n", overall_stats[key].describe().loc[['mean', 'std']])
 
     print("\n\n\n")
 

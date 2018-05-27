@@ -46,14 +46,14 @@ class AlexNet(nn.Module):
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
-                nn.init.kaiming_normal_(m.weight, mode='fan_out')
+                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
                 if m.bias is not None:
                     nn.init.constant_(m.bias, 0)
             elif isinstance(m, nn.BatchNorm2d):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
             elif isinstance(m, nn.Linear):
-                nn.init.normal_(m.weight, 0, 1/num_classes)
+                nn.init.normal_(m.weight, mean=0, std=1e-3)
                 nn.init.constant_(m.bias, 0)
 
     def forward(self, x):
@@ -65,11 +65,6 @@ class AlexNet(nn.Module):
 
 
 def alexnet(dataset):
-    r"""AlexNet model architecture from the
-    `"One weird trick..." <https://arxiv.org/abs/1404.5997>`_ paper.
-    Args:
-        pretrained (bool): If True, returns a model pre-trained on ImageNet
-    """
     model = AlexNet(dataset)
     # if pretrained:
     #    model.load_state_dict(model_zoo.load_url(model_urls['alexnet']))
