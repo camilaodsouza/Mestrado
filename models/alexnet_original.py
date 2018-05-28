@@ -1,24 +1,11 @@
 import torch.nn as nn
-# import torch.utils.model_zoo as model_zoo
 
-__all__ = ['AlexNet', 'alexnet']
-
-# model_urls = {
-#    'alexnet': 'https://s3.amazonaws.com/pytorch/models/alexnet-owt-4df8aa71.pth',
-# }
+__all__ = ['alexnet']
 
 
 class AlexNet(nn.Module):
     def __init__(self, num_classes=10):
         super(AlexNet, self).__init__()
-        """
-        if dataset == "cifar10":
-            num_classes = 10
-        elif dataset == "cifar100":
-            num_classes = 100
-        else:
-            num_classes = 10
-        """
         self.features = nn.Sequential(
             nn.Conv2d(3, 64, kernel_size=5, stride=1, padding=2),
             nn.ReLU(inplace=True),
@@ -66,6 +53,4 @@ class AlexNet(nn.Module):
 
 def alexnet(dataset):
     model = AlexNet(dataset)
-    # if pretrained:
-    #    model.load_state_dict(model_zoo.load_url(model_urls['alexnet']))
     return model

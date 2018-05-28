@@ -23,7 +23,7 @@ PyTorch :mod:`torch.utils.model_zoo`. These can  constructed by passing
 .. _SqueezeNet: https://arxiv.org/abs/1602.07360
 """
 
-from .alexnet import *
-from .resnet import *
-from .vgg import *
-from .lenet5 import *
+from .alexnet_original import *
+from .resnet_original import *
+from .vgg_original import *
+from .lenet_original import *

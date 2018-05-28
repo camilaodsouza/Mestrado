@@ -92,6 +92,8 @@ parser.add_argument('-pf', '--print-freq', default=16, type=int, metavar='N',
                     help='print frequency (default: 16)')
 parser.add_argument('-gpu', '--gpu-id', default='1', type=str,
                     help='id for CUDA_VISIBLE_DEVICES')
+parser.add_argument('-sd', '--seed', default='123456', type=int,
+                    help='seed to be globaly used')
 # parser.add_argument('-tr', '--train', const=True, nargs='?', type=bool,
 #                    help='if true, train the model')
 # parser.add_argument('-el', '--extract-logits', const=True, nargs='?', type=bool,
@@ -122,10 +124,10 @@ def execute():
     ######################################
 
     # Using seeds...
-    random.seed(0)
-    numpy.random.seed(0)
-    torch.manual_seed(0)
-    torch.cuda.manual_seed(0)
+    random.seed(args.seed)
+    numpy.random.seed(args.seed)
+    torch.manual_seed(args.seed)
+    torch.cuda.manual_seed(args.seed)
 
     # Configuring args and dataset...
     if args.dataset == "mnist":
@@ -244,8 +246,8 @@ def execute():
     model = models.__dict__[args.arch](num_classes=args.number_of_model_classes)
     model.cuda()
     print("\nMODEL:", model)
-    torch.manual_seed(0)
-    torch.cuda.manual_seed(0)
+    torch.manual_seed(args.seed)
+    torch.cuda.manual_seed(args.seed)
 
     #########################################
     # Training...
@@ -257,19 +259,16 @@ def execute():
     # define optimizer...
     optimizer = torch.optim.SGD(model.parameters(), lr=args.original_learning_rate, momentum=args.momentum,
                                 weight_decay=args.weight_decay, nesterov=True)
-
-    # define optimizer...
     # optimizer = torch.optim.Adam(model.parameters(), lr=args.original_learning_rate)
     # optimizer = torch.optim.Adam(model.parameters(), weight_decay=args.weight_decay)
     # optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=5e-4)
 
     # define scheduler...
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=10, factor=0.2, verbose=True)
+    # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=30, factor=0.2, verbose=True)
+    # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=1000, verbose=True)
     # scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=args.learning_rate_decay_epochs,
     #                                                  gamma=args.learning_rate_decay_rate)
-
-    # define scheduler...
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=10, factor=0.2, verbose=True)
-    # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=1000, verbose=True)
 
     # model.initialize_parameters() ####### It works for AlexNet, LeNet and VGG...
     # initialize_parameters(model)
@@ -323,20 +322,20 @@ def execute():
     extract_logits_from_file(best_model_file_path, model, args.number_of_model_classes, args.execution_path,
                              train_loader, val_loader, test_loader, "best_model")
 
-    ############################################
-    # Computing inference times...
-    ############################################
+    ########################################################################################
+    # Computing inference times and number of parameters...
+    ########################################################################################
 
     print("\n################ COMPUTING INFERENCE TIMES AND MODEL WEIGHTS, BIAS AND PARAMETERS ################")
 
     if args.train_set_split is None:
         val_loader = DataLoader(val_set, batch_size=1, num_workers=args.workers,
-                                # pin_memory=True, shuffle=True, worker_init_fn=worker_init)
-                                pin_memory=True, shuffle=True)
+                                pin_memory=True, shuffle=True, worker_init_fn=worker_init)
+                                # pin_memory=True, shuffle=True)
     else:
         val_loader = DataLoader(val_set, batch_size=1, num_workers=args.workers,
-                                # pin_memory=True, sampler=val_sampler, worker_init_fn=worker_init)
-                                pin_memory=True, sampler=val_sampler)
+                                pin_memory=True, sampler=val_sampler, worker_init_fn=worker_init)
+                                # pin_memory=True, sampler=val_sampler)
 
     mean_cpu_inference_time = 1000 * compute_total_inference_time(model, val_loader, "cpu") / len(val_loader.sampler)
     mean_gpu_inference_time = 1000 * compute_total_inference_time(model, val_loader, "gpu") / len(val_loader.sampler)
@@ -622,7 +621,7 @@ def compute_entropy(tensor, dim=1):
 # """
 def worker_init(worker_id):
     # random.seed(args.execution)
-    random.seed(0)
+    random.seed(args.seed)
 # """
 
 
@@ -802,6 +801,9 @@ def main():
         experiment_configs = experiment.split("+")
         for config in experiment_configs:
             config = config.split("~")
+            if config[0] == "seed":
+                args.seed = int(config[1])
+                print("MANUAL SEED:", args.seed)
             if config[0] == "nmc":
                 args.number_of_model_classes = int(config[1])
                 print("NUMBER OF MODEL CLASSES:", args.number_of_model_classes)
@@ -820,16 +822,15 @@ def main():
 
             print("\n################ EXECUTION:", args.execution, "OF", args.executions, "################")
 
-            # execution_results and auc_statistics...
-            (execution_results["TRAIN ACC1"], execution_results["VAL ACC1"],
+            # execute and get results and statistics...
+            (execution_results["TRAIN [ACC1]"], execution_results["VAL [ACC1]"],
              execution_results["TRAIN LOSS"], execution_results["TRAIN ENTROPY"], execution_results["VAL ENTROPY"],
-             execution_results["CPU TIME"], execution_results["GPU TIME"]) = execute()
+             execution_results["CPU TIME [MS]"], execution_results["GPU TIME [MS]"]) = execute()
 
-            # appending execution_results...
+            # appending results...
             experiment_stats = experiment_stats.append(execution_results, ignore_index=True)
-            experiment_stats = experiment_stats[["TRAIN ACC1", "VAL ACC1",
-                                                 "TRAIN LOSS", "TRAIN ENTROPY", "VAL ENTROPY",
-                                                 "CPU TIME", "GPU TIME"]]
+            experiment_stats = experiment_stats[["TRAIN [ACC1]", "VAL [ACC1]", "TRAIN LOSS", "TRAIN ENTROPY",
+                                                 "VAL ENTROPY", "CPU TIME [MS]", "GPU TIME [MS]"]]
 
         # print("\n################################\n", "EXPERIMENT STATISTICS", "\n################################\n")
         # print("\n", experiment.upper())

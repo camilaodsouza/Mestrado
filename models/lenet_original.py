@@ -1,6 +1,6 @@
 import torch.nn as nn
 
-__all__ = ['LeNet5', 'lenet5']
+__all__ = ['lenet5']
 
 
 class LeNet5(nn.Module):

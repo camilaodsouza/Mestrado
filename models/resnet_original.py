@@ -1,8 +1,7 @@
 import torch.nn as nn
 import math
-# import torch.utils.model_zoo as model_zoo
 
-__all__ = ['ResNet', 'resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152',]
+__all__ = ['resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152']
 
 
 def conv3x3(in_planes, out_planes, stride=1):
@@ -26,14 +25,14 @@ class BasicBlock(nn.Module):
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
-                nn.init.kaiming_normal_(m.weight, mode='fan_out')
+                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
                 if m.bias is not None:
                     nn.init.constant_(m.bias, 0)
             elif isinstance(m, nn.BatchNorm2d):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
             elif isinstance(m, nn.Linear):
-                nn.init.normal_(m.weight, 0, 1/num_classes)
+                nn.init.normal_(m.weight, mean=0, std=1e-3)
                 nn.init.constant_(m.bias, 0)
 
     def forward(self, x):

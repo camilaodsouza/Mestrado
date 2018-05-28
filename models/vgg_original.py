@@ -1,6 +1,6 @@
 import torch.nn as nn
 
-__all__ = ['VGG', 'vgg11', 'vgg11bn', 'vgg13', 'vgg13bn', 'vgg16', 'vgg16bn', 'vgg19bn', 'vgg19', ]
+__all__ = ['vgg11', 'vgg11bn', 'vgg13', 'vgg13bn', 'vgg16', 'vgg16bn', 'vgg19bn', 'vgg19', ]
 
 
 class VGG(nn.Module):
@@ -13,7 +13,6 @@ class VGG(nn.Module):
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
-                # nn.init.kaiming_normal_(m.weight, mode='fan_out')
                 nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
                 if m.bias is not None:
                     nn.init.constant_(m.bias, 0)
@@ -21,7 +20,7 @@ class VGG(nn.Module):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
             elif isinstance(m, nn.Linear):
-                nn.init.normal_(m.weight, mean=0, std=0.01)
+                nn.init.normal_(m.weight, mean=0, std=1e-3)
                 nn.init.constant_(m.bias, 0)
 
     def forward(self, x):
