@@ -73,17 +73,24 @@ parser.add_argument('-lm', '--local-model', metavar='MODEL', default=None, choic
                     help='model to be used: ' + ' | '.join(local_model_names))
 parser.add_argument('-rm', '--remote-model', metavar='MODEL', default=None, choices=remote_model_names,
                     help='model to be used: ' + ' | '.join(remote_model_names))
-parser.add_argument('-x', '--executions', default=1, type=int, metavar='N',
+parser.add_argument('-x', '--executions', default=5, type=int, metavar='N',
                     help='Number of executions (default: 5)')
 parser.add_argument('-exps', '--experiments', default="baseline", type=str, metavar='EXPERIMENTS',
                     help='Experiments to be performed')
 parser.add_argument('-d', '--dataset', metavar='DATA', default='cifar10', choices=dataset_names,
                     help='dataset to be used: ' + ' | '.join(dataset_names) + ' (default: cifar10)')
+parser.add_argument('-gpu', '--gpu-id', default='1', type=str,
+                    help='id for CUDA_VISIBLE_DEVICES')
+parser.add_argument('-sd', '--seed', default='1234', type=int,
+                    help='seed to be globaly used')
 # parser.add_argument('-t', '--threshold', default=0.01, type=float, metavar='T',
 #                    help='Threshold to be used')
 
 args = parser.parse_args()
 args.experiments = args.experiments.split("_")
+
+# cuda device to use...
+os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu_id)
 
 
 def execute():
@@ -93,10 +100,10 @@ def execute():
     ######################################
 
     # Using seeds...
-    random.seed(0)
-    numpy.random.seed(0)
-    torch.manual_seed(0)
-    torch.cuda.manual_seed(0)
+    random.seed(args.seed)
+    numpy.random.seed(args.seed)
+    torch.manual_seed(args.seed)
+    torch.cuda.manual_seed(args.seed)
 
     # Configuring args and dataset...
     if args.dataset == "mnist":
@@ -619,13 +626,13 @@ def main():
         else:
             args.arch = args.remote_model
 
-        args.experiment_path = os.path.join("artifacts", args.dataset, args.arch, experiment)
-        print("\nEXPERIMENT PATH:", args.experiment_path)
-
         experiment_configs = experiment.split("+")
         for config in experiment_configs:
             config = config.split("~")
-            if config[0] == "nmc":
+            if config[0] == "seed":
+                args.seed = int(config[1])
+                print("MANUAL SEED:", args.seed)
+            elif config[0] == "nmc":
                 args.number_of_model_classes = int(config[1])
                 print("NUMBER OF MODEL CLASSES:", args.number_of_model_classes)
             # elif config[0] == "rt":
@@ -635,14 +642,10 @@ def main():
             #     args.regularization_value = float(config[1])
             #     print("REGULARIZATION VALUE:", args.regularization_value)
 
-        for args.execution in range(1, args.executions + 1):
+        args.experiment_path = os.path.join("artifacts", args.dataset, args.arch, experiment)
+        print("\nEXPERIMENT PATH:", args.experiment_path)
 
-            # Using seeds
-            # args.execution = execution
-            # random.seed(args.execution)
-            # numpy.random.seed(args.execution)
-            # torch.manual_seed(args.execution)
-            # torch.cuda.manual_seed(args.execution)
+        for args.execution in range(1, args.executions + 1):
 
             # args.execution = execution
             execution_results = {}

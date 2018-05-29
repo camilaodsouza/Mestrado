@@ -19,10 +19,7 @@ export run=train
 export dataset=cifar100
 for model in vgg19bn
 do
-  export exps="seed~1234+nmc~50"
-  python $run.py -d $dataset -lm $model -exps $exps | tee artifacts/$run.$dataset.$model.$exps.txt
-  export exps="seed~12345+nmc~50"
-  python $run.py -d $dataset -lm $model -exps $exps | tee artifacts/$run.$dataset.$model.$exps.txt
-  export exps="seed~123456+nmc~50"
+  #export exps="seed~1234+nmc~50_seed~12345+nmc~50_seed~123456+nmc~50"
+  export exps="newseed~1234+nmc~50_newseed~12345+nmc~50_newseed~123456+nmc~50"
   python $run.py -d $dataset -lm $model -exps $exps | tee artifacts/$run.$dataset.$model.$exps.txt
 done

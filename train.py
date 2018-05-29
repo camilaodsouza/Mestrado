@@ -92,7 +92,7 @@ parser.add_argument('-pf', '--print-freq', default=16, type=int, metavar='N',
                     help='print frequency (default: 16)')
 parser.add_argument('-gpu', '--gpu-id', default='1', type=str,
                     help='id for CUDA_VISIBLE_DEVICES')
-parser.add_argument('-sd', '--seed', default='123456', type=int,
+parser.add_argument('-sd', '--seed', default='1234', type=int,
                     help='seed to be globaly used')
 # parser.add_argument('-tr', '--train', const=True, nargs='?', type=bool,
 #                    help='if true, train the model')
@@ -239,8 +239,8 @@ def execute():
     print("\nDATASET:", args.dataset)
 
     # create model
-    torch.manual_seed(args.execution)
-    torch.cuda.manual_seed(args.execution)
+    torch.manual_seed(args.seed + args.execution)
+    torch.cuda.manual_seed(args.seed + args.execution)
     print("=> creating model '{}'".format(args.arch))
     # model = create_model()
     model = models.__dict__[args.arch](num_classes=args.number_of_model_classes)
@@ -790,13 +790,10 @@ def main():
         else:
             args.arch = args.remote_model
 
-        args.experiment_path = os.path.join("artifacts", args.dataset, args.arch, experiment)
-        print("\nEXPERIMENT PATH:", args.experiment_path)
-
         # Configuring the args variables...
-        args.number_of_model_classes = None
-        args.regularization_type = None
-        args.regularization_value = 0
+        args.number_of_model_classes = None  # Do I need this line???
+        args.regularization_type = None  # Do I need this line???
+        args.regularization_value = 0  # Do I need this line???
 
         experiment_configs = experiment.split("+")
         for config in experiment_configs:
@@ -804,7 +801,7 @@ def main():
             if config[0] == "seed":
                 args.seed = int(config[1])
                 print("MANUAL SEED:", args.seed)
-            if config[0] == "nmc":
+            elif config[0] == "nmc":
                 args.number_of_model_classes = int(config[1])
                 print("NUMBER OF MODEL CLASSES:", args.number_of_model_classes)
             elif config[0] == "rt":
@@ -813,6 +810,9 @@ def main():
             elif config[0] == "rv":
                 args.regularization_value = float(config[1])
                 print("REGULARIZATION VALUE:", args.regularization_value)
+
+        args.experiment_path = os.path.join("artifacts", args.dataset, args.arch, experiment)
+        print("\nEXPERIMENT PATH:", args.experiment_path)
 
         # for execution in range(1, args.executions + 1):
         for args.execution in range(1, args.executions + 1):
