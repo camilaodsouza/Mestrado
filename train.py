@@ -618,11 +618,9 @@ def compute_entropy(tensor, dim=1):
     return -(softmax_output * logsoftmax_output).sum(dim=dim)
 
 
-# """
 def worker_init(worker_id):
     # random.seed(args.execution)
     random.seed(args.seed)
-# """
 
 
 def create_model():
