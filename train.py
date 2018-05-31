@@ -92,7 +92,7 @@ parser.add_argument('-pf', '--print-freq', default=16, type=int, metavar='N',
                     help='print frequency (default: 16)')
 parser.add_argument('-gpu', '--gpu-id', default='1', type=str,
                     help='id for CUDA_VISIBLE_DEVICES')
-parser.add_argument('-sd', '--seed', default='1234', type=int,
+parser.add_argument('-sd', '--seed', default='1230', type=int,
                     help='seed to be globaly used')
 # parser.add_argument('-tr', '--train', const=True, nargs='?', type=bool,
 #                    help='if true, train the model')
@@ -124,10 +124,16 @@ def execute():
     ######################################
 
     # Using seeds...
-    random.seed(args.seed)
-    numpy.random.seed(args.seed)
-    torch.manual_seed(args.seed)
-    torch.cuda.manual_seed(args.seed)
+    args.execution_seed = args.seed + args.execution
+    random.seed(args.execution_seed)
+    numpy.random.seed(args.execution_seed)
+    torch.manual_seed(args.execution_seed)
+    torch.cuda.manual_seed(args.execution_seed)
+    print("EXECUTION SEED:", args.execution_seed)
+    # random.seed(args.seed)
+    # numpy.random.seed(args.seed)
+    # torch.manual_seed(args.seed)
+    # torch.cuda.manual_seed(args.seed)
 
     # Configuring args and dataset...
     if args.dataset == "mnist":
@@ -239,15 +245,15 @@ def execute():
     print("\nDATASET:", args.dataset)
 
     # create model
-    torch.manual_seed(args.seed + args.execution)
-    torch.cuda.manual_seed(args.seed + args.execution)
+    # torch.manual_seed(args.seed + args.execution)
+    # torch.cuda.manual_seed(args.seed + args.execution)
     print("=> creating model '{}'".format(args.arch))
     # model = create_model()
     model = models.__dict__[args.arch](num_classes=args.number_of_model_classes)
     model.cuda()
     print("\nMODEL:", model)
-    torch.manual_seed(args.seed)
-    torch.cuda.manual_seed(args.seed)
+    # torch.manual_seed(args.seed)
+    # torch.cuda.manual_seed(args.seed)
 
     #########################################
     # Training...
@@ -429,7 +435,7 @@ def train(train_loader, model, criterion, optimizer, epoch, writer):
         output_tensor = model(input_tensor)
 
         # Working with entropy...
-        entropy = compute_entropy(output_tensor, dim=1)
+        entropy = compute_entropies(output_tensor, dim=1)
         mean_entropy = entropy.sum()/entropy.size(0)
 
         # compute loss
@@ -527,7 +533,7 @@ def validate(val_loader, model, epoch, writer):
             output_tensor = model(input_tensor)
 
             # Working with entropy...
-            entropy = compute_entropy(output_tensor, dim=1)
+            entropy = compute_entropies(output_tensor, dim=1)
             mean_entropy = entropy.sum()/entropy.size(0)
 
             # accumulate metrics over epoch
@@ -610,7 +616,7 @@ def compute_train_val_samplers(train_set_to_split, split_fraction):
     return train_sampler, val_sampler
 
 
-def compute_entropy(tensor, dim=1):
+def compute_entropies(tensor, dim=1):
     softmax = nn.Softmax(dim=dim)
     logsoftmax = nn.LogSoftmax(dim=dim)
     softmax_output = softmax(tensor)  # .data)#.data
@@ -620,7 +626,8 @@ def compute_entropy(tensor, dim=1):
 
 def worker_init(worker_id):
     # random.seed(args.execution)
-    random.seed(args.seed)
+    # random.seed(args.seed)
+    random.seed(args.execution_seed)
 
 
 def create_model():
@@ -778,7 +785,7 @@ def main():
         print("\n\n")
         print("****************************************************************")
         print("EXPERIMENT:", experiment.upper())
-        print("****************************************************************")
+        print("****************************************************************\n")
 
         # execution_results = {}
         experiment_stats = pd.DataFrame()
@@ -796,9 +803,9 @@ def main():
         experiment_configs = experiment.split("+")
         for config in experiment_configs:
             config = config.split("~")
-            if config[0] == "seed":
+            if config[0] == "ebs":
                 args.seed = int(config[1])
-                print("MANUAL SEED:", args.seed)
+                print("EXPERIMENT BASE SEED:", args.seed)
             elif config[0] == "nmc":
                 args.number_of_model_classes = int(config[1])
                 print("NUMBER OF MODEL CLASSES:", args.number_of_model_classes)
@@ -810,7 +817,7 @@ def main():
                 print("REGULARIZATION VALUE:", args.regularization_value)
 
         args.experiment_path = os.path.join("artifacts", args.dataset, args.arch, experiment)
-        print("\nEXPERIMENT PATH:", args.experiment_path)
+        print("EXPERIMENT PATH:", args.experiment_path)
 
         # for execution in range(1, args.executions + 1):
         for args.execution in range(1, args.executions + 1):

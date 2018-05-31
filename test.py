@@ -29,9 +29,6 @@ from sklearn.metrics import roc_auc_score
 from sklearn.metrics import roc_curve
 from sklearn.ensemble import IsolationForest
 from sklearn import svm
-# from torch.autograd import Variable
-# from matplotlib import pyplot as plt
-# from scipy.io import loadmat
 
 import models
 
@@ -47,8 +44,6 @@ WEIBULL_TAIL_SIZE = 20
 
 cudnn.benchmark = False
 cudnn.deterministic = True
-
-# softmax = nn.Softmax(dim=1)
 
 numpy.set_printoptions(formatter={'float': '{:0.8f}'.format})
 torch.set_printoptions(precision=8)
@@ -81,7 +76,7 @@ parser.add_argument('-d', '--dataset', metavar='DATA', default='cifar10', choice
                     help='dataset to be used: ' + ' | '.join(dataset_names) + ' (default: cifar10)')
 parser.add_argument('-gpu', '--gpu-id', default='1', type=str,
                     help='id for CUDA_VISIBLE_DEVICES')
-parser.add_argument('-sd', '--seed', default='1234', type=int,
+parser.add_argument('-sd', '--seed', default='1230', type=int,
                     help='seed to be globaly used')
 # parser.add_argument('-t', '--threshold', default=0.01, type=float, metavar='T',
 #                    help='Threshold to be used')
@@ -100,10 +95,16 @@ def execute():
     ######################################
 
     # Using seeds...
-    random.seed(args.seed)
-    numpy.random.seed(args.seed)
-    torch.manual_seed(args.seed)
-    torch.cuda.manual_seed(args.seed)
+    args.execution_seed = args.seed + args.execution
+    random.seed(args.execution_seed)
+    numpy.random.seed(args.execution_seed)
+    torch.manual_seed(args.execution_seed)
+    torch.cuda.manual_seed(args.execution_seed)
+    print("EXECUTION SEED:", args.execution_seed)
+    # random.seed(args.seed)
+    # numpy.random.seed(args.seed)
+    # torch.manual_seed(args.seed)
+    # torch.cuda.manual_seed(args.seed)
 
     # Configuring args and dataset...
     if args.dataset == "mnist":
@@ -178,13 +179,6 @@ def execute():
     open_set_test_targets = [int(item in args.normal_classes) for item in original_test_targets]
     open_set_test_targets_numpy = numpy.asarray(open_set_test_targets)  # .numpy()
 
-    """
-    indices = numpy.random.permutation(val_set['logits'].shape[0])
-    train_idx, test_idx = indices[:30000], indices[30000:]
-    train_logits, test_logits = val_set['logits'][train_idx], val_set['logits'][test_idx]
-    train_targets, original_test_targets = val_set['targets'][train_idx], val_set['targets'][test_idx]
-    """
-
     ################################
     # Training and testing...
     ################################
@@ -205,6 +199,9 @@ def execute():
     train_entropy = compute_entropies(train_logits, dim=1)
     # train_mean_entropy = train_entropy.data.sum()/train_entropy.data.size(0)
     train_mean_entropy = train_entropy.sum()/train_entropy.size(0)
+    val_entropy = compute_entropies(val_logits, dim=1)
+    # val_mean_entropy = val_entropy.data.sum()/val_entropy.data.size(0)
+    val_mean_entropy = val_entropy.sum()/val_entropy.size(0)
     test_entropy = compute_entropies(test_logits, dim=1)
     # test_mean_entropy = test_entropy.data.sum()/test_entropy.data.size(0)
     test_mean_entropy = test_entropy.sum()/test_entropy.size(0)
@@ -237,7 +234,7 @@ def execute():
     openmax_test_max_knowing_probabilities_numpy = openmax_test_max_knowing_probabilities.numpy()
     # print(openmax_test_max_knowing_probabilities_numpy[:30])
     openmax_auc = roc_auc_score(open_set_test_targets_numpy, openmax_test_max_knowing_probabilities_numpy)
-    openmax_auc = openmax_auc if openmax_auc > 0.5 else 1 - openmax_auc
+    # openmax_auc = openmax_auc if openmax_auc > 0.5 else 1 - openmax_auc
     # """
 
     # Calculating isoforest auc...
@@ -245,7 +242,7 @@ def execute():
     isolation_forest.fit(train_logits_numpy)
     isolation_forest_test_score = isolation_forest.decision_function(test_logits_numpy)
     isolation_forast_auc = roc_auc_score(open_set_test_targets_numpy, isolation_forest_test_score)
-    isolation_forast_auc = isolation_forast_auc if isolation_forast_auc > 0.5 else 1 - isolation_forast_auc
+    # isolation_forast_auc = isolation_forast_auc if isolation_forast_auc > 0.5 else 1 - isolation_forast_auc
     # fpr, tpr, _ = roc_curve(open_set_test_targets_numpy, isolation_forest_test_score)
     """
     if args.dataset in {"mnist", "cifar10"}:
@@ -261,17 +258,17 @@ def execute():
     fpr, tpr, _ = roc_curve(open_set_test_targets_numpy, isolation_forest_test_score)
     """
 
-    # """
+    """
     # Calculating ocsvm auc...
     oc_svm = svm.OneClassSVM()
     oc_svm.fit(train_logits_numpy)
     oc_svm_test_score = oc_svm.decision_function(test_logits_numpy)
     oc_svm_auc = roc_auc_score(open_set_test_targets_numpy, oc_svm_test_score)
     fpr, tpr, _ = roc_curve(open_set_test_targets_numpy, oc_svm_test_score)
-    # """
+    """
 
-    return (100 * map_val_acc1, train_mean_entropy.item(), test_mean_entropy.item(),
-            threshold_auc, openmax_auc, isolation_forast_auc, oc_svm_auc)
+    return (100 * map_val_acc1, train_mean_entropy.item(), val_mean_entropy.item(), test_mean_entropy.item(),
+            threshold_auc, openmax_auc, isolation_forast_auc, 0)
 
 
 def weibull_tail_fitting(vectors_means, vectors_distances, number_of_model_classes, tailsize=WEIBULL_TAIL_SIZE):
@@ -616,7 +613,7 @@ def main():
         print("\n\n")
         print("****************************************************************")
         print("EXPERIMENT:", experiment.upper())
-        print("****************************************************************")
+        print("****************************************************************\n")
 
         # execution_results = {}
         experiment_stats = pd.DataFrame()
@@ -629,9 +626,9 @@ def main():
         experiment_configs = experiment.split("+")
         for config in experiment_configs:
             config = config.split("~")
-            if config[0] == "seed":
+            if config[0] == "ebs":
                 args.seed = int(config[1])
-                print("MANUAL SEED:", args.seed)
+                print("EXPERIMENT BASE SEED:", args.seed)
             elif config[0] == "nmc":
                 args.number_of_model_classes = int(config[1])
                 print("NUMBER OF MODEL CLASSES:", args.number_of_model_classes)
@@ -643,7 +640,7 @@ def main():
             #     print("REGULARIZATION VALUE:", args.regularization_value)
 
         args.experiment_path = os.path.join("artifacts", args.dataset, args.arch, experiment)
-        print("\nEXPERIMENT PATH:", args.experiment_path)
+        print("EXPERIMENT PATH:", args.experiment_path)
 
         for args.execution in range(1, args.executions + 1):
 
@@ -654,13 +651,13 @@ def main():
 
             # execute and get results and statistics...
             (execution_results["MAP VAL [ACC1]"], execution_results["TRAIN ENTROPY"],
-             execution_results["TEST ENTROPY"], execution_results["THRESHOLD [AUC]"],
-             execution_results["OPENMAX [AUC]"], execution_results["ISOFOREST [AUC]"],
-             execution_results["OCSVM [AUC]"]) = execute()
+             execution_results["VAL ENTROPY"], execution_results["TEST ENTROPY"],
+             execution_results["THRESHOLD [AUC]"], execution_results["OPENMAX [AUC]"],
+             execution_results["ISOFOREST [AUC]"], execution_results["OCSVM [AUC]"]) = execute()
 
             # appending results...
             experiment_stats = experiment_stats.append(execution_results, ignore_index=True)
-            experiment_stats = experiment_stats[["MAP VAL [ACC1]", "TRAIN ENTROPY", "TEST ENTROPY",
+            experiment_stats = experiment_stats[["MAP VAL [ACC1]", "TRAIN ENTROPY", "VAL ENTROPY", "TEST ENTROPY",
                                                  "THRESHOLD [AUC]", "OPENMAX [AUC]", "ISOFOREST [AUC]", "OCSVM [AUC]"]]
 
         # print("\n################################\n", "EXPERIMENT STATISTICS", "\n################################\n")
