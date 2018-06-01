@@ -1,4 +1,3 @@
-import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -71,6 +70,18 @@ class ResNet(nn.Module):
         self.layer4 = self._make_layer(block, 512, num_blocks[3], stride=2)
         self.linear = nn.Linear(512*block.expansion, num_classes)
 
+        for module in self.modules():
+            if isinstance(module, nn.Conv2d):
+                nn.init.kaiming_normal_(module.weight, mode='fan_out', nonlinearity='relu')
+                if module.bias is not None:
+                    nn.init.constant_(module.bias, 0)
+            elif isinstance(module, nn.BatchNorm2d):
+                nn.init.constant_(module.weight, 1)
+                nn.init.constant_(module.bias, 0)
+            elif isinstance(module, nn.Linear):
+                nn.init.normal_(module.weight, mean=0, std=1/num_classes)
+                nn.init.constant_(module.bias, 0)
+
     def _make_layer(self, block, planes, num_blocks, stride):
         strides = [stride] + [1]*(num_blocks-1)
         layers = []
@@ -91,29 +102,21 @@ class ResNet(nn.Module):
         return out
 
 
-def resnet18():
-    return ResNet(BasicBlock, [2,2,2,2])
+def resnet18(**kwargs):
+    return ResNet(BasicBlock, [2, 2, 2, 2], **kwargs)
 
 
-def resnet34():
-    return ResNet(BasicBlock, [3,4,6,3])
+def resnet34(**kwargs):
+    return ResNet(BasicBlock, [3, 4, 6, 3], **kwargs)
 
 
-def resnet50():
-    return ResNet(Bottleneck, [3,4,6,3])
+def resnet50(**kwargs):
+    return ResNet(Bottleneck, [3, 4, 6, 3], **kwargs)
 
 
-def resnet101():
-    return ResNet(Bottleneck, [3,4,23,3])
+def resnet101(**kwargs):
+    return ResNet(Bottleneck, [3, 4, 23, 3], **kwargs)
 
 
-def resnet152():
-    return ResNet(Bottleneck, [3,8,36,3])
-
-
-#def test():
-#    net = resnet18()
-#    y = net(torch.randn(1,3,32,32))
-#    print(y.size())
-
-# test()
+def resnet152(**kwargs):
+    return ResNet(Bottleneck, [3, 8, 36, 3], **kwargs)

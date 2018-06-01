@@ -1,14 +1,11 @@
-'''MobileNetV2 in PyTorch.
-See the paper "Inverted Residuals and Linear Bottlenecks:
-Mobile Networks for Classification, Detection and Segmentation" for more details.
-'''
-import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+__all__ = ['MobileNetV2', 'mobilenetv2']
+
 
 class Block(nn.Module):
-    '''expand + depthwise + pointwise'''
+    """expand + depthwise + pointwise"""
     def __init__(self, in_planes, out_planes, expansion, stride):
         super(Block, self).__init__()
         self.stride = stride
@@ -76,10 +73,5 @@ class MobileNetV2(nn.Module):
         return out
 
 
-def test():
-    net = MobileNetV2()
-    x = torch.randn(2,3,32,32)
-    y = net(x)
-    print(y.size())
-
-# test()
+def mobilenetv2(**kwargs):
+    return MobileNetV2(**kwargs)

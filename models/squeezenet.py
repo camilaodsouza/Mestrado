@@ -1,16 +1,8 @@
-import math
 import torch
 import torch.nn as nn
 from collections import OrderedDict
 
-
 __all__ = ['SqueezeNet', 'squeezenet1_0', 'squeezenet1_1']
-
-
-model_urls = {
-    'squeezenet1_0': 'https://download.pytorch.org/models/squeezenet1_0-a815701f.pth',
-    'squeezenet1_1': 'https://download.pytorch.org/models/squeezenet1_1-f364aa15.pth',
-}
 
 
 class Fire(nn.Module):
@@ -59,20 +51,20 @@ class SqueezeNet(nn.Module):
         self.num_classes = num_classes
         if version == 1.0:
             self.features = nn.Sequential(
-                #32x32x3
-                nn.Conv2d(3, 96, kernel_size=3, stride=1, padding=1), #32x32x96
+                # 32x32x3
+                nn.Conv2d(3, 96, kernel_size=3, stride=1, padding=1),  # 32x32x96
                 nn.ReLU(inplace=True),
-                nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True), #16x16x96
-                Fire(96, 32, 64, 64), #16x16x128
-                Fire(128, 16, 64, 64), #16x16x128
-                Fire(128, 32, 128, 128), #16x16x256
-                Fire(256, 32, 128, 128), #16x16x256
-                nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True), #8x8x256
-                Fire(256, 48, 192, 192), #8x8x384
-                Fire(384, 48, 192, 192), #8x8x384
-                Fire(384, 64, 256, 256), #8x8x512
-                nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True), #4x4x512
-                Fire(512, 64, 256, 256), #4x4x512
+                nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True),  # 16x16x96
+                Fire(96, 32, 64, 64),  # 16x16x128
+                Fire(128, 16, 64, 64),  # 16x16x128
+                Fire(128, 32, 128, 128),  # 16x16x256
+                Fire(256, 32, 128, 128),  # 16x16x256
+                nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True),  # 8x8x256
+                Fire(256, 48, 192, 192),  # 8x8x384
+                Fire(384, 48, 192, 192),  # 8x8x384
+                Fire(384, 64, 256, 256),  # 8x8x512
+                nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True),  # 4x4x512
+                Fire(512, 64, 256, 256),  # 4x4x512
 
             )
         else:
@@ -93,14 +85,31 @@ class SqueezeNet(nn.Module):
             )
         # Final convolution is initialized differently form the rest
         final_conv = nn.Conv2d(512, num_classes, kernel_size=1)
-        self.classifier = nn.Sequential (
-            #nn.Dropout(p=0.5),
-            final_conv, #4x4x10
-            nn.BatchNorm3d(num_classes),
+        self.classifier = nn.Sequential(
+            # nn.Dropout(p=0.5),
+            final_conv,  # 4x4x10
+            # nn.BatchNorm3d(num_classes),
+            nn.BatchNorm2d(num_classes),
             nn.ReLU(inplace=True),
-            nn.AvgPool2d(4) #1x1x10
+            nn.AvgPool2d(4)  # 1x1x10
         )
 
+        for module in self.modules():
+            if isinstance(module, nn.Conv2d):
+                if module is final_conv:
+                    nn.init.normal_(module.weight, mean=0.0, std=0.01)
+                else:
+                    nn.init.kaiming_uniform_(module.weight)
+                if module.bias is not None:
+                    nn.init.constant_(module.bias, 0)
+            elif isinstance(module, nn.BatchNorm2d):
+                nn.init.constant_(module.weight, 1)
+                nn.init.constant_(module.bias, 0)
+            elif isinstance(module, nn.Linear):
+                nn.init.normal_(module.weight, mean=0, std=1/num_classes)
+                nn.init.constant_(module.bias, 0)
+
+        """
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 gain = 2.0
@@ -112,31 +121,19 @@ class SqueezeNet(nn.Module):
                     m.weight.data.uniform_(-u, u)
                 if m.bias is not None:
                     m.bias.data.zero_()
+        """
 
     def forward(self, x):
         x = self.features(x)
         x = self.classifier(x)
         return x.view(x.size(0), self.num_classes)
 
-def squeezenet1_0(pretrained=False, model_root=None, **kwargs):
-    r"""SqueezeNet model architecture from the `"SqueezeNet: AlexNet-level
-    accuracy with 50x fewer parameters and <0.5MB model size"
-    <https://arxiv.org/abs/1602.07360>`_ paper.
-    """
+
+def squeezenet1_0(**kwargs):
     model = SqueezeNet(version=1.0, **kwargs)
-    print(model)
-    #if pretrained:
-    #    misc.load_state_dict(model, model_urls['squeezenet1_0'], model_root)
     return model
 
 
-def squeezenet1_1(pretrained=False, model_root=None, **kwargs):
-    r"""SqueezeNet 1.1 model from the `official SqueezeNet repo
-    <https://github.com/DeepScale/SqueezeNet/tree/master/SqueezeNet_v1.1>`_.
-    SqueezeNet 1.1 has 2.4x less computation and slightly fewer parameters
-    than SqueezeNet 1.0, without sacrificing accuracy.
-    """
+def squeezenet1_1(**kwargs):
     model = SqueezeNet(version=1.1, **kwargs)
-    #if pretrained:
-    #    misc.load_state_dict(model, model_urls['squeezenet1_1'], model_root)
     return model
