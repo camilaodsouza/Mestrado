@@ -5,20 +5,20 @@ export run=train
 #export dataset=mnist
 #for model in lenet5
 #do
-#  export exps="seed~1234+nmc~5_seed~12345+nmc~5_seed~123456+nmc~5"
+#  export exps="baseline+nmc~5"
 #  python $run.py -d $dataset -lm $model -exps $exps -e 3 -x 2 #| tee artifacts/$run.$dataset.$model.$exps.txt
 #done
 
-#export dataset=cifar10
-#for model in vgg19bn
-#do
-#  export exps="nmc~5"
-#  python $run.py -d $dataset -lm $model -exps $exps | tee artifacts/$run.$dataset.$model.$exps.txt
-#done
+export dataset=cifar10
+for model in vgg19bn #alexnet
+do
+  export exps="baseline+nmc~5"
+  python $run.py -d $dataset -lm $model -exps $exps -e 3 -x 2 #| tee artifacts/$run.$dataset.$model.$exps.txt
+done
 
 export dataset=cifar100
-for model in vgg19bn
+for model in vgg19bn #alexnet
 do
-  export exps="ebs~1230+nmc~50_ebs~12340+nmc~50_ebs~123450+nmc~50"
+  export exps="baseline+nmc~50"
   python $run.py -d $dataset -lm $model -exps $exps -e 3 -x 2 #| tee artifacts/$run.$dataset.$model.$exps.txt
 done
