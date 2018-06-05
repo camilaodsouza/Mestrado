@@ -3,7 +3,7 @@ from .alexnet import *
 from .vgg import *
 from .resnet import *
 from .squeezenet import *
-from .squeezenetdsc import *
+from .squeezemobnet import *
 from .mobilenet import *
 from .mobilenetv2 import *
 from .shufflenet import *

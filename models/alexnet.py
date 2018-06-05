@@ -4,7 +4,6 @@ __all__ = ['AlexNet', 'alexnet']
 
 
 class AlexNet(nn.Module):
-
     def __init__(self, num_classes=10):
         super(AlexNet, self).__init__()
         self.features = nn.Sequential(
@@ -43,7 +42,7 @@ class AlexNet(nn.Module):
                 nn.init.constant_(module.weight, 1)
                 nn.init.constant_(module.bias, 0)
             elif isinstance(module, nn.Linear):
-                nn.init.normal_(module.weight, mean=0, std=1/num_classes)
+                nn.init.normal_(module.weight, mean=0, std=1e-3)
                 nn.init.constant_(module.bias, 0)
 
     def forward(self, x):

@@ -61,7 +61,6 @@ class ResNet(nn.Module):
     def __init__(self, block, num_blocks, num_classes=10):
         super(ResNet, self).__init__()
         self.in_planes = 64
-
         self.conv1 = nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
         self.layer1 = self._make_layer(block, 64, num_blocks[0], stride=1)
@@ -79,7 +78,7 @@ class ResNet(nn.Module):
                 nn.init.constant_(module.weight, 1)
                 nn.init.constant_(module.bias, 0)
             elif isinstance(module, nn.Linear):
-                nn.init.normal_(module.weight, mean=0, std=1/num_classes)
+                nn.init.normal_(module.weight, mean=0, std=1e-3)
                 nn.init.constant_(module.bias, 0)
 
     def _make_layer(self, block, planes, num_blocks, stride):

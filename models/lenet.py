@@ -1,11 +1,11 @@
 import torch.nn as nn
 
-__all__ = ['lenet5']
+__all__ = ['LeNet', 'lenet5']
 
 
-class LeNet5(nn.Module):
+class LeNet(nn.Module):
     def __init__(self, num_classes=10):
-        super(LeNet5, self).__init__()
+        super(LeNet, self).__init__()
         self.features = nn.Sequential(
             nn.Conv2d(1, 6, kernel_size=5, padding=(2, 2)),
             nn.BatchNorm2d(6),
@@ -17,7 +17,7 @@ class LeNet5(nn.Module):
             nn.MaxPool2d(kernel_size=2, stride=2),
         )
         self.classifier = nn.Sequential(
-            nn.Linear(16*5*5, 120),
+            nn.Linear(400, 120),
             nn.ReLU(True),
             # nn.Linear(120, 84),
             # nn.ReLU(True),
@@ -43,5 +43,5 @@ class LeNet5(nn.Module):
         return x
 
 
-def lenet5(num_classes=10):
-    return LeNet5(num_classes)
+def lenet5(**kwargs):
+    return LeNet(**kwargs)

@@ -2,6 +2,13 @@ import torch.nn as nn
 
 __all__ = ['VGG', 'vgg11', 'vgg11bn', 'vgg13', 'vgg13bn', 'vgg16', 'vgg16bn', 'vgg19bn', 'vgg19']
 
+cfg = {
+    'A': [64, 'M', 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M'],
+    'B': [64, 64, 'M', 128, 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M'],
+    'D': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512, 'M', 512, 512, 512, 'M'],
+    'E': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512, 'M'],
+}
+
 
 class VGG(nn.Module):
     def __init__(self, features, num_classes=10):
@@ -20,14 +27,12 @@ class VGG(nn.Module):
                 nn.init.constant_(module.weight, 1)
                 nn.init.constant_(module.bias, 0)
             elif isinstance(module, nn.Linear):
-                nn.init.normal_(module.weight, mean=0, std=1/num_classes)
+                nn.init.normal_(module.weight, mean=0, std=1e-3)
                 nn.init.constant_(module.bias, 0)
 
     def forward(self, x):
         x = self.features(x)
-        # print(x.size())
         x = x.view(x.size(0), -1)
-        # print(x.size())
         x = self.classifier(x)
         return x
 
@@ -45,18 +50,10 @@ def make_layers(config, batch_norm=False):
             else:
                 layers += [conv2d, nn.ReLU(inplace=True)]
             in_channels = v
-    # layers = layers[:-1]  # <<-- optional VGG desing number #1
-    # layers += [nn.AvgPool2d(kernel_size=2, stride=2)]  # <<-- optional VGG desing number #1
-    layers += [nn.AvgPool2d(kernel_size=1, stride=1)]  # <<-- optional VGG desing number #2
+    # layers = layers[:-1]  # <<-- optional VGG desing number #2
+    # layers += [nn.AvgPool2d(kernel_size=2, stride=2)]  # <<-- optional VGG desing number #2
+    layers += [nn.AvgPool2d(kernel_size=1, stride=1)]  # <<-- optional VGG desing number #1
     return nn.Sequential(*layers)
-
-
-cfg = {
-    'A': [64, 'M', 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M'],
-    'B': [64, 64, 'M', 128, 128, 'M', 256, 256, 'M', 512, 512, 'M', 512, 512, 'M'],
-    'D': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512, 'M', 512, 512, 512, 'M'],
-    'E': [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 256, 'M', 512, 512, 512, 512, 'M', 512, 512, 512, 512, 'M'],
-}
 
 
 def vgg11(**kwargs):
