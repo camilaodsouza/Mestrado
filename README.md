@@ -1,5 +1,3 @@
-# Deep Learning Lab
+# SqueezeMobNet
 
-Deep Learning Lab.
-
-Requires tnt, tqdm, tensorboardX.
+A PyTorch implementation of SqueezeMobNet.
