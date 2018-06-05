@@ -111,14 +111,14 @@ datasets/imagenet2012/*
 !datasets/imagenet2012/*.py
 !datasets/imagenet2012/*.sh
 
-adversarial_attacks_defences/dev_toolkit/dataset/
-
 # ignore Tensorflow checkpoints
 *.ckpt*
 # ignore dataset images
 adversarial_attacks_defences/dev_toolkit/dataset/images
 # ignore images
 *.png
+*.jpg
+*.jpeg
 
 events*
 

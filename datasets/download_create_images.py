@@ -22,8 +22,13 @@ parser.add_argument('-bs', '--batch-size', default=128, type=int,
                     metavar='N', help='mini-batch size (default: 128)')
 parser.add_argument('-w', '--workers', default=4, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
+parser.add_argument('-gpu', '--gpu-id', default='1', type=str,
+                    help='id for CUDA_VISIBLE_DEVICES')
 
 args = parser.parse_args()
+
+# cuda device to use...
+os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu_id)
 
 data_dir = os.path.join('.', args.dataset)
 images_dir = os.path.join(data_dir, "images")
