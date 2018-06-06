@@ -60,9 +60,9 @@ remote_model_names = sorted(name for name in torchvision_models.__dict__
 
 parser = argparse.ArgumentParser(description='Test')
 
-parser.add_argument('-dir', '--artifact-dir', type=str, metavar='DIR',
-                    help='the project directory')
-parser.add_argument('-data', '--dataset-dir', type=str, metavar='DATA',
+# parser.add_argument('-dir', '--artifact-dir', type=str, metavar='DIR',
+#                    help='the project directory')
+parser.add_argument('-dd', '--dataset-dir', type=str, metavar='DATA',
                     help='output dir for logits extracted')
 parser.add_argument('-lm', '--local-model', metavar='MODEL', default=None, choices=local_model_names,
                     help='model to be used: ' + ' | '.join(local_model_names))
@@ -76,15 +76,20 @@ parser.add_argument('-d', '--dataset', metavar='DATA', default='cifar10', choice
                     help='dataset to be used: ' + ' | '.join(dataset_names) + ' (default: cifar10)')
 parser.add_argument('-gpu', '--gpu-id', default='1', type=str,
                     help='id for CUDA_VISIBLE_DEVICES')
-parser.add_argument('-sd', '--seed', default='1230', type=int,
-                    help='seed to be globaly used')
+# parser.add_argument('-bsd', '--base-seed', default='1230', type=int,
+#                     help='seed to be used as base')
 # parser.add_argument('-t', '--threshold', default=0.01, type=float, metavar='T',
 #                    help='Threshold to be used')
 
 args = parser.parse_args()
 args.experiments = args.experiments.split("_")
 
-# cuda device to use...
+if args.local_model is not None:
+    args.arch = args.local_model
+else:
+    args.arch = args.remote_model
+
+# cuda device to be used...
 os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu_id)
 
 
@@ -95,16 +100,16 @@ def execute():
     ######################################
 
     # Using seeds...
-    args.execution_seed = args.seed + args.execution
+    args.execution_seed = args.base_seed + args.execution
     random.seed(args.execution_seed)
     numpy.random.seed(args.execution_seed)
     torch.manual_seed(args.execution_seed)
     torch.cuda.manual_seed(args.execution_seed)
     print("EXECUTION SEED:", args.execution_seed)
-    # random.seed(args.seed)
-    # numpy.random.seed(args.seed)
-    # torch.manual_seed(args.seed)
-    # torch.cuda.manual_seed(args.seed)
+    # random.seed(args.base_seed)
+    # numpy.random.seed(args.base_seed)
+    # torch.manual_seed(args.base_seed)
+    # torch.cuda.manual_seed(args.base_seed)
 
     # Configuring args and dataset...
     if args.dataset == "mnist":
@@ -618,17 +623,15 @@ def main():
         # execution_results = {}
         experiment_stats = pd.DataFrame()
 
-        if args.local_model is not None:
-            args.arch = args.local_model
-        else:
-            args.arch = args.remote_model
+        # RESET EXPERIMENT CONFIGS TO DEFAULT VALUES SINCE WE ARE USING GLOBAL VARIABLES...
+        args.base_seed = 1230
 
         experiment_configs = experiment.split("+")
         for config in experiment_configs:
             config = config.split("~")
-            if config[0] == "ebs":
-                args.seed = int(config[1])
-                print("EXPERIMENT BASE SEED:", args.seed)
+            if config[0] == "bsd":
+                args.base_seed = int(config[1])
+                print("BASE SEED:", args.base_seed)
             elif config[0] == "nmc":
                 args.number_of_model_classes = int(config[1])
                 print("NUMBER OF MODEL CLASSES:", args.number_of_model_classes)
@@ -640,7 +643,7 @@ def main():
             #     print("REGULARIZATION VALUE:", args.regularization_value)
 
         args.experiment_path = os.path.join("artifacts", args.dataset, args.arch, experiment)
-        print("EXPERIMENT PATH:", args.experiment_path)
+        print("PATH:", args.experiment_path)
 
         for args.execution in range(1, args.executions + 1):
 

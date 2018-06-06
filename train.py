@@ -54,9 +54,9 @@ remote_model_names = sorted(name for name in torchvision_models.__dict__
 
 parser = argparse.ArgumentParser(description='Train')
 
-parser.add_argument('-dir', '--artifact-dir', type=str, metavar='DIR',
-                    help='the project directory')
-parser.add_argument('-data', '--dataset-dir', type=str, metavar='DATA',
+# parser.add_argument('-dir', '--artifact-dir', type=str, metavar='DIR',
+#                     help='the project directory')
+parser.add_argument('-dd', '--dataset-dir', type=str, metavar='DATA',
                     help='output dir for logits extracted')
 parser.add_argument('-x', '--executions', default=5, type=int, metavar='N',
                     help='Number of executions (default: 5)')
@@ -92,8 +92,8 @@ parser.add_argument('-pf', '--print-freq', default=16, type=int, metavar='N',
                     help='print frequency (default: 16)')
 parser.add_argument('-gpu', '--gpu-id', default='1', type=str,
                     help='id for CUDA_VISIBLE_DEVICES')
-parser.add_argument('-sd', '--seed', default='1230', type=int,
-                    help='seed to be globaly used')
+# parser.add_argument('-bsd', '--base-seed', default='1230', type=int,
+#                     help='seed to be used as base')
 # parser.add_argument('-tr', '--train', const=True, nargs='?', type=bool,
 #                    help='if true, train the model')
 # parser.add_argument('-el', '--extract-logits', const=True, nargs='?', type=bool,
@@ -105,9 +105,15 @@ args = parser.parse_args()
 args.learning_rate_decay_epochs = sorted([int(item) for item in args.learning_rate_decay_epochs.split()])
 args.experiments = args.experiments.split("_")
 
-# cuda device to use...
+if args.local_model is not None:
+    args.arch = args.local_model
+else:
+    args.arch = args.remote_model
+
+# cuda device to be used...
 os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu_id)
 
+# RAW_RESULTS IS CURRENTLY A GLOBAL VARIABLE...
 raw_results = {
     'train_loss': [{} for item in range(args.epochs)],
     'train_entropy': [{} for item in range(args.epochs)],
@@ -124,16 +130,16 @@ def execute():
     ######################################
 
     # Using seeds...
-    args.execution_seed = args.seed + args.execution
+    args.execution_seed = args.base_seed + args.execution
     random.seed(args.execution_seed)
     numpy.random.seed(args.execution_seed)
     torch.manual_seed(args.execution_seed)
     torch.cuda.manual_seed(args.execution_seed)
     print("EXECUTION SEED:", args.execution_seed)
-    # random.seed(args.seed)
-    # numpy.random.seed(args.seed)
-    # torch.manual_seed(args.seed)
-    # torch.cuda.manual_seed(args.seed)
+    # random.seed(args.base_seed)
+    # numpy.random.seed(args.base_seed)
+    # torch.manual_seed(args.base_seed)
+    # torch.cuda.manual_seed(args.base_seed)
 
     # Configuring args and dataset...
     if args.dataset == "mnist":
@@ -245,15 +251,15 @@ def execute():
     print("\nDATASET:", args.dataset)
 
     # create model
-    # torch.manual_seed(args.seed + args.execution)
-    # torch.cuda.manual_seed(args.seed + args.execution)
+    # torch.manual_seed(args.base_seed + args.execution)
+    # torch.cuda.manual_seed(args.base_seed + args.execution)
     print("=> creating model '{}'".format(args.arch))
     # model = create_model()
     model = models.__dict__[args.arch](num_classes=args.number_of_model_classes)
     model.cuda()
     print("\nMODEL:", model)
-    # torch.manual_seed(args.seed)
-    # torch.cuda.manual_seed(args.seed)
+    # torch.manual_seed(args.base_seed)
+    # torch.cuda.manual_seed(args.base_seed)
 
     #########################################
     # Training...
@@ -625,8 +631,6 @@ def compute_entropies(tensor, dim=1):
 
 
 def worker_init(worker_id):
-    # random.seed(args.execution)
-    # random.seed(args.seed)
     random.seed(args.execution_seed)
 
 
@@ -790,22 +794,18 @@ def main():
         # execution_results = {}
         experiment_stats = pd.DataFrame()
 
-        if args.local_model is not None:
-            args.arch = args.local_model
-        else:
-            args.arch = args.remote_model
-
-        # Configuring the args variables...
-        args.number_of_model_classes = None  # Do I need this line???
-        args.regularization_type = None  # Do I need this line???
-        args.regularization_value = 0  # Do I need this line???
+        # RESET EXPERIMENT CONFIGS TO DEFAULT VALUES SINCE WE ARE USING GLOBAL VARIABLES...
+        args.base_seed = 1230
+        args.number_of_model_classes = None
+        args.regularization_type = None
+        args.regularization_value = 0
 
         experiment_configs = experiment.split("+")
         for config in experiment_configs:
             config = config.split("~")
-            if config[0] == "ebs":
-                args.seed = int(config[1])
-                print("EXPERIMENT BASE SEED:", args.seed)
+            if config[0] == "bsd":
+                args.base_seed = int(config[1])
+                print("BASE SEED:", args.base_seed)
             elif config[0] == "nmc":
                 args.number_of_model_classes = int(config[1])
                 print("NUMBER OF MODEL CLASSES:", args.number_of_model_classes)
@@ -817,7 +817,7 @@ def main():
                 print("REGULARIZATION VALUE:", args.regularization_value)
 
         args.experiment_path = os.path.join("artifacts", args.dataset, args.arch, experiment)
-        print("EXPERIMENT PATH:", args.experiment_path)
+        print("PATH:", args.experiment_path)
 
         # for execution in range(1, args.executions + 1):
         for args.execution in range(1, args.executions + 1):
@@ -842,8 +842,6 @@ def main():
         # print("\n", experiment_stats.transpose())
         # print("\n", experiment_stats.describe())
 
-        overall_stats[experiment] = experiment_stats
-
         # Saving tab separeted files...
         csv.register_dialect('unixpwd', delimiter='\t', quoting=csv.QUOTE_NONE)
         for key in raw_results:
@@ -854,6 +852,8 @@ def main():
                 writer.writeheader()
                 for epoch in range(len(raw_results[key])):
                     writer.writerow(raw_results[key][epoch])
+
+        overall_stats[experiment] = experiment_stats
 
     print("\n\n\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n", "OVERALL STATISTICS", "\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n")
     for key in overall_stats:
