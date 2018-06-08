@@ -22,6 +22,7 @@ import torch.utils.data
 import torchvision.transforms as transforms
 import torchvision.models as torchvision_models
 import torchnet as tnt
+# import timeit
 import csv
 
 
@@ -130,16 +131,12 @@ def execute():
     ######################################
 
     # Using seeds...
+    random.seed(args.base_seed)
+    numpy.random.seed(args.base_seed)
+    torch.manual_seed(args.base_seed)
+    torch.cuda.manual_seed(args.base_seed)
     args.execution_seed = args.base_seed + args.execution
-    random.seed(args.execution_seed)
-    numpy.random.seed(args.execution_seed)
-    torch.manual_seed(args.execution_seed)
-    torch.cuda.manual_seed(args.execution_seed)
     print("EXECUTION SEED:", args.execution_seed)
-    # random.seed(args.base_seed)
-    # numpy.random.seed(args.base_seed)
-    # torch.manual_seed(args.base_seed)
-    # torch.cuda.manual_seed(args.base_seed)
 
     # Configuring args and dataset...
     if args.dataset == "mnist":
@@ -251,15 +248,15 @@ def execute():
     print("\nDATASET:", args.dataset)
 
     # create model
-    # torch.manual_seed(args.base_seed + args.execution)
-    # torch.cuda.manual_seed(args.base_seed + args.execution)
+    torch.manual_seed(args.execution_seed)
+    torch.cuda.manual_seed(args.execution_seed)
     print("=> creating model '{}'".format(args.arch))
     # model = create_model()
     model = models.__dict__[args.arch](num_classes=args.number_of_model_classes)
     model.cuda()
     print("\nMODEL:", model)
-    # torch.manual_seed(args.base_seed)
-    # torch.cuda.manual_seed(args.base_seed)
+    torch.manual_seed(args.base_seed)
+    torch.cuda.manual_seed(args.base_seed)
 
     #########################################
     # Training...
@@ -631,7 +628,7 @@ def compute_entropies(tensor, dim=1):
 
 
 def worker_init(worker_id):
-    random.seed(args.execution_seed)
+    random.seed(args.base_seed)
 
 
 def create_model():
@@ -744,8 +741,9 @@ def compute_total_inference_time(model, val_loader, mode):
             initial_time = time.time()
             _ = model(input_tensor)
             final_time = time.time()
-
             instance_inference_time = final_time - initial_time
+            # instance_inference_time = timeit.timeit("model(input_tensor)", number=1)
+
             total_inference_time += instance_inference_time
 
     return total_inference_time

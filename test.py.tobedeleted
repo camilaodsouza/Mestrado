@@ -100,16 +100,12 @@ def execute():
     ######################################
 
     # Using seeds...
+    random.seed(args.base_seed)
+    numpy.random.seed(args.base_seed)
+    torch.manual_seed(args.base_seed)
+    torch.cuda.manual_seed(args.base_seed)
     args.execution_seed = args.base_seed + args.execution
-    random.seed(args.execution_seed)
-    numpy.random.seed(args.execution_seed)
-    torch.manual_seed(args.execution_seed)
-    torch.cuda.manual_seed(args.execution_seed)
     print("EXECUTION SEED:", args.execution_seed)
-    # random.seed(args.base_seed)
-    # numpy.random.seed(args.base_seed)
-    # torch.manual_seed(args.base_seed)
-    # torch.cuda.manual_seed(args.base_seed)
 
     # Configuring args and dataset...
     if args.dataset == "mnist":
