@@ -30,6 +30,23 @@ class MobileNet(nn.Module):
         self.layers = self._make_layers(in_planes=32)
         self.linear = nn.Linear(1024, num_classes)
 
+        """
+        for module in self.modules():
+            if isinstance(module, nn.Conv2d):
+                nn.init.kaiming_normal_(module.weight, mode='fan_out', nonlinearity='relu')
+                if module.bias is not None:
+                    nn.init.constant_(module.bias, 0)
+            elif isinstance(module, nn.BatchNorm1d):
+                nn.init.constant_(module.weight, 1)
+                nn.init.constant_(module.bias, 0)
+            elif isinstance(module, nn.BatchNorm2d):
+                nn.init.constant_(module.weight, 1)
+                nn.init.constant_(module.bias, 0)
+            elif isinstance(module, nn.Linear):
+                nn.init.normal_(module.weight, mean=0, std=1e-3)
+                nn.init.constant_(module.bias, 0)
+        """
+
     def _make_layers(self, in_planes):
         layers = []
         for x in self.cfg:

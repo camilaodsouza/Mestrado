@@ -42,6 +42,8 @@ cudnn.deterministic = True
 
 numpy.set_printoptions(formatter={'float': '{:0.4f}'.format})
 torch.set_printoptions(precision=4)
+#torch.set_default_tensor_type(torch.FloatTensor)
+#torch.set_default_dtype(torch.float32)
 pd.set_option('display.width', 160)
 
 dataset_names = ('mnist', 'cifar10', 'cifar100', 'imagenet2012')

@@ -1,3 +1,4 @@
+import math
 import torch
 import torch.nn as nn
 from collections import OrderedDict
@@ -12,8 +13,7 @@ class Block(nn.Module):
 
         self.mob = nn.Sequential(
             OrderedDict([
-                 ('pointwise', nn.Conv2d(
-                     in_planes, in_planes, kernel_size=3, stride=stride, padding=1, groups=in_planes, bias=False)),
+                 ('pointwise', nn.Conv2d(in_planes, in_planes, kernel_size=3, stride=stride, padding=1, groups=in_planes, bias=False)),
                  #('BatchNorm', nn.BatchNorm2d(in_planes)),
                  ('activation', nn.ReLU(inplace=True)),
                  ('depthwise', nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=1, bias=False)),
@@ -140,6 +140,19 @@ class SqueezeMobNet(nn.Module):
                 nn.AvgPool2d(4)  # 1x1x10 for cifar10
             )
 
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                gain = 2.0
+                if m is final_conv:
+                    m.weight.data.normal_(0, 0.01)
+                else:
+                    fan_in = m.kernel_size[0] * m.kernel_size[1] * m.in_channels
+                    u = math.sqrt(3.0 * gain / fan_in)
+                    m.weight.data.uniform_(-u, u)
+                if m.bias is not None:
+                    m.bias.data.zero_()
+
+        """
         for module in self.modules():
             if isinstance(module, nn.Conv2d):
                 if module is final_conv:
@@ -148,12 +161,16 @@ class SqueezeMobNet(nn.Module):
                     nn.init.kaiming_uniform_(module.weight)
                 if module.bias is not None:
                     nn.init.constant_(module.bias, 0)
+            elif isinstance(module, nn.BatchNorm1d):
+                nn.init.constant_(module.weight, 1)
+                nn.init.constant_(module.bias, 0)
             elif isinstance(module, nn.BatchNorm2d):
                 nn.init.constant_(module.weight, 1)
                 nn.init.constant_(module.bias, 0)
             elif isinstance(module, nn.Linear):
                 nn.init.normal_(module.weight, mean=0, std=1e-3)
                 nn.init.constant_(module.bias, 0)
+        """
 
     def forward(self, x):
         x = self.features(x)

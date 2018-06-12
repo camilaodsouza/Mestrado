@@ -10,18 +10,18 @@ export run=train
 #done
 
 export dataset=cifar10
-for model in squeezemobnet mobilenet #alexnet squeezenet
+for model in squeezemobnet #alexnet squeezenet squeezemobnet mobilenet
 do
-  export exps="baseline"
-  python $run.py -d $dataset -lm $model -exps $exps | tee artifacts/$run.$dataset.$model.$exps.txt
+  export exps="bsd~12340_bsd~123450_bsd~1234560_bsd~12345670_bsd~123456780_bsd~1234567890_bsd~12345678910_bsd~123456789120"
+  python $run.py -d $dataset -lm $model -exps $exps -x 1 | tee artifacts/$run.$dataset.$model.$exps.txt
 done
 
-export dataset=cifar100
-for model in alexnet squeezenet squeezemobnet mobilenet
-do
-  export exps="baseline"
-  python $run.py -d $dataset -lm $model -exps $exps | tee artifacts/$run.$dataset.$model.$exps.txt
-done
+#export dataset=cifar10
+#for model in alexnet squeezenet squeezemobnet mobilenet
+#do
+#  export exps="baseline"
+#  python $run.py -d $dataset -lm $model -exps $exps | tee artifacts/$run.$dataset.$model.$exps.txt
+#done
 
 #export dataset=imagenet
 #for model in squeezemobnet1_0_imagenet squeezemobnet1_1_imagenet mobilenet_imagenet
