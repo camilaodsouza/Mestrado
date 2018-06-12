@@ -400,8 +400,7 @@ def train_val(train_loader, val_loader, model, criterion, optimizer, scheduler,
             best_model_val_entropy = val_entropy
 
             print("!+NEW BEST+ {0:.3f} IN EPOCH {1}!!! SAVING... {2}\n".format(val_acc1, epoch, best_model_file_path))
-            full_state = {'epoch': epoch, 'arch': args.arch, 'model_state_dict': model.state_dict(),
-                          'best_val_acc1': best_model_val_acc1, 'optimizer_state_dict': optimizer.state_dict()}
+            full_state = {'epoch': epoch, 'arch': args.arch, 'model_state_dict': model.state_dict(), 'best_val_acc1': best_model_val_acc1}
             torch.save(full_state, best_model_file_path)
 
         print('!$$$$ BEST: {0:.3f}\n'.format(best_model_val_acc1))
