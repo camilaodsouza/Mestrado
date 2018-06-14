@@ -12,7 +12,7 @@ export run=train
 export dataset=cifar10
 for model in squeezemobnet #alexnet squeezenet squeezemobnet mobilenet
 do
-  export exps="bsd~12340_bsd~123450_bsd~1234560_bsd~12345670_bsd~123456780_bsd~1234567890_bsd~12345678910_bsd~123456789120"
+  export exps="bsd~12340_bsd~123450_bsd~1234560_bsd~12345670_bsd~123456780_bsd~1234567890"
   python $run.py -d $dataset -lm $model -exps $exps -x 1 | tee artifacts/$run.$dataset.$model.$exps.txt
 done
 
