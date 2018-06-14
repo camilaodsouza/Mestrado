@@ -1,5 +1,5 @@
 import torch.utils.data as data
-
+#from .train import args
 from PIL import Image
 
 import os
@@ -120,17 +120,21 @@ class DatasetFolder(data.Dataset):
 IMG_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.ppm', '.bmp', '.pgm', '.tif']
 
 
-# Patch from torchvision...
+"""
 def pil_loader(path):
     # open path as file to avoid ResourceWarning (https://github.com/python-pillow/Pillow/issues/835)
     with open(path, 'rb') as f:
+        #img = Image.open(f)
+        #return img.convert('RGB')
         with Image.open(f) as img:
             # print(img.getbands())
-            if img.getbands() == ('L',):
+            if args.dataset == "mnist":
+            #if img.getbands() == ('L'):
                 return img.convert('L')
             else:
                 return img.convert('RGB')
 # End of the patch from torchvision...
+"""
 
 
 def accimage_loader(path):
@@ -147,7 +151,24 @@ def default_loader(path):
     if get_image_backend() == 'accimage':
         return accimage_loader(path)
     else:
-        return pil_loader(path)
+        if path.find("mnist") == -1:
+            return pil_loader(path)
+        else:
+            return mnist_pil_loader(path)
+
+
+def mnist_pil_loader(path):
+    # open path as file to avoid ResourceWarning (https://github.com/python-pillow/Pillow/issues/835)
+    with open(path, 'rb') as f:
+        img = Image.open(f)
+        return img.convert('L')
+
+
+def pil_loader(path):
+    # open path as file to avoid ResourceWarning (https://github.com/python-pillow/Pillow/issues/835)
+    with open(path, 'rb') as f:
+        img = Image.open(f)
+        return img.convert('RGB')
 
 
 class ImageFolder(DatasetFolder):

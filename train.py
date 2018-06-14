@@ -175,7 +175,7 @@ def execute():
     else:
         args.number_of_dataset_classes = 1000
         args.number_of_model_classes = args.number_of_model_classes if args.number_of_model_classes else 1000
-        dataset_path = args.dataset_dir if args.dataset_dir else "datasets/imagenet2012/images"
+        dataset_path = args.dataset_dir if args.dataset_dir else "/mnt/ssd/imagenet_scripts/2012/images"
         if args.arch.startswith('inception'):
             size = (299, 299)
         else:
@@ -183,11 +183,11 @@ def execute():
         # normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         normalize = transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
         train_transform = transforms.Compose(
-            [transforms.RandomSizedCrop(size[0]),  # 224 , 299
+            [transforms.RandomResizedCrop(size[0]),  # 224 , 299
              transforms.RandomHorizontalFlip(),
              transforms.ToTensor(), normalize])
         inference_transform = transforms.Compose(
-            [transforms.Scale(size[1]),  # 256
+            [transforms.Resize(size[1]),  # 256
              transforms.CenterCrop(size[0]),  # 224 , 299
              transforms.ToTensor(), normalize])
 
