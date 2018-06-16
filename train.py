@@ -22,28 +22,25 @@ import torch.utils.data
 import torchvision.transforms as transforms
 import torchvision.models as torchvision_models
 import torchnet as tnt
-# import timeit
 import csv
 
 
 from tqdm import tqdm
-# from torch.autograd import Variable
 from tensorboardX import SummaryWriter
 from torch.nn.modules.module import _addindent
 from torch.utils.data.sampler import SubsetRandomSampler
 from torch.utils.data import DataLoader
 
 import models
-# from folder import ImageFolder
 from datasets import ImageFolder
 
-cudnn.benchmark = False
-cudnn.deterministic = True
+#cudnn.benchmark = False
+#cudnn.deterministic = True
+cudnn.benchmark = True
+cudnn.deterministic = False
 
 numpy.set_printoptions(formatter={'float': '{:0.4f}'.format})
 torch.set_printoptions(precision=4)
-#torch.set_default_tensor_type(torch.FloatTensor)
-#torch.set_default_dtype(torch.float32)
 pd.set_option('display.width', 160)
 
 dataset_names = ('mnist', 'cifar10', 'cifar100', 'imagenet2012')
@@ -57,8 +54,6 @@ remote_model_names = sorted(name for name in torchvision_models.__dict__
 
 parser = argparse.ArgumentParser(description='Train')
 
-# parser.add_argument('-dir', '--artifact-dir', type=str, metavar='DIR',
-#                     help='the project directory')
 parser.add_argument('-dd', '--dataset-dir', type=str, metavar='DATA',
                     help='output dir for logits extracted')
 parser.add_argument('-x', '--executions', default=5, type=int, metavar='N',
@@ -95,14 +90,6 @@ parser.add_argument('-pf', '--print-freq', default=16, type=int, metavar='N',
                     help='print frequency (default: 16)')
 parser.add_argument('-gpu', '--gpu-id', default='1', type=str,
                     help='id for CUDA_VISIBLE_DEVICES')
-# parser.add_argument('-bsd', '--base-seed', default='1230', type=int,
-#                     help='seed to be used as base')
-# parser.add_argument('-tr', '--train', const=True, nargs='?', type=bool,
-#                    help='if true, train the model')
-# parser.add_argument('-el', '--extract-logits', const=True, nargs='?', type=bool,
-#                    help='if true, extract logits')
-# parser.add_argument('-cit', '--compute-inference-times', const=True, nargs='?', type=bool,
-#                    help='if true, compute inference times')
 
 args = parser.parse_args()
 args.learning_rate_decay_epochs = sorted([int(item) for item in args.learning_rate_decay_epochs.split()])
@@ -133,10 +120,10 @@ def execute():
     ######################################
 
     # Using seeds...
-    random.seed(args.base_seed)
-    numpy.random.seed(args.base_seed)
-    torch.manual_seed(args.base_seed)
-    torch.cuda.manual_seed(args.base_seed)
+    #random.seed(args.base_seed)
+    #numpy.random.seed(args.base_seed)
+    #torch.manual_seed(args.base_seed)
+    #torch.cuda.manual_seed(args.base_seed)
     args.execution_seed = args.base_seed + args.execution
     print("EXECUTION SEED:", args.execution_seed)
 
@@ -145,7 +132,6 @@ def execute():
         args.number_of_dataset_classes = 10
         args.number_of_model_classes = args.number_of_model_classes if args.number_of_model_classes else 10
         dataset_path = args.dataset_dir if args.dataset_dir else "datasets/mnist/images"
-        # normalize = transforms.Normalize(mean=[0.1307], std=[0.3081])
         normalize = transforms.Normalize((0.1307,), (0.3081,))
         train_transform = transforms.Compose(
             [transforms.ToTensor(), normalize])
@@ -154,8 +140,8 @@ def execute():
         args.number_of_dataset_classes = 10
         args.number_of_model_classes = args.number_of_model_classes if args.number_of_model_classes else 10
         dataset_path = args.dataset_dir if args.dataset_dir else "datasets/cifar10/images"
-        # normalize = transforms.Normalize(mean=[0.491, 0.482, 0.446], std=[0.247, 0.243, 0.261])
-        normalize = transforms.Normalize((0.491, 0.482, 0.446), (0.247, 0.243, 0.261))
+        #normalize = transforms.Normalize((0.491, 0.482, 0.446), (0.247, 0.243, 0.261))
+        normalize = transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023/255, 0.1994/255, 0.2010/255))
         train_transform = transforms.Compose(
             [transforms.RandomCrop(32, padding=4),
              transforms.RandomHorizontalFlip(),
@@ -165,7 +151,6 @@ def execute():
         args.number_of_dataset_classes = 100
         args.number_of_model_classes = args.number_of_model_classes if args.number_of_model_classes else 100
         dataset_path = args.dataset_dir if args.dataset_dir else "datasets/cifar100/images"
-        # normalize = transforms.Normalize(mean=[0.507, 0.486, 0.440], std=[0.267, 0.256, 0.276])
         normalize = transforms.Normalize((0.507, 0.486, 0.440), (0.267, 0.256, 0.276))
         train_transform = transforms.Compose(
             [transforms.RandomCrop(32, padding=4),
@@ -180,7 +165,6 @@ def execute():
             size = (299, 299)
         else:
             size = (224, 256)
-        # normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         normalize = transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
         train_transform = transforms.Compose(
             [transforms.RandomResizedCrop(size[0]),  # 224 , 299
@@ -215,17 +199,16 @@ def execute():
 
     # Creating sets and loaders...
     if args.train_set_split is None:
-        train_set = ImageFolder(train_path, transform=train_transform, selected_classes=args.normal_classes,
-                                target_transform=args.normal_classes.index)
-        val_set = ImageFolder(val_path, transform=inference_transform, selected_classes=args.normal_classes,
-                              target_transform=args.normal_classes.index)
+        print("OK!!!!!!!!!!!!!!!!!!!!!!!!!")
+        train_set = ImageFolder(train_path, transform=train_transform,)
+                                #selected_classes=args.normal_classes, target_transform=args.normal_classes.index)
+        val_set = ImageFolder(val_path, transform=inference_transform,)
+                              #selected_classes=args.normal_classes, target_transform=args.normal_classes.index)
 
-        train_loader = DataLoader(train_set, batch_size=args.batch_size, num_workers=args.workers,
-                                  pin_memory=True, shuffle=True, worker_init_fn=worker_init)
-                                  # pin_memory=True, shuffle=True)
-        val_loader = DataLoader(val_set, batch_size=args.batch_size, num_workers=args.workers,
-                                pin_memory=True, shuffle=True, worker_init_fn=worker_init)
-                                # pin_memory=True, shuffle=True)
+        train_loader = DataLoader(train_set, batch_size=args.batch_size, num_workers=args.workers, pin_memory=True, shuffle=True,)
+                                  #worker_init_fn=worker_init)
+        val_loader = DataLoader(val_set, batch_size=args.batch_size, num_workers=args.workers, pin_memory=True, shuffle=True,)
+                                #worker_init_fn=worker_init)
     else:
         train_set = ImageFolder(train_path, transform=train_transform, selected_classes=args.normal_classes,
                                 target_transform=args.normal_classes.index)
@@ -236,10 +219,8 @@ def execute():
 
         train_loader = DataLoader(train_set, batch_size=args.batch_size, num_workers=args.workers,
                                   pin_memory=True, sampler=train_sampler, worker_init_fn=worker_init)
-                                  # pin_memory=True, sampler=train_sampler)
         val_loader = DataLoader(val_set, batch_size=args.batch_size, num_workers=args.workers,
                                 pin_memory=True, sampler=val_sampler, worker_init_fn=worker_init)
-                                # pin_memory=True, sampler=val_sampler)
 
     print("\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
     print("TRAINSET LOADER SIZE: ====>>>> ", len(train_loader.sampler))
@@ -250,15 +231,15 @@ def execute():
     print("\nDATASET:", args.dataset)
 
     # create model
-    torch.manual_seed(args.execution_seed)
-    torch.cuda.manual_seed(args.execution_seed)
+    #torch.manual_seed(args.execution_seed)
+    #torch.cuda.manual_seed(args.execution_seed)
     print("=> creating model '{}'".format(args.arch))
     # model = create_model()
     model = models.__dict__[args.arch](num_classes=args.number_of_model_classes)
     model.cuda()
     print("\nMODEL:", model)
-    torch.manual_seed(args.base_seed)
-    torch.cuda.manual_seed(args.base_seed)
+    #torch.manual_seed(args.base_seed)
+    #torch.cuda.manual_seed(args.base_seed)
 
     #########################################
     # Training...
@@ -268,18 +249,14 @@ def execute():
     criterion = nn.CrossEntropyLoss().cuda()
 
     # define optimizer...
-    optimizer = torch.optim.SGD(model.parameters(), lr=args.original_learning_rate, momentum=args.momentum,
-                                weight_decay=args.weight_decay, nesterov=True)
-    # optimizer = torch.optim.Adam(model.parameters(), lr=args.original_learning_rate)
-    # optimizer = torch.optim.Adam(model.parameters(), weight_decay=args.weight_decay)
-    # optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=5e-4)
+    # optimizer = torch.optim.SGD(model.parameters(), lr=args.original_learning_rate, momentum=args.momentum,
+    #                            weight_decay=args.weight_decay, nesterov=True)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)  # , weight_decay=5e-4)
 
     # define scheduler...
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=10, factor=0.2, verbose=True)
-    # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=30, factor=0.2, verbose=True)
-    # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=1000, verbose=True)
-    # scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=args.learning_rate_decay_epochs,
-    #                                                  gamma=args.learning_rate_decay_rate)
+    # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=10, factor=0.2, verbose=True)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=10, factor=0.1, verbose=True,
+                                                           threshold=0.01, threshold_mode='abs')
 
     # model.initialize_parameters() ####### It works for AlexNet, LeNet and VGG...
     # initialize_parameters(model)
@@ -308,13 +285,10 @@ def execute():
 
         train_loader = DataLoader(train_set, batch_size=args.batch_size, num_workers=args.workers,
                                   pin_memory=True, shuffle=True, worker_init_fn=worker_init)
-                                  # pin_memory=True, shuffle=True)
         val_loader = DataLoader(val_set, batch_size=args.batch_size, num_workers=args.workers,
                                 pin_memory=True, shuffle=True, worker_init_fn=worker_init)
-                                # pin_memory=True, shuffle=True)
         test_loader = DataLoader(test_set, batch_size=args.batch_size, num_workers=args.workers,
                                  pin_memory=True, shuffle=True, worker_init_fn=worker_init)
-                                 # pin_memory=True, shuffle=True)
     else:
         train_set = ImageFolder(train_path, transform=inference_transform, selected_classes=args.normal_classes)
         val_set = ImageFolder(train_path, transform=inference_transform, selected_classes=args.normal_classes)
@@ -322,13 +296,10 @@ def execute():
 
         train_loader = DataLoader(train_set, batch_size=args.batch_size, num_workers=args.workers,
                                   pin_memory=True, sampler=train_sampler, worker_init_fn=worker_init)
-                                  # pin_memory=True, sampler=train_sampler)
         val_loader = DataLoader(val_set, batch_size=args.batch_size, num_workers=args.workers,
                                 pin_memory=True, sampler=val_sampler, worker_init_fn=worker_init)
-                                # pin_memory=True, sampler=val_sampler)
         test_loader = DataLoader(test_set, batch_size=args.batch_size, num_workers=args.workers,
                                  pin_memory=True, shuffle=True, worker_init_fn=worker_init)
-                                 # pin_memory=True, shuffle=True)
 
     extract_logits_from_file(best_model_file_path, model, args.number_of_model_classes, args.execution_path,
                              train_loader, val_loader, test_loader, "best_model")
@@ -342,11 +313,9 @@ def execute():
     if args.train_set_split is None:
         val_loader = DataLoader(val_set, batch_size=1, num_workers=args.workers,
                                 pin_memory=True, shuffle=True, worker_init_fn=worker_init)
-                                # pin_memory=True, shuffle=True)
     else:
         val_loader = DataLoader(val_set, batch_size=1, num_workers=args.workers,
                                 pin_memory=True, sampler=val_sampler, worker_init_fn=worker_init)
-                                # pin_memory=True, sampler=val_sampler)
 
     mean_cpu_inference_time = 1000 * compute_total_inference_time(model, val_loader, "cpu") / len(val_loader.sampler)
     mean_gpu_inference_time = 1000 * compute_total_inference_time(model, val_loader, "gpu") / len(val_loader.sampler)
@@ -406,7 +375,8 @@ def train_val(train_loader, val_loader, model, criterion, optimizer, scheduler,
         print('!$$$$ BEST: {0:.3f}\n'.format(best_model_val_acc1))
 
         # Adjusting learning rate (if using reduce on plateau)...
-        scheduler.step(val_acc1)
+        # scheduler.step(val_acc1)
+        scheduler.step(train_loss)
 
     return (best_model_train_acc1, best_model_val_acc1, best_model_train_loss,
             best_model_train_entropy, best_model_val_entropy)
@@ -455,8 +425,6 @@ def train(train_loader, model, criterion, optimizer, epoch, writer):
         # accumulate metrics over epoch
         train_loss.add(loss.item())
         train_entropy.add(mean_entropy.item())
-        # train_acc.add(output_tensor.data, target_tensor.data)
-        # train_conf.add(output_tensor.data, target_tensor.data)
         train_acc.add(output_tensor.detach(), target_tensor.detach())
         train_conf.add(output_tensor.detach(), target_tensor.detach())
 
@@ -542,8 +510,6 @@ def validate(val_loader, model, epoch, writer):
 
             # accumulate metrics over epoch
             val_entropy.add(mean_entropy.item())
-            # val_acc.add(output_tensor.data, target_tensor.data)
-            # val_conf.add(output_tensor.data, target_tensor.data)
             val_acc.add(output_tensor.detach(), target_tensor.detach())
             val_conf.add(output_tensor.detach(), target_tensor.detach())
 
@@ -629,7 +595,8 @@ def compute_entropies(tensor, dim=1):
 
 
 def worker_init(worker_id):
-    random.seed(args.base_seed)
+    #random.seed(args.base_seed)
+    pass
 
 
 def create_model():

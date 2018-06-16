@@ -11,6 +11,8 @@ import argparse
 import os
 import torchvision
 import torch
+import numpy
+from PIL import Image
 
 dataset_names = ('cifar10', 'cifar100', 'mnist')
 
@@ -52,9 +54,14 @@ def build_images(loader, dir):
         print(input.size())
         print(type(input[0]))
         for i in range(input.size(0)):
-            torchvision.utils.save_image(input[i], os.path.join(
-                # dir, "class"+str(target[i]), "image"+str(batch_idx * args.batch_size + i)+".jpg"))
-                dir, "class" + str(target[i].item()), "image" + str(batch_idx * args.batch_size + i) + ".jpg"))
+            if i == 0:
+                print(input[i])
+            print(input[i].size())
+            img_path = os.path.join(dir, "class" + str(target[i].item()), "image" + str(batch_idx * args.batch_size + i) + ".JPEG")
+            torchvision.utils.save_image(input[i], img_path)
+            #img = torchvision.transforms.ToPILImage(mode="RGB")(torch.mul(input[i], 255))
+            #img.save(img_path, "JPEG")
+            #cifar_save_image(input[i], input[i])
 
 
 def mnist_build_images(loader, dir):
@@ -63,8 +70,21 @@ def mnist_build_images(loader, dir):
         print(type(input[0]))
         for i in range(input.size(0)):
             mnist_save_image(input[i], os.path.join(
-                # dir, "class"+str(target[i]), "image"+str(batch_idx * args.batch_size + i)+".png"))
                 dir, "class" + str(target[i].item()), "image" + str(batch_idx * args.batch_size + i) + ".png"))
+
+
+def cifar_save_image(tensor, filename):
+    from PIL import Image
+    tensor = tensor.cpu()
+    grid = torchvision.utils.make_grid(tensor)
+    ndarr = grid.mul(255).clamp(0, 255).byte().permute(1, 2, 0).numpy()
+    # new_ndarr = np.expand_dims(ndarr[:,:,0], axis=2)
+    new_ndarr = ndarr[:, :, :]
+    print(new_ndarr.shape)
+    im = Image.fromarray(new_ndarr, mode='RGB')
+    # im = im.convert('L')
+    print("FILENAME:", filename)
+    im.save(filename, "JPEG")
 
 
 def mnist_save_image(tensor, filename):
@@ -81,17 +101,24 @@ def mnist_save_image(tensor, filename):
     im.save(filename)  # Maybe bmp is not working for MNIST... Try png...
 
 
+train_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
+test_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
+#train_transform = None
+#test_transform = None
+
 if args.dataset == "cifar10":
     nclasses = 10
     create_directories()
 
-    train_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
+    #train_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
     train_set = torchvision.datasets.CIFAR10(root=data_dir, train=True, download=True, transform=train_transform)
+    #train_set = torchvision.datasets.CIFAR10(root=data_dir, train=True, download=True)
     train_loader = torch.utils.data.DataLoader(train_set, batch_size=args.batch_size, shuffle=True,
                                                num_workers=args.workers, pin_memory=True)
 
-    test_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
+    #test_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
     test_set = torchvision.datasets.CIFAR10(root=data_dir, train=False, transform=test_transform)
+    #test_set = torchvision.datasets.CIFAR10(root=data_dir, train=False)
     test_loader = torch.utils.data.DataLoader(test_set, batch_size=args.batch_size, shuffle=True,
                                               num_workers=args.workers, pin_memory=True)
 
@@ -102,12 +129,12 @@ if args.dataset == "cifar100":
     nclasses = 100
     create_directories()
 
-    train_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
+    #train_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
     train_set = torchvision.datasets.CIFAR100(root=data_dir, train=True, download=True, transform=train_transform)
     train_loader = torch.utils.data.DataLoader(train_set, batch_size=args.batch_size, shuffle=True,
                                                num_workers=args.workers, pin_memory=True)
 
-    test_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
+    #test_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
     test_set = torchvision.datasets.CIFAR100(root=data_dir, train=False, transform=test_transform)
     test_loader = torch.utils.data.DataLoader(test_set, batch_size=args.batch_size, shuffle=True,
                                               num_workers=args.workers, pin_memory=True)
@@ -120,12 +147,12 @@ if args.dataset == "mnist":
     nclasses = 10
     create_directories()
 
-    train_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
+    #train_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
     train_set = torchvision.datasets.MNIST(root=data_dir, train=True, download=True, transform=train_transform)
     train_loader = torch.utils.data.DataLoader(train_set, batch_size=args.batch_size, shuffle=True,
                                                num_workers=args.workers, pin_memory=True)
 
-    test_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
+    #test_transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
     test_set = torchvision.datasets.MNIST(root=data_dir, train=False, transform=test_transform)
     test_loader = torch.utils.data.DataLoader(test_set, batch_size=args.batch_size, shuffle=True,
                                               num_workers=args.workers, pin_memory=True)
