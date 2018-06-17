@@ -141,7 +141,7 @@ def execute():
         args.number_of_model_classes = args.number_of_model_classes if args.number_of_model_classes else 10
         dataset_path = args.dataset_dir if args.dataset_dir else "datasets/cifar10/images"
         #normalize = transforms.Normalize((0.491, 0.482, 0.446), (0.247, 0.243, 0.261))
-        normalize = transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023/255, 0.1994/255, 0.2010/255))
+        normalize = transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
         train_transform = transforms.Compose(
             [transforms.RandomCrop(32, padding=4),
              transforms.RandomHorizontalFlip(),
@@ -256,7 +256,7 @@ def execute():
     # define scheduler...
     # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=10, factor=0.2, verbose=True)
     scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=10, factor=0.1, verbose=True,
-                                                           threshold=0.01, threshold_mode='abs')
+                                                           threshold=0.05, threshold_mode='abs')
 
     # model.initialize_parameters() ####### It works for AlexNet, LeNet and VGG...
     # initialize_parameters(model)
