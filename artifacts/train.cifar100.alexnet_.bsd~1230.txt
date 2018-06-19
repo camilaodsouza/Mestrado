@@ -1,0 +1,245 @@
+
+
+
+****************************************************************
+EXPERIMENT: BSD~1230
+****************************************************************
+
+BASE SEED: 1230
+PATH: artifacts/cifar100/alexnet_/bsd~1230
+
+################ EXECUTION: 1 OF 1 ################
+EXECUTION SEED: 1231
+Files already downloaded and verified
+Files already downloaded and verified
+
+ARGUMENTS:  {'dataset_dir': None, 'executions': 1, 'dataset': 'cifar100', 'local_model': 'alexnet_', 'remote_model': None, 'workers': 4, 'epochs': 2, 'batch_size': 128, 'train_set_split': None, 'original_learning_rate': 0.05, 'learning_rate_decay_rate': 0.1, 'learning_rate_decay_period': 30, 'learning_rate_decay_epochs': [60, 80, 90], 'experiments': ['bsd~1230'], 'momentum': 0.9, 'weight_decay': 0.0005, 'print_freq': 16, 'gpu_id': '1', 'arch': 'alexnet_', 'base_seed': 1230, 'number_of_model_classes': 100, 'regularization_type': None, 'regularization_value': 0, 'experiment_path': 'artifacts/cifar100/alexnet_/bsd~1230', 'execution': 1, 'execution_seed': 1231, 'number_of_dataset_classes': 100, 'execution_path': 'artifacts/cifar100/alexnet_/bsd~1230/exec1'}
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+TRAINSET LOADER SIZE: ====>>>>  50000
+VALIDSET LOADER SIZE: ====>>>>  10000
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+DATASET: cifar100
+=> creating model 'alexnet_'
+
+MODEL: AlexNet_(
+  (features): Sequential(
+    (0): Conv2d(3, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (1): ReLU(inplace)
+    (2): MaxPool2d(kernel_size=3, stride=2, padding=0, dilation=1, ceil_mode=True)
+    (3): Conv2d(64, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (4): ReLU(inplace)
+    (5): MaxPool2d(kernel_size=3, stride=2, padding=0, dilation=1, ceil_mode=True)
+    (6): Conv2d(192, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (7): ReLU(inplace)
+    (8): Conv2d(384, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (9): ReLU(inplace)
+    (10): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (11): ReLU(inplace)
+    (12): MaxPool2d(kernel_size=3, stride=2, padding=0, dilation=1, ceil_mode=True)
+  )
+  (classifier): Sequential(
+    (0): Linear(in_features=4096, out_features=4096, bias=True)
+    (1): BatchNorm1d(4096, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU(inplace)
+    (3): Linear(in_features=4096, out_features=4096, bias=True)
+    (4): BatchNorm1d(4096, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): ReLU(inplace)
+    (6): Linear(in_features=4096, out_features=100, bias=True)
+  )
+)
+
+################ TRAINING ################
+
+######## EPOCH: 1 OF 2 ########
+
+LEARNING RATE:	 0.05
+Train Epoch: [1][16/391]	Data 0.000901	Time 0.049962	Loss 5.0543	Entropy 3.7894		Acc1 2.64	Acc5 10.21
+Train Epoch: [1][32/391]	Data 0.000748	Time 0.049810	Loss 4.8846	Entropy 3.8814		Acc1 3.27	Acc5 12.55
+Train Epoch: [1][48/391]	Data 0.000897	Time 0.049652	Loss 4.7005	Entropy 3.9292		Acc1 3.92	Acc5 15.06
+Train Epoch: [1][64/391]	Data 0.000976	Time 0.049822	Loss 4.5797	Entropy 3.9166		Acc1 4.59	Acc5 16.97
+Train Epoch: [1][80/391]	Data 0.000988	Time 0.049565	Loss 4.4861	Entropy 3.9012		Acc1 5.23	Acc5 18.45
+Train Epoch: [1][96/391]	Data 0.000944	Time 0.049825	Loss 4.4556	Entropy 3.8946		Acc1 5.39	Acc5 19.03
+Train Epoch: [1][112/391]	Data 0.000902	Time 0.049692	Loss 4.4347	Entropy 3.9083		Acc1 5.35	Acc5 18.90
+Train Epoch: [1][128/391]	Data 0.000750	Time 0.049907	Loss 4.4196	Entropy 3.9121		Acc1 5.31	Acc5 18.99
+Train Epoch: [1][144/391]	Data 0.000989	Time 0.049862	Loss 4.4163	Entropy 3.9202		Acc1 5.28	Acc5 18.97
+Train Epoch: [1][160/391]	Data 0.000945	Time 0.050361	Loss 4.3954	Entropy 3.9000		Acc1 5.50	Acc5 19.49
+Train Epoch: [1][176/391]	Data 0.000908	Time 0.049973	Loss 4.3704	Entropy 3.8880		Acc1 5.75	Acc5 20.09
+Train Epoch: [1][192/391]	Data 0.000777	Time 0.050053	Loss 4.3433	Entropy 3.8739		Acc1 5.99	Acc5 20.70
+Train Epoch: [1][208/391]	Data 0.001141	Time 0.049773	Loss 4.3159	Entropy 3.8666		Acc1 6.14	Acc5 21.43
+Train Epoch: [1][224/391]	Data 0.000907	Time 0.050035	Loss 4.2903	Entropy 3.8548		Acc1 6.36	Acc5 21.94
+Train Epoch: [1][240/391]	Data 0.000743	Time 0.050180	Loss 4.2688	Entropy 3.8447		Acc1 6.61	Acc5 22.38
+Train Epoch: [1][256/391]	Data 0.000901	Time 0.050445	Loss 4.2452	Entropy 3.8380		Acc1 6.75	Acc5 22.91
+Train Epoch: [1][272/391]	Data 0.001211	Time 0.049826	Loss 4.2237	Entropy 3.8279		Acc1 6.98	Acc5 23.31
+Train Epoch: [1][288/391]	Data 0.000936	Time 0.050161	Loss 4.2036	Entropy 3.8188		Acc1 7.24	Acc5 23.84
+Train Epoch: [1][304/391]	Data 0.000890	Time 0.050258	Loss 4.1794	Entropy 3.8082		Acc1 7.48	Acc5 24.42
+Train Epoch: [1][320/391]	Data 0.000952	Time 0.050163	Loss 4.1573	Entropy 3.7915		Acc1 7.69	Acc5 24.98
+Train Epoch: [1][336/391]	Data 0.000829	Time 0.050138	Loss 4.1392	Entropy 3.7853		Acc1 7.90	Acc5 25.50
+Train Epoch: [1][352/391]	Data 0.000806	Time 0.051837	Loss 4.1176	Entropy 3.7749		Acc1 8.18	Acc5 26.03
+Train Epoch: [1][368/391]	Data 0.000795	Time 0.054553	Loss 4.1011	Entropy 3.7650		Acc1 8.40	Acc5 26.51
+Train Epoch: [1][384/391]	Data 0.000827	Time 0.054715	Loss 4.0861	Entropy 3.7553		Acc1 8.55	Acc5 26.85
+
+CONFUSION:
+ [[0.1020 0.0220 0.0120 ... 0.0000 0.0240 0.0000]
+ [0.0220 0.0940 0.0120 ... 0.0080 0.0080 0.0080]
+ [0.0160 0.0080 0.1060 ... 0.0280 0.0220 0.0120]
+ ...
+ [0.0040 0.0040 0.0300 ... 0.0660 0.0040 0.0020]
+ [0.0160 0.0120 0.0500 ... 0.0240 0.0680 0.0000]
+ [0.0060 0.0100 0.0180 ... 0.0080 0.0120 0.0240]]
+
+#### TRAIN: 8.624
+
+
+Valid Epoch: [1][16/79]	Data 0.000760	Time 0.017586	Entropy 3.4066		Acc1 13.43	Acc5 37.55
+Valid Epoch: [1][32/79]	Data 0.000766	Time 0.017431	Entropy 3.4078		Acc1 13.82	Acc5 37.30
+Valid Epoch: [1][48/79]	Data 0.000802	Time 0.017585	Entropy 3.3983		Acc1 13.64	Acc5 37.61
+Valid Epoch: [1][64/79]	Data 0.000801	Time 0.017524	Entropy 3.3942		Acc1 13.53	Acc5 37.99
+
+CONFUSION:
+ [[0.0500 0.0100 0.0000 ... 0.0000 0.1000 0.0000]
+ [0.0000 0.2000 0.0100 ... 0.0000 0.0500 0.0000]
+ [0.0300 0.0000 0.2000 ... 0.0000 0.2300 0.0000]
+ ...
+ [0.0000 0.0000 0.0400 ... 0.0900 0.1000 0.0000]
+ [0.0100 0.0100 0.0400 ... 0.0100 0.4200 0.0000]
+ [0.0300 0.0000 0.0300 ... 0.0100 0.0400 0.1400]]
+
+#### VALID: 13.490
+
+!+NEW BEST+ 13.490 IN EPOCH 1!!! SAVING... artifacts/cifar100/alexnet_/bsd~1230/exec1/best_model.pth.tar
+
+!$$$$ BEST: 13.490
+
+
+######## EPOCH: 2 OF 2 ########
+
+LEARNING RATE:	 0.05
+Train Epoch: [2][16/391]	Data 0.000815	Time 0.054890	Loss 3.5647	Entropy 3.4690		Acc1 15.53	Acc5 41.65
+Train Epoch: [2][32/391]	Data 0.000909	Time 0.054868	Loss 3.6915	Entropy 3.4974		Acc1 14.36	Acc5 38.35
+Train Epoch: [2][48/391]	Data 0.000915	Time 0.054777	Loss 3.6828	Entropy 3.5015		Acc1 13.87	Acc5 37.74
+Train Epoch: [2][64/391]	Data 0.000883	Time 0.054729	Loss 3.6692	Entropy 3.4696		Acc1 14.03	Acc5 38.42
+Train Epoch: [2][80/391]	Data 0.000960	Time 0.055058	Loss 3.6690	Entropy 3.4528		Acc1 14.03	Acc5 38.61
+Train Epoch: [2][96/391]	Data 0.000881	Time 0.054753	Loss 3.6653	Entropy 3.4553		Acc1 14.12	Acc5 38.66
+Train Epoch: [2][112/391]	Data 0.000936	Time 0.055135	Loss 3.6497	Entropy 3.4461		Acc1 14.31	Acc5 38.98
+Train Epoch: [2][128/391]	Data 0.000756	Time 0.054824	Loss 3.6398	Entropy 3.4486		Acc1 14.41	Acc5 39.16
+Train Epoch: [2][144/391]	Data 0.000763	Time 0.054901	Loss 3.6213	Entropy 3.4337		Acc1 14.65	Acc5 39.54
+Train Epoch: [2][160/391]	Data 0.000817	Time 0.055187	Loss 3.6093	Entropy 3.4234		Acc1 14.73	Acc5 39.76
+Train Epoch: [2][176/391]	Data 0.000820	Time 0.055016	Loss 3.6145	Entropy 3.4278		Acc1 14.79	Acc5 39.76
+Train Epoch: [2][192/391]	Data 0.000902	Time 0.055063	Loss 3.6077	Entropy 3.4249		Acc1 14.77	Acc5 39.91
+Train Epoch: [2][208/391]	Data 0.000917	Time 0.054441	Loss 3.5979	Entropy 3.4128		Acc1 15.00	Acc5 40.17
+Train Epoch: [2][224/391]	Data 0.000742	Time 0.054801	Loss 3.5864	Entropy 3.4018		Acc1 15.17	Acc5 40.58
+Train Epoch: [2][240/391]	Data 0.000717	Time 0.054848	Loss 3.5738	Entropy 3.3957		Acc1 15.35	Acc5 41.00
+Train Epoch: [2][256/391]	Data 0.000948	Time 0.055030	Loss 3.5658	Entropy 3.3836		Acc1 15.52	Acc5 41.33
+Train Epoch: [2][272/391]	Data 0.000924	Time 0.055314	Loss 3.5653	Entropy 3.3841		Acc1 15.49	Acc5 41.31
+Train Epoch: [2][288/391]	Data 0.000765	Time 0.054847	Loss 3.5581	Entropy 3.3780		Acc1 15.58	Acc5 41.44
+Train Epoch: [2][304/391]	Data 0.000785	Time 0.054900	Loss 3.5528	Entropy 3.3752		Acc1 15.68	Acc5 41.49
+Train Epoch: [2][320/391]	Data 0.000921	Time 0.055003	Loss 3.5435	Entropy 3.3661		Acc1 15.88	Acc5 41.75
+Train Epoch: [2][336/391]	Data 0.000890	Time 0.054760	Loss 3.5287	Entropy 3.3600		Acc1 16.13	Acc5 42.10
+Train Epoch: [2][352/391]	Data 0.000904	Time 0.054980	Loss 3.5160	Entropy 3.3466		Acc1 16.38	Acc5 42.46
+Train Epoch: [2][368/391]	Data 0.000896	Time 0.054787	Loss 3.5051	Entropy 3.3400		Acc1 16.54	Acc5 42.77
+Train Epoch: [2][384/391]	Data 0.000881	Time 0.054712	Loss 3.4943	Entropy 3.3305		Acc1 16.71	Acc5 43.02
+
+CONFUSION:
+ [[0.2900 0.0320 0.0180 ... 0.0020 0.0160 0.0040]
+ [0.0220 0.2200 0.0020 ... 0.0020 0.0000 0.0020]
+ [0.0120 0.0140 0.1140 ... 0.0240 0.0460 0.0060]
+ ...
+ [0.0000 0.0020 0.0140 ... 0.1740 0.0060 0.0020]
+ [0.0140 0.0020 0.0520 ... 0.0040 0.0980 0.0020]
+ [0.0080 0.0040 0.0180 ... 0.0020 0.0080 0.0480]]
+
+#### TRAIN: 16.728
+
+
+Valid Epoch: [2][16/79]	Data 0.000741	Time 0.017348	Entropy 3.0401		Acc1 15.67	Acc5 42.24
+Valid Epoch: [2][32/79]	Data 0.000754	Time 0.017692	Entropy 3.0211		Acc1 16.19	Acc5 42.65
+Valid Epoch: [2][48/79]	Data 0.000751	Time 0.017423	Entropy 3.0187		Acc1 16.67	Acc5 43.25
+Valid Epoch: [2][64/79]	Data 0.000727	Time 0.017445	Entropy 3.0219		Acc1 16.66	Acc5 42.98
+
+CONFUSION:
+ [[0.0800 0.0100 0.0000 ... 0.0000 0.0300 0.0000]
+ [0.0000 0.0500 0.0000 ... 0.0000 0.0000 0.0000]
+ [0.0000 0.0000 0.2000 ... 0.0000 0.0700 0.0200]
+ ...
+ [0.0000 0.0000 0.0100 ... 0.0300 0.0300 0.0000]
+ [0.0000 0.0000 0.0500 ... 0.0300 0.0800 0.0000]
+ [0.0000 0.0000 0.0100 ... 0.0000 0.0100 0.1300]]
+
+#### VALID: 16.370
+
+!+NEW BEST+ 16.370 IN EPOCH 2!!! SAVING... artifacts/cifar100/alexnet_/bsd~1230/exec1/best_model.pth.tar
+
+!$$$$ BEST: 16.370
+
+
+################ COMPUTING INFERENCE TIMES AND MODEL WEIGHTS, BIAS AND PARAMETERS ################
+
+COMPUTING INFERENCE TIME: CPU
+
+COMPUTING INFERENCE TIME: GPU
+
+MEAN CPU INFERENCE TIME (MILISECONDS):	16.9304
+MEAN GPU INFERENCE TIME (MILISECONDS):	0.3686
+
+NUMBER OF WEIGHTS, BIAS AND PARAMETERS:
+AlexNet_ (
+  (features): Sequential (
+    (0): Conv2d(3, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)), weights=((64, 3, 3, 3), (64,)), parameters=1792
+    (1): ReLU(inplace), weights=(), parameters=0
+    (2): MaxPool2d(kernel_size=3, stride=2, padding=0, dilation=1, ceil_mode=True), weights=(), parameters=0
+    (3): Conv2d(64, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)), weights=((192, 64, 3, 3), (192,)), parameters=110784
+    (4): ReLU(inplace), weights=(), parameters=0
+    (5): MaxPool2d(kernel_size=3, stride=2, padding=0, dilation=1, ceil_mode=True), weights=(), parameters=0
+    (6): Conv2d(192, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)), weights=((384, 192, 3, 3), (384,)), parameters=663936
+    (7): ReLU(inplace), weights=(), parameters=0
+    (8): Conv2d(384, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)), weights=((256, 384, 3, 3), (256,)), parameters=884992
+    (9): ReLU(inplace), weights=(), parameters=0
+    (10): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)), weights=((256, 256, 3, 3), (256,)), parameters=590080
+    (11): ReLU(inplace), weights=(), parameters=0
+    (12): MaxPool2d(kernel_size=3, stride=2, padding=0, dilation=1, ceil_mode=True), weights=(), parameters=0
+  ), weights=((64, 3, 3, 3), (64,), (192, 64, 3, 3), (192,), (384, 192, 3, 3), (384,), (256, 384, 3, 3), (256,), (256, 256, 3, 3), (256,)), parameters=2251584
+  (classifier): Sequential (
+    (0): Linear(in_features=4096, out_features=4096, bias=True), weights=((4096, 4096), (4096,)), parameters=16781312
+    (1): BatchNorm1d(4096, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True), weights=((4096,), (4096,)), parameters=8192
+    (2): ReLU(inplace), weights=(), parameters=0
+    (3): Linear(in_features=4096, out_features=4096, bias=True), weights=((4096, 4096), (4096,)), parameters=16781312
+    (4): BatchNorm1d(4096, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True), weights=((4096,), (4096,)), parameters=8192
+    (5): ReLU(inplace), weights=(), parameters=0
+    (6): Linear(in_features=4096, out_features=100, bias=True), weights=((100, 4096), (100,)), parameters=409700
+  ), weights=((4096, 4096), (4096,), (4096,), (4096,), (4096, 4096), (4096,), (4096,), (4096,), (100, 4096), (100,)), parameters=33988708
+) 
+
+
+
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+ OVERALL STATISTICS 
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+
+ BSD~1230
+
+                        0
+TRAIN [ACC1]   16.728000
+VAL [ACC1]     16.370000
+TRAIN LOSS      3.490752
+TRAIN ENTROPY   3.327159
+VAL ENTROPY     3.023598
+CPU TIME [MS]  16.930386
+GPU TIME [MS]   0.368608
+
+        TRAIN [ACC1]  VAL [ACC1]  TRAIN LOSS  TRAIN ENTROPY  VAL ENTROPY  CPU TIME [MS]  GPU TIME [MS]
+count         1.000        1.00    1.000000       1.000000     1.000000       1.000000       1.000000
+mean         16.728       16.37    3.490752       3.327159     3.023598      16.930386       0.368608
+std             NaN         NaN         NaN            NaN          NaN            NaN            NaN
+min          16.728       16.37    3.490752       3.327159     3.023598      16.930386       0.368608
+25%          16.728       16.37    3.490752       3.327159     3.023598      16.930386       0.368608
+50%          16.728       16.37    3.490752       3.327159     3.023598      16.930386       0.368608
+75%          16.728       16.37    3.490752       3.327159     3.023598      16.930386       0.368608
+max          16.728       16.37    3.490752       3.327159     3.023598      16.930386       0.368608
+
+
+
+

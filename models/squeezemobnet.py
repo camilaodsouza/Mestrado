@@ -88,7 +88,7 @@ class SqueezeMobNet_(nn.Module):
                 nn.MaxPool2d(kernel_size=3, stride=2, ceil_mode=True),
                 Fire_(512, 64, 256, 256),
             )
-        elif version == 1.0:
+        elif version == 1.1:
             # Model to ImageNet dataset...
             self.features = nn.Sequential(
                 nn.Conv2d(3, 64, kernel_size=3, stride=2),

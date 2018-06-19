@@ -1,3 +1,3 @@
-# SqueezeMobNet_
+# SqueezeMobNet
 
-A PyTorch implementation of SqueezeMobNet_.
+A PyTorch implementation of SqueezeMobNet.
