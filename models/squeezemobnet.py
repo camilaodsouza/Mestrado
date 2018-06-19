@@ -3,13 +3,13 @@ import torch
 import torch.nn as nn
 from collections import OrderedDict
 
-__all__ = ['SqueezeMobNet', 'squeezemobnet', 'squeezemobnet1_0', 'squeezemobnet1_1']
+__all__ = ['SqueezeMobNet_', 'squeezemobnet_', 'squeezemobnet1_0', 'squeezemobnet1_1']
 
 
-class Block(nn.Module):
+class Block_(nn.Module):
     """Depthwise conv + Pointwise conv"""
     def __init__(self, in_planes, out_planes, stride=1):
-        super(Block, self).__init__()
+        super(Block_, self).__init__()
 
         self.mob = nn.Sequential(
             OrderedDict([
@@ -27,11 +27,11 @@ class Block(nn.Module):
         return out
 
 
-class Fire(nn.Module):
+class Fire_(nn.Module):
 
     def __init__(self, inplanes, squeeze_planes,
                  expand1x1_planes, expand3x3_planes):
-        super(Fire, self).__init__()
+        super(Fire_, self).__init__()
         self.inplanes = inplanes
 
         self.group1 = nn.Sequential(
@@ -52,7 +52,7 @@ class Fire(nn.Module):
 
         self.group3 = nn.Sequential(
             OrderedDict([
-                ('expand3x3', Block(squeeze_planes, expand3x3_planes))  # ,
+                ('expand3x3', Block_(squeeze_planes, expand3x3_planes))  # ,
                 # ('BatchNorm', nn.BatchNorm2d(expand3x3_planes)),
                 # ('expand3x3_activation', nn.ReLU(inplace=True))
             ])
@@ -63,12 +63,12 @@ class Fire(nn.Module):
         return torch.cat([self.group2(x), self.group3(x)], 1)
 
 
-class SqueezeMobNet(nn.Module):
+class SqueezeMobNet_(nn.Module):
 
     def __init__(self, version=None, num_classes=10):
-        super(SqueezeMobNet, self).__init__()
+        super(SqueezeMobNet_, self).__init__()
         if version not in [1.0, 1.1, "cifar"]:
-            raise ValueError("Unsupported SqueezeNet version {version}:"
+            raise ValueError("Unsupported SqueezeMobNet_ version {version}:"
                              "1.0, 1.1 or cifar expected".format(version=version))
         self.num_classes = num_classes
         if version == 1.0:
@@ -77,16 +77,16 @@ class SqueezeMobNet(nn.Module):
                 nn.Conv2d(3, 96, kernel_size=7, stride=2),
                 nn.ReLU(inplace=True),
                 nn.MaxPool2d(kernel_size=3, stride=2, ceil_mode=True),
-                Fire(96, 16, 64, 64),
-                Fire(128, 16, 64, 64),
-                Fire(128, 32, 128, 128),
+                Fire_(96, 16, 64, 64),
+                Fire_(128, 16, 64, 64),
+                Fire_(128, 32, 128, 128),
                 nn.MaxPool2d(kernel_size=3, stride=2, ceil_mode=True),
-                Fire(256, 32, 128, 128),
-                Fire(256, 48, 192, 192),
-                Fire(384, 48, 192, 192),
-                Fire(384, 64, 256, 256),
+                Fire_(256, 32, 128, 128),
+                Fire_(256, 48, 192, 192),
+                Fire_(384, 48, 192, 192),
+                Fire_(384, 64, 256, 256),
                 nn.MaxPool2d(kernel_size=3, stride=2, ceil_mode=True),
-                Fire(512, 64, 256, 256),
+                Fire_(512, 64, 256, 256),
             )
         elif version == 1.0:
             # Model to ImageNet dataset...
@@ -94,32 +94,32 @@ class SqueezeMobNet(nn.Module):
                 nn.Conv2d(3, 64, kernel_size=3, stride=2),
                 nn.ReLU(inplace=True),
                 nn.MaxPool2d(kernel_size=3, stride=2, ceil_mode=True),
-                Fire(64, 16, 64, 64),
-                Fire(128, 16, 64, 64),
+                Fire_(64, 16, 64, 64),
+                Fire_(128, 16, 64, 64),
                 nn.MaxPool2d(kernel_size=3, stride=2, ceil_mode=True),
-                Fire(128, 32, 128, 128),
-                Fire(256, 32, 128, 128),
+                Fire_(128, 32, 128, 128),
+                Fire_(256, 32, 128, 128),
                 nn.MaxPool2d(kernel_size=3, stride=2, ceil_mode=True),
-                Fire(256, 48, 192, 192),
-                Fire(384, 48, 192, 192),
-                Fire(384, 64, 256, 256),
-                Fire(512, 64, 256, 256),
+                Fire_(256, 48, 192, 192),
+                Fire_(384, 48, 192, 192),
+                Fire_(384, 64, 256, 256),
+                Fire_(512, 64, 256, 256),
             )
         elif version == "cifar":
             self.features = nn.Sequential(  # 32x32x3
                 nn.Conv2d(3, 96, kernel_size=3, stride=1, padding=1),  # 32x32x64
                 nn.ReLU(inplace=True),
                 nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True),  # 16x16x64
-                Fire(96, 32, 64, 64),  # 16x16x128
-                Fire(128, 16, 64, 64),  # 16x16x128
-                Fire(128, 32, 128, 128),  # 16x16x256
-                Fire(256, 32, 128, 128),  # 16x16x256
+                Fire_(96, 32, 64, 64),  # 16x16x128
+                Fire_(128, 16, 64, 64),  # 16x16x128
+                Fire_(128, 32, 128, 128),  # 16x16x256
+                Fire_(256, 32, 128, 128),  # 16x16x256
                 nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True),  # 8x8x256
-                Fire(256, 48, 192, 192),  # 8x8x384
-                Fire(384, 48, 192, 192),  # 8x8x384
-                Fire(384, 64, 256, 256),  # 8x8x512
+                Fire_(256, 48, 192, 192),  # 8x8x384
+                Fire_(384, 48, 192, 192),  # 8x8x384
+                Fire_(384, 64, 256, 256),  # 8x8x512
                 nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True),  # 4x4x512
-                Fire(512, 64, 256, 256),  # 4x4x512
+                Fire_(512, 64, 256, 256),  # 4x4x512
             )
         # Final convolution is initialized differently form the rest
         final_conv = nn.Conv2d(512, num_classes, kernel_size=1)
@@ -178,17 +178,20 @@ class SqueezeMobNet(nn.Module):
         return x.view(x.size(0), self.num_classes)
 
 
+def squeezemobnet_(**kwargs):
+    model = SqueezeMobNet_(version="cifar", **kwargs)
+    return model
+
+
+#### ImageNet Model ####
+
+
 def squeezemobnet1_0(**kwargs):
-    model = SqueezeMobNet(version=1.0, **kwargs)
+    model = SqueezeMobNet_(version=1.0, **kwargs)
     print(model)
     return model
 
 
 def squeezemobnet1_1(**kwargs):
-    model = SqueezeMobNet(version=1.1, **kwargs)
-    return model
-
-
-def squeezemobnet(**kwargs):
-    model = SqueezeMobNet(version="cifar", **kwargs)
+    model = SqueezeMobNet_(version=1.1, **kwargs)
     return model

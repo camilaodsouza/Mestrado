@@ -19,6 +19,7 @@ import torch.nn as nn
 import torch.nn.parallel
 import torch.optim
 import torch.utils.data
+import torchvision
 import torchvision.transforms as transforms
 import torchvision.models as torchvision_models
 import torchnet as tnt
@@ -34,10 +35,10 @@ from torch.utils.data import DataLoader
 import models
 from datasets import ImageFolder
 
-#cudnn.benchmark = False
-#cudnn.deterministic = True
-cudnn.benchmark = True
-cudnn.deterministic = False
+cudnn.benchmark = False
+cudnn.deterministic = True
+#cudnn.benchmark = True
+#cudnn.deterministic = False
 
 numpy.set_printoptions(formatter={'float': '{:0.4f}'.format})
 torch.set_printoptions(precision=4)
@@ -64,9 +65,11 @@ parser.add_argument('-lm', '--local-model', metavar='MODEL', default=None, choic
                     help='model to be used: ' + ' | '.join(local_model_names))
 parser.add_argument('-rm', '--remote-model', metavar='MODEL', default=None, choices=remote_model_names,
                     help='model to be used: ' + ' | '.join(remote_model_names))
+#parser.add_argument('-w', '--workers', default=4, type=int, metavar='N',
+#                    help='number of data loading workers (default: 4)')
 parser.add_argument('-w', '--workers', default=4, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
-parser.add_argument('-e', '--epochs', default=150, type=int, metavar='N',
+parser.add_argument('-e', '--epochs', default=100, type=int, metavar='N',
                     help='number of total epochs to run')
 parser.add_argument('-bs', '--batch-size', default=128, type=int, metavar='N',
                     help='mini-batch size (default: 128)')
@@ -120,10 +123,10 @@ def execute():
     ######################################
 
     # Using seeds...
-    #random.seed(args.base_seed)
-    #numpy.random.seed(args.base_seed)
-    #torch.manual_seed(args.base_seed)
-    #torch.cuda.manual_seed(args.base_seed)
+    random.seed(args.base_seed)
+    numpy.random.seed(args.base_seed)
+    torch.manual_seed(args.base_seed)
+    torch.cuda.manual_seed(args.base_seed)
     args.execution_seed = args.base_seed + args.execution
     print("EXECUTION SEED:", args.execution_seed)
 
@@ -131,36 +134,41 @@ def execute():
     if args.dataset == "mnist":
         args.number_of_dataset_classes = 10
         args.number_of_model_classes = args.number_of_model_classes if args.number_of_model_classes else 10
-        dataset_path = args.dataset_dir if args.dataset_dir else "datasets/mnist/images"
         normalize = transforms.Normalize((0.1307,), (0.3081,))
         train_transform = transforms.Compose(
             [transforms.ToTensor(), normalize])
         inference_transform = transforms.Compose([transforms.ToTensor(), normalize])
+        dataset_path = args.dataset_dir if args.dataset_dir else "datasets/mnist"
+        train_set = torchvision.datasets.MNIST(root=dataset_path, train=True, download=True, transform=train_transform)
+        val_set = torchvision.datasets.MNIST(root=dataset_path, train=False, download=True, transform=inference_transform)
     elif args.dataset == "cifar10":
         args.number_of_dataset_classes = 10
         args.number_of_model_classes = args.number_of_model_classes if args.number_of_model_classes else 10
-        dataset_path = args.dataset_dir if args.dataset_dir else "datasets/cifar10/images"
-        #normalize = transforms.Normalize((0.491, 0.482, 0.446), (0.247, 0.243, 0.261))
-        normalize = transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
+        normalize = transforms.Normalize((0.491, 0.482, 0.446), (0.247, 0.243, 0.261))
+        #normalize = transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
         train_transform = transforms.Compose(
             [transforms.RandomCrop(32, padding=4),
              transforms.RandomHorizontalFlip(),
              transforms.ToTensor(), normalize])
         inference_transform = transforms.Compose([transforms.ToTensor(), normalize])
+        dataset_path = args.dataset_dir if args.dataset_dir else "datasets/cifar10"
+        train_set = torchvision.datasets.CIFAR10(root=dataset_path, train=True, download=True, transform=train_transform)
+        val_set = torchvision.datasets.CIFAR10(root=dataset_path, train=False, download=True, transform=inference_transform)
     elif args.dataset == "cifar100":
         args.number_of_dataset_classes = 100
         args.number_of_model_classes = args.number_of_model_classes if args.number_of_model_classes else 100
-        dataset_path = args.dataset_dir if args.dataset_dir else "datasets/cifar100/images"
         normalize = transforms.Normalize((0.507, 0.486, 0.440), (0.267, 0.256, 0.276))
         train_transform = transforms.Compose(
             [transforms.RandomCrop(32, padding=4),
              transforms.RandomHorizontalFlip(),
              transforms.ToTensor(), normalize])
         inference_transform = transforms.Compose([transforms.ToTensor(), normalize])
+        dataset_path = args.dataset_dir if args.dataset_dir else "datasets/cifar100"
+        train_set = torchvision.datasets.CIFAR100(root=dataset_path, train=True, download=True, transform=train_transform)
+        val_set = torchvision.datasets.CIFAR100(root=dataset_path, train=False, download=True, transform=inference_transform)
     else:
         args.number_of_dataset_classes = 1000
         args.number_of_model_classes = args.number_of_model_classes if args.number_of_model_classes else 1000
-        dataset_path = args.dataset_dir if args.dataset_dir else "/mnt/ssd/imagenet_scripts/2012/images"
         if args.arch.startswith('inception'):
             size = (299, 299)
         else:
@@ -174,9 +182,11 @@ def execute():
             [transforms.Resize(size[1]),  # 256
              transforms.CenterCrop(size[0]),  # 224 , 299
              transforms.ToTensor(), normalize])
-
-    # Defining the same normal classes for all experiments...
-    args.normal_classes = sorted(random.sample(range(0, args.number_of_dataset_classes), args.number_of_model_classes))
+        dataset_path = args.dataset_dir if args.dataset_dir else "/mnt/ssd/imagenet_scripts/2012/images"
+        train_path = os.path.join(dataset_path, 'train')
+        val_path = os.path.join(dataset_path, 'val')
+        train_set = ImageFolder(train_path, transform=train_transform)
+        val_set = ImageFolder(val_path, transform=inference_transform)
 
     # Preparing paths...
     args.execution_path = os.path.join(args.experiment_path, "exec" + str(args.execution))
@@ -194,33 +204,8 @@ def execute():
     # Preparing data...
     ######################################
 
-    train_path = os.path.join(dataset_path, 'train')
-    val_path = os.path.join(dataset_path, 'val')
-
-    # Creating sets and loaders...
-    if args.train_set_split is None:
-        print("OK!!!!!!!!!!!!!!!!!!!!!!!!!")
-        train_set = ImageFolder(train_path, transform=train_transform,)
-                                #selected_classes=args.normal_classes, target_transform=args.normal_classes.index)
-        val_set = ImageFolder(val_path, transform=inference_transform,)
-                              #selected_classes=args.normal_classes, target_transform=args.normal_classes.index)
-
-        train_loader = DataLoader(train_set, batch_size=args.batch_size, num_workers=args.workers, pin_memory=True, shuffle=True,)
-                                  #worker_init_fn=worker_init)
-        val_loader = DataLoader(val_set, batch_size=args.batch_size, num_workers=args.workers, pin_memory=True, shuffle=True,)
-                                #worker_init_fn=worker_init)
-    else:
-        train_set = ImageFolder(train_path, transform=train_transform, selected_classes=args.normal_classes,
-                                target_transform=args.normal_classes.index)
-        val_set = ImageFolder(train_path, transform=inference_transform, selected_classes=args.normal_classes,
-                              target_transform=args.normal_classes.index)
-
-        train_sampler, val_sampler = compute_train_val_samplers(train_set, args.train_set_split)
-
-        train_loader = DataLoader(train_set, batch_size=args.batch_size, num_workers=args.workers,
-                                  pin_memory=True, sampler=train_sampler, worker_init_fn=worker_init)
-        val_loader = DataLoader(val_set, batch_size=args.batch_size, num_workers=args.workers,
-                                pin_memory=True, sampler=val_sampler, worker_init_fn=worker_init)
+    train_loader = DataLoader(train_set, batch_size=args.batch_size, num_workers=args.workers, shuffle=True, worker_init_fn=worker_init)
+    val_loader = DataLoader(val_set, batch_size=args.batch_size, num_workers=args.workers, shuffle=True, worker_init_fn=worker_init)
 
     print("\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
     print("TRAINSET LOADER SIZE: ====>>>> ", len(train_loader.sampler))
@@ -231,15 +216,15 @@ def execute():
     print("\nDATASET:", args.dataset)
 
     # create model
-    #torch.manual_seed(args.execution_seed)
-    #torch.cuda.manual_seed(args.execution_seed)
+    torch.manual_seed(args.execution_seed)
+    torch.cuda.manual_seed(args.execution_seed)
     print("=> creating model '{}'".format(args.arch))
     # model = create_model()
     model = models.__dict__[args.arch](num_classes=args.number_of_model_classes)
     model.cuda()
     print("\nMODEL:", model)
-    #torch.manual_seed(args.base_seed)
-    #torch.cuda.manual_seed(args.base_seed)
+    torch.manual_seed(args.base_seed)
+    torch.cuda.manual_seed(args.base_seed)
 
     #########################################
     # Training...
@@ -249,16 +234,18 @@ def execute():
     criterion = nn.CrossEntropyLoss().cuda()
 
     # define optimizer...
-    # optimizer = torch.optim.SGD(model.parameters(), lr=args.original_learning_rate, momentum=args.momentum,
-    #                            weight_decay=args.weight_decay, nesterov=True)
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.01)  # , weight_decay=5e-4)
+    optimizer = torch.optim.SGD(model.parameters(), lr=args.original_learning_rate, momentum=args.momentum,
+                                weight_decay=args.weight_decay, nesterov=True)
+    #optimizer = torch.optim.Adam(model.parameters(), lr=0.01)  # , weight_decay=5e-4)
 
     # define scheduler...
     # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=10, factor=0.2, verbose=True)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=10, factor=0.1, verbose=True,
-                                                           threshold=0.05, threshold_mode='abs')
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=10, factor=0.2, verbose=True,
+                                                           threshold=0.05, threshold_mode='rel')
+    #scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=10, factor=0.1, verbose=True,
+    #                                                       threshold=0.05, threshold_mode='abs')
 
-    # model.initialize_parameters() ####### It works for AlexNet, LeNet and VGG...
+    # model.initialize_parameters() ####### It works for AlexNet_, LeNet and VGG...
     # initialize_parameters(model)
 
     print("\n################ TRAINING ################")
@@ -270,52 +257,13 @@ def execute():
     # save to json file
     writer.export_scalars_to_json(os.path.join(args.execution_path, 'log.json'))
 
-    ############################################
-    # Extracting logits...
-    ############################################
-
-    print("\n################ EXTRACTING LOGITS ################")
-    best_model_file_path = os.path.join(args.execution_path, 'best_model.pth.tar')
-
-    # We need to use inference transform to extract... Even for trainset...
-    if args.train_set_split is None:
-        train_set = ImageFolder(train_path, transform=inference_transform, selected_classes=args.normal_classes)
-        val_set = ImageFolder(val_path, transform=inference_transform, selected_classes=args.normal_classes)
-        test_set = ImageFolder(val_path, transform=inference_transform)
-
-        train_loader = DataLoader(train_set, batch_size=args.batch_size, num_workers=args.workers,
-                                  pin_memory=True, shuffle=True, worker_init_fn=worker_init)
-        val_loader = DataLoader(val_set, batch_size=args.batch_size, num_workers=args.workers,
-                                pin_memory=True, shuffle=True, worker_init_fn=worker_init)
-        test_loader = DataLoader(test_set, batch_size=args.batch_size, num_workers=args.workers,
-                                 pin_memory=True, shuffle=True, worker_init_fn=worker_init)
-    else:
-        train_set = ImageFolder(train_path, transform=inference_transform, selected_classes=args.normal_classes)
-        val_set = ImageFolder(train_path, transform=inference_transform, selected_classes=args.normal_classes)
-        test_set = ImageFolder(val_path, transform=inference_transform)
-
-        train_loader = DataLoader(train_set, batch_size=args.batch_size, num_workers=args.workers,
-                                  pin_memory=True, sampler=train_sampler, worker_init_fn=worker_init)
-        val_loader = DataLoader(val_set, batch_size=args.batch_size, num_workers=args.workers,
-                                pin_memory=True, sampler=val_sampler, worker_init_fn=worker_init)
-        test_loader = DataLoader(test_set, batch_size=args.batch_size, num_workers=args.workers,
-                                 pin_memory=True, shuffle=True, worker_init_fn=worker_init)
-
-    extract_logits_from_file(best_model_file_path, model, args.number_of_model_classes, args.execution_path,
-                             train_loader, val_loader, test_loader, "best_model")
-
     ########################################################################################
     # Computing inference times and number of parameters...
     ########################################################################################
 
     print("\n################ COMPUTING INFERENCE TIMES AND MODEL WEIGHTS, BIAS AND PARAMETERS ################")
 
-    if args.train_set_split is None:
-        val_loader = DataLoader(val_set, batch_size=1, num_workers=args.workers,
-                                pin_memory=True, shuffle=True, worker_init_fn=worker_init)
-    else:
-        val_loader = DataLoader(val_set, batch_size=1, num_workers=args.workers,
-                                pin_memory=True, sampler=val_sampler, worker_init_fn=worker_init)
+    val_loader = DataLoader(val_set, batch_size=1, num_workers=args.workers, shuffle=True, worker_init_fn=worker_init)
 
     mean_cpu_inference_time = 1000 * compute_total_inference_time(model, val_loader, "cpu") / len(val_loader.sampler)
     mean_gpu_inference_time = 1000 * compute_total_inference_time(model, val_loader, "gpu") / len(val_loader.sampler)
@@ -480,6 +428,9 @@ def validate(val_loader, model, epoch, writer):
     # switch to evaluate mode
     model.eval()
 
+    correct = 0
+    total = 0
+
     # Start timer...
     val_batch_start_time = time.time()
 
@@ -515,6 +466,11 @@ def validate(val_loader, model, epoch, writer):
 
             # measure elapsed time
             val_batch_time = time.time()-val_batch_start_time
+
+            #_, predicted = output_tensor.max(1)
+            #total += target_tensor.size(0)
+            #correct += predicted.eq(target_tensor).sum().item()
+            #print("CHECK:", 100. * correct / total)
 
             if batch_index % args.print_freq == 0:
                 print('Valid Epoch: [{0}][{1}/{2}]\t'
@@ -595,8 +551,7 @@ def compute_entropies(tensor, dim=1):
 
 
 def worker_init(worker_id):
-    #random.seed(args.base_seed)
-    pass
+    random.seed(args.base_seed)
 
 
 def create_model():
