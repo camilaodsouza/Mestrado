@@ -225,7 +225,7 @@ class SqueezeNet(nn.Module):
         return x.view(x.size(0), self.num_classes)
 
 
-def squeezenet1_0( **kwargs):
+def squeezenet1_0(**kwargs):
     model = SqueezeNet(version=1.0, **kwargs)
     return model
 

@@ -1,0 +1,375 @@
+
+
+
+****************************************************************
+EXPERIMENT: BSD~1230
+****************************************************************
+
+BASE SEED: 1230
+PATH: artifacts/cifar10/mobilenet_/bsd~1230
+
+################ EXECUTION: 1 OF 1 ################
+EXECUTION SEED: 1231
+Files already downloaded and verified
+Files already downloaded and verified
+
+ARGUMENTS:  {'dataset_dir': None, 'executions': 1, 'dataset': 'cifar10', 'local_model': 'mobilenet_', 'remote_model': None, 'workers': 4, 'epochs': 2, 'batch_size': 128, 'train_set_split': None, 'original_learning_rate': 0.05, 'learning_rate_decay_rate': 0.1, 'learning_rate_decay_period': 30, 'learning_rate_decay_epochs': [60, 80, 90], 'experiments': ['bsd~1230'], 'momentum': 0.9, 'weight_decay': 0.0005, 'print_freq': 16, 'gpu_id': '1', 'arch': 'mobilenet_', 'base_seed': 1230, 'number_of_model_classes': 10, 'regularization_type': None, 'regularization_value': 0, 'experiment_path': 'artifacts/cifar10/mobilenet_/bsd~1230', 'execution': 1, 'execution_seed': 1231, 'number_of_dataset_classes': 10, 'execution_path': 'artifacts/cifar10/mobilenet_/bsd~1230/exec1'}
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+TRAINSET LOADER SIZE: ====>>>>  50000
+VALIDSET LOADER SIZE: ====>>>>  10000
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+DATASET: cifar10
+=> creating model 'mobilenet_'
+
+MODEL: MobileNet_(
+  (conv1): Conv2d(3, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+  (bn1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (layers): Sequential(
+    (0): Block_(
+      (conv1): Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+      (bn1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(32, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn2): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+    (1): Block_(
+      (conv1): Conv2d(64, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=64, bias=False)
+      (bn1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(64, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+    (2): Block_(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128, bias=False)
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+    (3): Block_(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=128, bias=False)
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(128, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+    (4): Block_(
+      (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=256, bias=False)
+      (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(256, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+    (5): Block_(
+      (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=256, bias=False)
+      (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(256, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+    (6): Block_(
+      (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=512, bias=False)
+      (bn1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+    (7): Block_(
+      (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=512, bias=False)
+      (bn1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+    (8): Block_(
+      (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=512, bias=False)
+      (bn1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+    (9): Block_(
+      (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=512, bias=False)
+      (bn1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+    (10): Block_(
+      (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=512, bias=False)
+      (bn1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+    (11): Block_(
+      (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=512, bias=False)
+      (bn1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(512, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn2): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+    (12): Block_(
+      (conv1): Conv2d(1024, 1024, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1024, bias=False)
+      (bn1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(1024, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn2): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    )
+  )
+  (linear): Linear(in_features=1024, out_features=10, bias=True)
+)
+
+################ TRAINING ################
+
+######## EPOCH: 1 OF 2 ########
+
+LEARNING RATE:	 0.05
+Train Epoch: [1][16/391]	Data 0.000868	Time 0.040965	Loss 2.3952	Entropy 2.1678		Acc1 11.18	Acc5 53.76
+Train Epoch: [1][32/391]	Data 0.000860	Time 0.040855	Loss 2.3574	Entropy 2.1031		Acc1 13.01	Acc5 58.15
+Train Epoch: [1][48/391]	Data 0.000897	Time 0.041258	Loss 2.2818	Entropy 2.0273		Acc1 15.17	Acc5 63.79
+Train Epoch: [1][64/391]	Data 0.000902	Time 0.041195	Loss 2.2237	Entropy 1.9646		Acc1 17.42	Acc5 67.77
+Train Epoch: [1][80/391]	Data 0.000998	Time 0.041232	Loss 2.1787	Entropy 1.9148		Acc1 19.12	Acc5 70.74
+Train Epoch: [1][96/391]	Data 0.001002	Time 0.041111	Loss 2.1353	Entropy 1.8820		Acc1 20.80	Acc5 72.56
+Train Epoch: [1][112/391]	Data 0.000935	Time 0.041058	Loss 2.0935	Entropy 1.8473		Acc1 22.48	Acc5 74.34
+Train Epoch: [1][128/391]	Data 0.000758	Time 0.041223	Loss 2.0570	Entropy 1.8235		Acc1 23.79	Acc5 75.89
+Train Epoch: [1][144/391]	Data 0.000815	Time 0.041213	Loss 2.0247	Entropy 1.7997		Acc1 24.99	Acc5 77.00
+Train Epoch: [1][160/391]	Data 0.000957	Time 0.041295	Loss 1.9954	Entropy 1.7797		Acc1 25.89	Acc5 78.08
+Train Epoch: [1][176/391]	Data 0.000948	Time 0.041358	Loss 1.9677	Entropy 1.7596		Acc1 26.92	Acc5 79.17
+Train Epoch: [1][192/391]	Data 0.000963	Time 0.041187	Loss 1.9445	Entropy 1.7447		Acc1 27.76	Acc5 79.97
+Train Epoch: [1][208/391]	Data 0.001029	Time 0.041232	Loss 1.9230	Entropy 1.7312		Acc1 28.51	Acc5 80.73
+Train Epoch: [1][224/391]	Data 0.000939	Time 0.041350	Loss 1.9017	Entropy 1.7181		Acc1 29.35	Acc5 81.31
+Train Epoch: [1][240/391]	Data 0.001005	Time 0.041444	Loss 1.8799	Entropy 1.7037		Acc1 30.18	Acc5 81.99
+Train Epoch: [1][256/391]	Data 0.000945	Time 0.041345	Loss 1.8618	Entropy 1.6902		Acc1 30.94	Acc5 82.50
+Train Epoch: [1][272/391]	Data 0.000911	Time 0.041223	Loss 1.8455	Entropy 1.6791		Acc1 31.60	Acc5 82.97
+Train Epoch: [1][288/391]	Data 0.000929	Time 0.041435	Loss 1.8290	Entropy 1.6710		Acc1 32.15	Acc5 83.47
+Train Epoch: [1][304/391]	Data 0.000974	Time 0.041290	Loss 1.8141	Entropy 1.6595		Acc1 32.70	Acc5 83.91
+Train Epoch: [1][320/391]	Data 0.000949	Time 0.042200	Loss 1.8022	Entropy 1.6524		Acc1 33.19	Acc5 84.21
+Train Epoch: [1][336/391]	Data 0.000938	Time 0.041312	Loss 1.7889	Entropy 1.6434		Acc1 33.70	Acc5 84.55
+Train Epoch: [1][352/391]	Data 0.000886	Time 0.041255	Loss 1.7759	Entropy 1.6345		Acc1 34.28	Acc5 84.83
+Train Epoch: [1][368/391]	Data 0.001015	Time 0.042603	Loss 1.7639	Entropy 1.6268		Acc1 34.79	Acc5 85.11
+Train Epoch: [1][384/391]	Data 0.000899	Time 0.043836	Loss 1.7519	Entropy 1.6193		Acc1 35.29	Acc5 85.39
+
+CONFUSION:
+ [[0.3820 0.0834 0.0618 0.0314 0.0382 0.0290 0.0160 0.0442 0.2284 0.0856]
+ [0.0568 0.4822 0.0186 0.0228 0.0144 0.0204 0.0196 0.0422 0.1178 0.2052]
+ [0.0892 0.0306 0.1890 0.1100 0.1524 0.1000 0.1476 0.0958 0.0466 0.0388]
+ [0.0362 0.0292 0.0876 0.2352 0.0654 0.2290 0.1418 0.1000 0.0236 0.0520]
+ [0.0542 0.0262 0.1428 0.0806 0.2430 0.0832 0.1732 0.1226 0.0398 0.0344]
+ [0.0284 0.0234 0.0774 0.1904 0.0654 0.3246 0.0970 0.1294 0.0258 0.0382]
+ [0.0134 0.0222 0.0974 0.1136 0.1316 0.0778 0.4216 0.0700 0.0166 0.0358]
+ [0.0324 0.0336 0.0506 0.0834 0.0852 0.1228 0.0690 0.4206 0.0292 0.0732]
+ [0.1942 0.1224 0.0340 0.0242 0.0202 0.0174 0.0130 0.0262 0.4360 0.1124]
+ [0.0588 0.2102 0.0198 0.0366 0.0186 0.0264 0.0320 0.0732 0.1160 0.4084]]
+
+#### TRAIN: 35.426
+
+
+Valid Epoch: [1][16/79]	Data 0.000796	Time 0.014158	Entropy 1.3322		Acc1 45.95	Acc5 92.82
+Valid Epoch: [1][32/79]	Data 0.000972	Time 0.014896	Entropy 1.3270		Acc1 47.36	Acc5 92.87
+Valid Epoch: [1][48/79]	Data 0.000959	Time 0.014665	Entropy 1.3293		Acc1 47.46	Acc5 92.95
+Valid Epoch: [1][64/79]	Data 0.000849	Time 0.014452	Entropy 1.3315		Acc1 47.01	Acc5 92.90
+
+CONFUSION:
+ [[0.4140 0.0600 0.1200 0.0080 0.0140 0.0790 0.0210 0.0220 0.2270 0.0350]
+ [0.0580 0.7310 0.0040 0.0010 0.0040 0.0120 0.0070 0.0100 0.0410 0.1320]
+ [0.0510 0.0200 0.3280 0.0500 0.1200 0.1500 0.1440 0.0780 0.0350 0.0240]
+ [0.0260 0.0190 0.0810 0.1100 0.0590 0.3140 0.2130 0.1010 0.0180 0.0590]
+ [0.0360 0.0170 0.1620 0.0100 0.2720 0.0680 0.1880 0.1940 0.0310 0.0220]
+ [0.0130 0.0150 0.0920 0.0460 0.0580 0.4830 0.0770 0.1790 0.0120 0.0250]
+ [0.0080 0.0090 0.0490 0.0280 0.0950 0.0480 0.6570 0.0500 0.0100 0.0460]
+ [0.0390 0.0140 0.0290 0.0210 0.0500 0.1050 0.0410 0.6180 0.0070 0.0760]
+ [0.1560 0.1240 0.0180 0.0070 0.0050 0.0320 0.0100 0.0140 0.5950 0.0390]
+ [0.0570 0.2810 0.0050 0.0080 0.0090 0.0120 0.0200 0.0270 0.0890 0.4920]]
+
+#### VALID: 47.000
+
+!+NEW BEST+ 47.000 IN EPOCH 1!!! SAVING... artifacts/cifar10/mobilenet_/bsd~1230/exec1/best_model.pth.tar
+
+!$$$$ BEST: 47.000
+
+
+######## EPOCH: 2 OF 2 ########
+
+LEARNING RATE:	 0.05
+Train Epoch: [2][16/391]	Data 0.000875	Time 0.045405	Loss 1.4181	Entropy 1.3892		Acc1 46.53	Acc5 92.82
+Train Epoch: [2][32/391]	Data 0.000948	Time 0.045529	Loss 1.4219	Entropy 1.3973		Acc1 47.29	Acc5 93.02
+Train Epoch: [2][48/391]	Data 0.000956	Time 0.045470	Loss 1.4233	Entropy 1.3932		Acc1 47.53	Acc5 93.12
+Train Epoch: [2][64/391]	Data 0.000976	Time 0.045640	Loss 1.4157	Entropy 1.3781		Acc1 48.28	Acc5 92.97
+Train Epoch: [2][80/391]	Data 0.000748	Time 0.045417	Loss 1.4109	Entropy 1.3789		Acc1 48.64	Acc5 92.98
+Train Epoch: [2][96/391]	Data 0.001536	Time 0.045731	Loss 1.4089	Entropy 1.3743		Acc1 48.86	Acc5 92.94
+Train Epoch: [2][112/391]	Data 0.000803	Time 0.045466	Loss 1.4052	Entropy 1.3717		Acc1 48.88	Acc5 92.96
+Train Epoch: [2][128/391]	Data 0.000785	Time 0.044216	Loss 1.4001	Entropy 1.3662		Acc1 49.26	Acc5 93.03
+Train Epoch: [2][144/391]	Data 0.000745	Time 0.045413	Loss 1.3926	Entropy 1.3585		Acc1 49.60	Acc5 93.15
+Train Epoch: [2][160/391]	Data 0.000928	Time 0.045745	Loss 1.3855	Entropy 1.3513		Acc1 49.99	Acc5 93.20
+Train Epoch: [2][176/391]	Data 0.000771	Time 0.045644	Loss 1.3787	Entropy 1.3471		Acc1 50.10	Acc5 93.26
+Train Epoch: [2][192/391]	Data 0.000786	Time 0.045454	Loss 1.3718	Entropy 1.3373		Acc1 50.43	Acc5 93.33
+Train Epoch: [2][208/391]	Data 0.000881	Time 0.045644	Loss 1.3622	Entropy 1.3299		Acc1 50.79	Acc5 93.51
+Train Epoch: [2][224/391]	Data 0.000917	Time 0.045662	Loss 1.3591	Entropy 1.3264		Acc1 50.87	Acc5 93.57
+Train Epoch: [2][240/391]	Data 0.000942	Time 0.045555	Loss 1.3474	Entropy 1.3176		Acc1 51.28	Acc5 93.66
+Train Epoch: [2][256/391]	Data 0.000996	Time 0.045406	Loss 1.3424	Entropy 1.3096		Acc1 51.44	Acc5 93.71
+Train Epoch: [2][272/391]	Data 0.000898	Time 0.037109	Loss 1.3383	Entropy 1.3061		Acc1 51.57	Acc5 93.72
+Train Epoch: [2][288/391]	Data 0.000785	Time 0.045439	Loss 1.3313	Entropy 1.3003		Acc1 51.88	Acc5 93.73
+Train Epoch: [2][304/391]	Data 0.000814	Time 0.046342	Loss 1.3231	Entropy 1.2932		Acc1 52.24	Acc5 93.84
+Train Epoch: [2][320/391]	Data 0.000845	Time 0.045556	Loss 1.3136	Entropy 1.2835		Acc1 52.52	Acc5 93.93
+Train Epoch: [2][336/391]	Data 0.000861	Time 0.045483	Loss 1.3086	Entropy 1.2777		Acc1 52.71	Acc5 93.99
+Train Epoch: [2][352/391]	Data 0.000991	Time 0.045597	Loss 1.3038	Entropy 1.2733		Acc1 52.94	Acc5 94.05
+Train Epoch: [2][368/391]	Data 0.000936	Time 0.045579	Loss 1.2984	Entropy 1.2688		Acc1 53.13	Acc5 94.10
+Train Epoch: [2][384/391]	Data 0.000878	Time 0.045945	Loss 1.2919	Entropy 1.2629		Acc1 53.39	Acc5 94.15
+
+CONFUSION:
+ [[0.5340 0.0582 0.0752 0.0238 0.0180 0.0156 0.0098 0.0224 0.1894 0.0536]
+ [0.0428 0.7018 0.0082 0.0120 0.0056 0.0074 0.0104 0.0104 0.0560 0.1454]
+ [0.0860 0.0142 0.4204 0.0950 0.1202 0.0854 0.0834 0.0434 0.0308 0.0212]
+ [0.0220 0.0152 0.1116 0.3184 0.0602 0.2468 0.1180 0.0494 0.0256 0.0328]
+ [0.0380 0.0148 0.1420 0.0644 0.4004 0.0626 0.1142 0.1296 0.0200 0.0140]
+ [0.0134 0.0124 0.0936 0.2052 0.0572 0.4580 0.0426 0.0828 0.0136 0.0212]
+ [0.0084 0.0116 0.0744 0.0922 0.0884 0.0290 0.6510 0.0124 0.0112 0.0214]
+ [0.0166 0.0136 0.0460 0.0548 0.1032 0.1096 0.0232 0.5788 0.0084 0.0458]
+ [0.1540 0.0602 0.0244 0.0162 0.0074 0.0100 0.0084 0.0074 0.6682 0.0438]
+ [0.0448 0.1714 0.0112 0.0254 0.0072 0.0118 0.0224 0.0362 0.0556 0.6140]]
+
+#### TRAIN: 53.450
+
+
+Valid Epoch: [2][16/79]	Data 0.000799	Time 0.014421	Entropy 1.1121		Acc1 54.20	Acc5 94.09
+Valid Epoch: [2][32/79]	Data 0.000765	Time 0.014384	Entropy 1.1059		Acc1 54.37	Acc5 93.73
+Valid Epoch: [2][48/79]	Data 0.000799	Time 0.014454	Entropy 1.1118		Acc1 54.13	Acc5 93.85
+Valid Epoch: [2][64/79]	Data 0.000783	Time 0.014864	Entropy 1.1213		Acc1 54.00	Acc5 93.60
+
+CONFUSION:
+ [[0.3780 0.0100 0.1290 0.0310 0.0460 0.0170 0.0220 0.0040 0.3470 0.0160]
+ [0.0340 0.4690 0.0290 0.0340 0.0310 0.0160 0.0140 0.0010 0.3180 0.0540]
+ [0.0470 0.0000 0.4210 0.0490 0.1890 0.0820 0.1500 0.0080 0.0460 0.0080]
+ [0.0040 0.0040 0.1210 0.1900 0.1270 0.2440 0.2450 0.0110 0.0380 0.0160]
+ [0.0100 0.0000 0.0810 0.0170 0.6360 0.0240 0.1530 0.0330 0.0420 0.0040]
+ [0.0010 0.0010 0.0670 0.1070 0.1180 0.5520 0.1100 0.0200 0.0230 0.0010]
+ [0.0020 0.0010 0.0410 0.0260 0.0890 0.0090 0.8110 0.0000 0.0180 0.0030]
+ [0.0240 0.0000 0.0500 0.0400 0.2620 0.1040 0.0290 0.4320 0.0240 0.0350]
+ [0.0250 0.0040 0.0160 0.0160 0.0120 0.0100 0.0060 0.0000 0.9050 0.0060]
+ [0.0460 0.0650 0.0070 0.0300 0.0160 0.0110 0.0410 0.0060 0.1940 0.5840]]
+
+#### VALID: 53.780
+
+!+NEW BEST+ 53.780 IN EPOCH 2!!! SAVING... artifacts/cifar10/mobilenet_/bsd~1230/exec1/best_model.pth.tar
+
+!$$$$ BEST: 53.780
+
+
+################ COMPUTING INFERENCE TIMES AND MODEL WEIGHTS, BIAS AND PARAMETERS ################
+
+COMPUTING INFERENCE TIME: CPU
+
+COMPUTING INFERENCE TIME: GPU
+
+MEAN CPU INFERENCE TIME (MILISECONDS):	49.0642
+MEAN GPU INFERENCE TIME (MILISECONDS):	1.2692
+
+NUMBER OF WEIGHTS, BIAS AND PARAMETERS:
+MobileNet_ (
+  (conv1): Conv2d(3, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False), weights=((32, 3, 3, 3),), parameters=864
+  (bn1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True), weights=((32,), (32,)), parameters=64
+  (layers): Sequential (
+    (0): Block_(
+      (conv1): Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+      (bn1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(32, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn2): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    ), weights=((32, 1, 3, 3), (32,), (32,), (64, 32, 1, 1), (64,), (64,)), parameters=2528
+    (1): Block_(
+      (conv1): Conv2d(64, 64, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=64, bias=False)
+      (bn1): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(64, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    ), weights=((64, 1, 3, 3), (64,), (64,), (128, 64, 1, 1), (128,), (128,)), parameters=9152
+    (2): Block_(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=128, bias=False)
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(128, 128, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn2): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    ), weights=((128, 1, 3, 3), (128,), (128,), (128, 128, 1, 1), (128,), (128,)), parameters=18048
+    (3): Block_(
+      (conv1): Conv2d(128, 128, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=128, bias=False)
+      (bn1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(128, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    ), weights=((128, 1, 3, 3), (128,), (128,), (256, 128, 1, 1), (256,), (256,)), parameters=34688
+    (4): Block_(
+      (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=256, bias=False)
+      (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(256, 256, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn2): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    ), weights=((256, 1, 3, 3), (256,), (256,), (256, 256, 1, 1), (256,), (256,)), parameters=68864
+    (5): Block_(
+      (conv1): Conv2d(256, 256, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=256, bias=False)
+      (bn1): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(256, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    ), weights=((256, 1, 3, 3), (256,), (256,), (512, 256, 1, 1), (512,), (512,)), parameters=134912
+    (6): Block_(
+      (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=512, bias=False)
+      (bn1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    ), weights=((512, 1, 3, 3), (512,), (512,), (512, 512, 1, 1), (512,), (512,)), parameters=268800
+    (7): Block_(
+      (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=512, bias=False)
+      (bn1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    ), weights=((512, 1, 3, 3), (512,), (512,), (512, 512, 1, 1), (512,), (512,)), parameters=268800
+    (8): Block_(
+      (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=512, bias=False)
+      (bn1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    ), weights=((512, 1, 3, 3), (512,), (512,), (512, 512, 1, 1), (512,), (512,)), parameters=268800
+    (9): Block_(
+      (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=512, bias=False)
+      (bn1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    ), weights=((512, 1, 3, 3), (512,), (512,), (512, 512, 1, 1), (512,), (512,)), parameters=268800
+    (10): Block_(
+      (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=512, bias=False)
+      (bn1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(512, 512, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn2): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    ), weights=((512, 1, 3, 3), (512,), (512,), (512, 512, 1, 1), (512,), (512,)), parameters=268800
+    (11): Block_(
+      (conv1): Conv2d(512, 512, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=512, bias=False)
+      (bn1): BatchNorm2d(512, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(512, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn2): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    ), weights=((512, 1, 3, 3), (512,), (512,), (1024, 512, 1, 1), (1024,), (1024,)), parameters=531968
+    (12): Block_(
+      (conv1): Conv2d(1024, 1024, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=1024, bias=False)
+      (bn1): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(1024, 1024, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn2): BatchNorm2d(1024, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    ), weights=((1024, 1, 3, 3), (1024,), (1024,), (1024, 1024, 1, 1), (1024,), (1024,)), parameters=1061888
+  ), weights=((32, 1, 3, 3), (32,), (32,), (64, 32, 1, 1), (64,), (64,), (64, 1, 3, 3), (64,), (64,), (128, 64, 1, 1), (128,), (128,), (128, 1, 3, 3), (128,), (128,), (128, 128, 1, 1), (128,), (128,), (128, 1, 3, 3), (128,), (128,), (256, 128, 1, 1), (256,), (256,), (256, 1, 3, 3), (256,), (256,), (256, 256, 1, 1), (256,), (256,), (256, 1, 3, 3), (256,), (256,), (512, 256, 1, 1), (512,), (512,), (512, 1, 3, 3), (512,), (512,), (512, 512, 1, 1), (512,), (512,), (512, 1, 3, 3), (512,), (512,), (512, 512, 1, 1), (512,), (512,), (512, 1, 3, 3), (512,), (512,), (512, 512, 1, 1), (512,), (512,), (512, 1, 3, 3), (512,), (512,), (512, 512, 1, 1), (512,), (512,), (512, 1, 3, 3), (512,), (512,), (512, 512, 1, 1), (512,), (512,), (512, 1, 3, 3), (512,), (512,), (1024, 512, 1, 1), (1024,), (1024,), (1024, 1, 3, 3), (1024,), (1024,), (1024, 1024, 1, 1), (1024,), (1024,)), parameters=3206048
+  (linear): Linear(in_features=1024, out_features=10, bias=True), weights=((10, 1024), (10,)), parameters=10250
+) 
+
+
+
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+ OVERALL STATISTICS 
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+
+ BSD~1230
+
+                        0
+TRAIN [ACC1]   53.450000
+VAL [ACC1]     53.780000
+TRAIN LOSS      1.290249
+TRAIN ENTROPY   1.260007
+VAL ENTROPY     1.117696
+CPU TIME [MS]  49.064212
+GPU TIME [MS]   1.269156
+
+        TRAIN [ACC1]  VAL [ACC1]  TRAIN LOSS  TRAIN ENTROPY  VAL ENTROPY  CPU TIME [MS]  GPU TIME [MS]
+count          1.00        1.00    1.000000       1.000000     1.000000       1.000000       1.000000
+mean          53.45       53.78    1.290249       1.260007     1.117696      49.064212       1.269156
+std             NaN         NaN         NaN            NaN          NaN            NaN            NaN
+min           53.45       53.78    1.290249       1.260007     1.117696      49.064212       1.269156
+25%           53.45       53.78    1.290249       1.260007     1.117696      49.064212       1.269156
+50%           53.45       53.78    1.290249       1.260007     1.117696      49.064212       1.269156
+75%           53.45       53.78    1.290249       1.260007     1.117696      49.064212       1.269156
+max           53.45       53.78    1.290249       1.260007     1.117696      49.064212       1.269156
+
+
+
+

@@ -1,0 +1,553 @@
+
+
+
+****************************************************************
+EXPERIMENT: BSD~1230
+****************************************************************
+
+BASE SEED: 1230
+PATH: artifacts/cifar10/mobilenetv2_/bsd~1230
+
+################ EXECUTION: 1 OF 1 ################
+EXECUTION SEED: 1231
+Files already downloaded and verified
+Files already downloaded and verified
+
+ARGUMENTS:  {'dataset_dir': None, 'executions': 1, 'dataset': 'cifar10', 'local_model': 'mobilenetv2_', 'remote_model': None, 'workers': 4, 'epochs': 2, 'batch_size': 128, 'train_set_split': None, 'original_learning_rate': 0.05, 'learning_rate_decay_rate': 0.1, 'learning_rate_decay_period': 30, 'learning_rate_decay_epochs': [60, 80, 90], 'experiments': ['bsd~1230'], 'momentum': 0.9, 'weight_decay': 0.0005, 'print_freq': 16, 'gpu_id': '1', 'arch': 'mobilenetv2_', 'base_seed': 1230, 'number_of_model_classes': 10, 'regularization_type': None, 'regularization_value': 0, 'experiment_path': 'artifacts/cifar10/mobilenetv2_/bsd~1230', 'execution': 1, 'execution_seed': 1231, 'number_of_dataset_classes': 10, 'execution_path': 'artifacts/cifar10/mobilenetv2_/bsd~1230/exec1'}
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+TRAINSET LOADER SIZE: ====>>>>  50000
+VALIDSET LOADER SIZE: ====>>>>  10000
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+DATASET: cifar10
+=> creating model 'mobilenetv2_'
+
+MODEL: MobileNetV2_(
+  (conv1): Conv2d(3, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False)
+  (bn1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (layers): Sequential(
+    (0): Block_(
+      (conv1): Conv2d(32, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+      (bn2): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(32, 16, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential(
+        (0): Conv2d(32, 16, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (1): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+    )
+    (1): Block_(
+      (conv1): Conv2d(16, 96, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(96, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=96, bias=False)
+      (bn2): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(96, 24, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(24, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential(
+        (0): Conv2d(16, 24, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (1): BatchNorm2d(24, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+    )
+    (2): Block_(
+      (conv1): Conv2d(24, 144, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(144, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(144, 144, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=144, bias=False)
+      (bn2): BatchNorm2d(144, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(144, 24, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(24, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential()
+    )
+    (3): Block_(
+      (conv1): Conv2d(24, 144, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(144, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(144, 144, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=144, bias=False)
+      (bn2): BatchNorm2d(144, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(144, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential()
+    )
+    (4): Block_(
+      (conv1): Conv2d(32, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(192, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+      (bn2): BatchNorm2d(192, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(192, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential()
+    )
+    (5): Block_(
+      (conv1): Conv2d(32, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(192, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+      (bn2): BatchNorm2d(192, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(192, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential()
+    )
+    (6): Block_(
+      (conv1): Conv2d(32, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(192, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(192, 192, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=192, bias=False)
+      (bn2): BatchNorm2d(192, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(192, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential()
+    )
+    (7): Block_(
+      (conv1): Conv2d(64, 384, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(384, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=384, bias=False)
+      (bn2): BatchNorm2d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(384, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential()
+    )
+    (8): Block_(
+      (conv1): Conv2d(64, 384, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(384, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=384, bias=False)
+      (bn2): BatchNorm2d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(384, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential()
+    )
+    (9): Block_(
+      (conv1): Conv2d(64, 384, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(384, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=384, bias=False)
+      (bn2): BatchNorm2d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(384, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential()
+    )
+    (10): Block_(
+      (conv1): Conv2d(64, 384, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(384, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=384, bias=False)
+      (bn2): BatchNorm2d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(384, 96, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential(
+        (0): Conv2d(64, 96, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (1): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+    )
+    (11): Block_(
+      (conv1): Conv2d(96, 576, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(576, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(576, 576, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=576, bias=False)
+      (bn2): BatchNorm2d(576, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(576, 96, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential()
+    )
+    (12): Block_(
+      (conv1): Conv2d(96, 576, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(576, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(576, 576, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=576, bias=False)
+      (bn2): BatchNorm2d(576, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(576, 96, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential()
+    )
+    (13): Block_(
+      (conv1): Conv2d(96, 576, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(576, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(576, 576, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=576, bias=False)
+      (bn2): BatchNorm2d(576, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(576, 160, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(160, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential()
+    )
+    (14): Block_(
+      (conv1): Conv2d(160, 960, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(960, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(960, 960, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=960, bias=False)
+      (bn2): BatchNorm2d(960, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(960, 160, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(160, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential()
+    )
+    (15): Block_(
+      (conv1): Conv2d(160, 960, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(960, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(960, 960, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=960, bias=False)
+      (bn2): BatchNorm2d(960, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(960, 160, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(160, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential()
+    )
+    (16): Block_(
+      (conv1): Conv2d(160, 960, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(960, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(960, 960, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=960, bias=False)
+      (bn2): BatchNorm2d(960, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(960, 320, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(320, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential(
+        (0): Conv2d(160, 320, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (1): BatchNorm2d(320, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+    )
+  )
+  (conv2): Conv2d(320, 1280, kernel_size=(1, 1), stride=(1, 1), bias=False)
+  (bn2): BatchNorm2d(1280, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+  (linear): Linear(in_features=1280, out_features=10, bias=True)
+)
+
+################ TRAINING ################
+
+######## EPOCH: 1 OF 2 ########
+
+LEARNING RATE:	 0.05
+Train Epoch: [1][16/391]	Data 0.001157	Time 0.128039	Loss 2.1538	Entropy 2.1045		Acc1 18.99	Acc5 70.12
+Train Epoch: [1][32/391]	Data 0.000975	Time 0.128112	Loss 2.0635	Entropy 1.9921		Acc1 21.95	Acc5 75.32
+Train Epoch: [1][48/391]	Data 0.001299	Time 0.127952	Loss 1.9951	Entropy 1.9074		Acc1 24.25	Acc5 78.45
+Train Epoch: [1][64/391]	Data 0.001173	Time 0.127966	Loss 1.9316	Entropy 1.8513		Acc1 26.89	Acc5 80.73
+Train Epoch: [1][80/391]	Data 0.000870	Time 0.127944	Loss 1.8905	Entropy 1.8082		Acc1 28.58	Acc5 82.11
+Train Epoch: [1][96/391]	Data 0.000928	Time 0.128029	Loss 1.8594	Entropy 1.7780		Acc1 29.85	Acc5 83.04
+Train Epoch: [1][112/391]	Data 0.001010	Time 0.127959	Loss 1.8264	Entropy 1.7498		Acc1 30.99	Acc5 83.99
+Train Epoch: [1][128/391]	Data 0.000997	Time 0.128354	Loss 1.7970	Entropy 1.7224		Acc1 32.31	Acc5 84.73
+Train Epoch: [1][144/391]	Data 0.000947	Time 0.129144	Loss 1.7707	Entropy 1.6984		Acc1 33.47	Acc5 85.23
+Train Epoch: [1][160/391]	Data 0.000878	Time 0.129228	Loss 1.7512	Entropy 1.6762		Acc1 34.30	Acc5 85.68
+Train Epoch: [1][176/391]	Data 0.001064	Time 0.129241	Loss 1.7295	Entropy 1.6577		Acc1 35.11	Acc5 86.25
+Train Epoch: [1][192/391]	Data 0.001043	Time 0.129314	Loss 1.7089	Entropy 1.6388		Acc1 36.01	Acc5 86.71
+Train Epoch: [1][208/391]	Data 0.001036	Time 0.129400	Loss 1.6878	Entropy 1.6211		Acc1 36.92	Acc5 87.20
+Train Epoch: [1][224/391]	Data 0.001057	Time 0.130086	Loss 1.6685	Entropy 1.6026		Acc1 37.66	Acc5 87.55
+Train Epoch: [1][240/391]	Data 0.001044	Time 0.140293	Loss 1.6482	Entropy 1.5860		Acc1 38.46	Acc5 87.92
+Train Epoch: [1][256/391]	Data 0.001161	Time 0.140554	Loss 1.6281	Entropy 1.5667		Acc1 39.23	Acc5 88.28
+Train Epoch: [1][272/391]	Data 0.000922	Time 0.140863	Loss 1.6097	Entropy 1.5496		Acc1 40.08	Acc5 88.61
+Train Epoch: [1][288/391]	Data 0.000999	Time 0.140424	Loss 1.5913	Entropy 1.5344		Acc1 40.82	Acc5 88.88
+Train Epoch: [1][304/391]	Data 0.000967	Time 0.140440	Loss 1.5748	Entropy 1.5180		Acc1 41.52	Acc5 89.18
+Train Epoch: [1][320/391]	Data 0.001150	Time 0.140494	Loss 1.5620	Entropy 1.5057		Acc1 42.09	Acc5 89.39
+Train Epoch: [1][336/391]	Data 0.001005	Time 0.140215	Loss 1.5461	Entropy 1.4925		Acc1 42.70	Acc5 89.64
+Train Epoch: [1][352/391]	Data 0.000968	Time 0.140629	Loss 1.5296	Entropy 1.4765		Acc1 43.39	Acc5 89.91
+Train Epoch: [1][368/391]	Data 0.000879	Time 0.140455	Loss 1.5148	Entropy 1.4626		Acc1 44.03	Acc5 90.14
+Train Epoch: [1][384/391]	Data 0.000926	Time 0.140370	Loss 1.4980	Entropy 1.4484		Acc1 44.64	Acc5 90.35
+
+CONFUSION:
+ [[0.4870 0.0634 0.0562 0.0252 0.0228 0.0222 0.0110 0.0360 0.1990 0.0772]
+ [0.0422 0.6166 0.0096 0.0164 0.0082 0.0142 0.0140 0.0256 0.0748 0.1784]
+ [0.0868 0.0218 0.2866 0.0946 0.1342 0.1078 0.1280 0.0686 0.0412 0.0304]
+ [0.0298 0.0240 0.0992 0.2386 0.0652 0.2522 0.1470 0.0780 0.0268 0.0392]
+ [0.0498 0.0118 0.1352 0.0616 0.3170 0.0760 0.1704 0.1328 0.0204 0.0250]
+ [0.0206 0.0200 0.0798 0.1848 0.0692 0.3904 0.0828 0.1056 0.0136 0.0332]
+ [0.0122 0.0182 0.0788 0.0936 0.1230 0.0620 0.5280 0.0440 0.0130 0.0272]
+ [0.0244 0.0270 0.0376 0.0716 0.0968 0.1226 0.0578 0.4890 0.0120 0.0612]
+ [0.1720 0.0812 0.0282 0.0222 0.0122 0.0106 0.0120 0.0102 0.5778 0.0736]
+ [0.0578 0.1854 0.0104 0.0308 0.0078 0.0146 0.0216 0.0510 0.0696 0.5510]]
+
+#### TRAIN: 44.820
+
+
+Valid Epoch: [1][16/79]	Data 0.000801	Time 0.038494	Entropy 1.0145		Acc1 54.83	Acc5 93.02
+Valid Epoch: [1][32/79]	Data 0.000769	Time 0.038392	Entropy 1.0159		Acc1 54.20	Acc5 93.87
+Valid Epoch: [1][48/79]	Data 0.000784	Time 0.038471	Entropy 1.0135		Acc1 54.51	Acc5 93.52
+Valid Epoch: [1][64/79]	Data 0.000761	Time 0.038440	Entropy 1.0199		Acc1 53.87	Acc5 93.32
+
+CONFUSION:
+ [[0.7320 0.0130 0.0850 0.0030 0.0000 0.0060 0.0010 0.0250 0.0990 0.0360]
+ [0.0820 0.7220 0.0060 0.0000 0.0010 0.0010 0.0000 0.0030 0.0190 0.1660]
+ [0.1350 0.0050 0.5090 0.0220 0.0690 0.0500 0.0340 0.0850 0.0590 0.0320]
+ [0.1190 0.0110 0.1920 0.1580 0.0390 0.1570 0.0510 0.0850 0.0690 0.1190]
+ [0.1000 0.0090 0.1620 0.0160 0.2960 0.0120 0.0260 0.2870 0.0480 0.0440]
+ [0.0550 0.0050 0.1820 0.1060 0.0260 0.3430 0.0130 0.1750 0.0290 0.0660]
+ [0.0640 0.0160 0.1260 0.0310 0.0970 0.0100 0.4550 0.0280 0.0970 0.0760]
+ [0.0680 0.0100 0.0550 0.0170 0.0230 0.0360 0.0020 0.6700 0.0120 0.1070]
+ [0.2030 0.0310 0.0110 0.0000 0.0010 0.0040 0.0000 0.0060 0.7210 0.0230]
+ [0.1080 0.0540 0.0060 0.0050 0.0000 0.0010 0.0010 0.0050 0.0350 0.7850]]
+
+#### VALID: 53.910
+
+!+NEW BEST+ 53.910 IN EPOCH 1!!! SAVING... artifacts/cifar10/mobilenetv2_/bsd~1230/exec1/best_model.pth.tar
+
+!$$$$ BEST: 53.910
+
+
+######## EPOCH: 2 OF 2 ########
+
+LEARNING RATE:	 0.05
+Train Epoch: [2][16/391]	Data 0.001189	Time 0.140307	Loss 1.1232	Entropy 1.0825		Acc1 59.28	Acc5 96.09
+Train Epoch: [2][32/391]	Data 0.000896	Time 0.140517	Loss 1.1165	Entropy 1.0976		Acc1 60.06	Acc5 95.95
+Train Epoch: [2][48/391]	Data 0.000893	Time 0.140464	Loss 1.1154	Entropy 1.0902		Acc1 60.32	Acc5 95.98
+Train Epoch: [2][64/391]	Data 0.000880	Time 0.140543	Loss 1.1082	Entropy 1.0806		Acc1 60.88	Acc5 95.90
+Train Epoch: [2][80/391]	Data 0.000890	Time 0.140498	Loss 1.1063	Entropy 1.0854		Acc1 60.98	Acc5 95.84
+Train Epoch: [2][96/391]	Data 0.000857	Time 0.140195	Loss 1.0961	Entropy 1.0747		Acc1 61.01	Acc5 95.88
+Train Epoch: [2][112/391]	Data 0.007670	Time 0.144446	Loss 1.0899	Entropy 1.0681		Acc1 61.12	Acc5 95.88
+Train Epoch: [2][128/391]	Data 0.001021	Time 0.140409	Loss 1.0834	Entropy 1.0630		Acc1 61.41	Acc5 95.96
+Train Epoch: [2][144/391]	Data 0.001156	Time 0.140387	Loss 1.0768	Entropy 1.0548		Acc1 61.69	Acc5 95.96
+Train Epoch: [2][160/391]	Data 0.001034	Time 0.140290	Loss 1.0721	Entropy 1.0520		Acc1 61.88	Acc5 95.93
+Train Epoch: [2][176/391]	Data 0.001191	Time 0.140367	Loss 1.0693	Entropy 1.0462		Acc1 62.02	Acc5 95.97
+Train Epoch: [2][192/391]	Data 0.001126	Time 0.140518	Loss 1.0602	Entropy 1.0410		Acc1 62.28	Acc5 96.09
+Train Epoch: [2][208/391]	Data 0.000978	Time 0.140345	Loss 1.0538	Entropy 1.0334		Acc1 62.39	Acc5 96.15
+Train Epoch: [2][224/391]	Data 0.000853	Time 0.140386	Loss 1.0507	Entropy 1.0294		Acc1 62.45	Acc5 96.18
+Train Epoch: [2][240/391]	Data 0.001047	Time 0.140492	Loss 1.0423	Entropy 1.0232		Acc1 62.72	Acc5 96.22
+Train Epoch: [2][256/391]	Data 0.000968	Time 0.140397	Loss 1.0378	Entropy 1.0178		Acc1 62.95	Acc5 96.24
+Train Epoch: [2][272/391]	Data 0.000813	Time 0.140459	Loss 1.0327	Entropy 1.0117		Acc1 63.09	Acc5 96.31
+Train Epoch: [2][288/391]	Data 0.001050	Time 0.140449	Loss 1.0267	Entropy 1.0070		Acc1 63.35	Acc5 96.35
+Train Epoch: [2][304/391]	Data 0.000842	Time 0.140352	Loss 1.0218	Entropy 1.0009		Acc1 63.55	Acc5 96.37
+Train Epoch: [2][320/391]	Data 0.001078	Time 0.140542	Loss 1.0133	Entropy 0.9949		Acc1 63.82	Acc5 96.43
+Train Epoch: [2][336/391]	Data 0.001155	Time 0.140533	Loss 1.0091	Entropy 0.9901		Acc1 63.99	Acc5 96.50
+Train Epoch: [2][352/391]	Data 0.000957	Time 0.140459	Loss 1.0048	Entropy 0.9857		Acc1 64.20	Acc5 96.52
+Train Epoch: [2][368/391]	Data 0.000992	Time 0.140351	Loss 1.0002	Entropy 0.9816		Acc1 64.38	Acc5 96.56
+Train Epoch: [2][384/391]	Data 0.000896	Time 0.140379	Loss 0.9956	Entropy 0.9760		Acc1 64.60	Acc5 96.58
+
+CONFUSION:
+ [[0.6674 0.0326 0.0766 0.0248 0.0212 0.0088 0.0066 0.0184 0.1028 0.0408]
+ [0.0264 0.8334 0.0050 0.0068 0.0038 0.0044 0.0068 0.0082 0.0316 0.0736]
+ [0.0844 0.0078 0.5230 0.0802 0.1048 0.0628 0.0732 0.0332 0.0222 0.0084]
+ [0.0248 0.0080 0.0864 0.4052 0.0690 0.2316 0.0950 0.0298 0.0276 0.0226]
+ [0.0344 0.0046 0.0916 0.0560 0.5592 0.0410 0.0814 0.1076 0.0140 0.0102]
+ [0.0090 0.0058 0.0660 0.2076 0.0564 0.5418 0.0344 0.0598 0.0074 0.0118]
+ [0.0086 0.0054 0.0626 0.0796 0.0720 0.0244 0.7236 0.0062 0.0100 0.0076]
+ [0.0174 0.0090 0.0422 0.0486 0.0964 0.0880 0.0102 0.6576 0.0070 0.0236]
+ [0.0990 0.0356 0.0210 0.0230 0.0082 0.0050 0.0084 0.0038 0.7692 0.0268]
+ [0.0364 0.0812 0.0066 0.0222 0.0064 0.0066 0.0076 0.0210 0.0282 0.7838]]
+
+#### TRAIN: 64.642
+
+
+Valid Epoch: [2][16/79]	Data 0.001865	Time 0.039474	Entropy 0.7330		Acc1 67.58	Acc5 97.22
+Valid Epoch: [2][32/79]	Data 0.001051	Time 0.038908	Entropy 0.7385		Acc1 67.14	Acc5 96.83
+Valid Epoch: [2][48/79]	Data 0.000780	Time 0.038400	Entropy 0.7415		Acc1 67.14	Acc5 96.96
+Valid Epoch: [2][64/79]	Data 0.000812	Time 0.038440	Entropy 0.7521		Acc1 66.71	Acc5 96.95
+
+CONFUSION:
+ [[0.5340 0.1030 0.0990 0.0010 0.0070 0.0040 0.0080 0.0100 0.1950 0.0390]
+ [0.0000 0.9640 0.0010 0.0010 0.0000 0.0010 0.0030 0.0010 0.0100 0.0190]
+ [0.0520 0.0210 0.5360 0.0100 0.1250 0.0640 0.1150 0.0300 0.0220 0.0250]
+ [0.0090 0.0480 0.1050 0.2080 0.0670 0.3290 0.1160 0.0220 0.0210 0.0750]
+ [0.0200 0.0110 0.0440 0.0100 0.5760 0.0530 0.0890 0.1800 0.0090 0.0080]
+ [0.0040 0.0160 0.0630 0.0330 0.0360 0.7090 0.0570 0.0410 0.0060 0.0350]
+ [0.0020 0.0130 0.0260 0.0140 0.0550 0.0230 0.8250 0.0040 0.0170 0.0210]
+ [0.0100 0.0390 0.0370 0.0090 0.0320 0.0880 0.0150 0.6990 0.0020 0.0690]
+ [0.0100 0.0750 0.0090 0.0050 0.0070 0.0060 0.0050 0.0040 0.8610 0.0180]
+ [0.0030 0.2110 0.0060 0.0000 0.0010 0.0010 0.0010 0.0020 0.0260 0.7490]]
+
+#### VALID: 66.610
+
+!+NEW BEST+ 66.610 IN EPOCH 2!!! SAVING... artifacts/cifar10/mobilenetv2_/bsd~1230/exec1/best_model.pth.tar
+
+!$$$$ BEST: 66.610
+
+
+################ COMPUTING INFERENCE TIMES AND MODEL WEIGHTS, BIAS AND PARAMETERS ################
+
+COMPUTING INFERENCE TIME: CPU
+
+COMPUTING INFERENCE TIME: GPU
+
+MEAN CPU INFERENCE TIME (MILISECONDS):	78.1986
+MEAN GPU INFERENCE TIME (MILISECONDS):	2.7907
+
+NUMBER OF WEIGHTS, BIAS AND PARAMETERS:
+MobileNetV2_ (
+  (conv1): Conv2d(3, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False), weights=((32, 3, 3, 3),), parameters=864
+  (bn1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True), weights=((32,), (32,)), parameters=64
+  (layers): Sequential (
+    (0): Block_(
+      (conv1): Conv2d(32, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=32, bias=False)
+      (bn2): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(32, 16, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential(
+        (0): Conv2d(32, 16, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (1): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+    ), weights=((32, 32, 1, 1), (32,), (32,), (32, 1, 3, 3), (32,), (32,), (16, 32, 1, 1), (16,), (16,), (16, 32, 1, 1), (16,), (16,)), parameters=2528
+    (1): Block_(
+      (conv1): Conv2d(16, 96, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(96, 96, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=96, bias=False)
+      (bn2): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(96, 24, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(24, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential(
+        (0): Conv2d(16, 24, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (1): BatchNorm2d(24, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+    ), weights=((96, 16, 1, 1), (96,), (96,), (96, 1, 3, 3), (96,), (96,), (24, 96, 1, 1), (24,), (24,), (24, 16, 1, 1), (24,), (24,)), parameters=5568
+    (2): Block_(
+      (conv1): Conv2d(24, 144, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(144, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(144, 144, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=144, bias=False)
+      (bn2): BatchNorm2d(144, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(144, 24, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(24, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential()
+    ), weights=((144, 24, 1, 1), (144,), (144,), (144, 1, 3, 3), (144,), (144,), (24, 144, 1, 1), (24,), (24,)), parameters=8832
+    (3): Block_(
+      (conv1): Conv2d(24, 144, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(144, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(144, 144, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=144, bias=False)
+      (bn2): BatchNorm2d(144, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(144, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential()
+    ), weights=((144, 24, 1, 1), (144,), (144,), (144, 1, 3, 3), (144,), (144,), (32, 144, 1, 1), (32,), (32,)), parameters=10000
+    (4): Block_(
+      (conv1): Conv2d(32, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(192, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+      (bn2): BatchNorm2d(192, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(192, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential()
+    ), weights=((192, 32, 1, 1), (192,), (192,), (192, 1, 3, 3), (192,), (192,), (32, 192, 1, 1), (32,), (32,)), parameters=14848
+    (5): Block_(
+      (conv1): Conv2d(32, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(192, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(192, 192, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=192, bias=False)
+      (bn2): BatchNorm2d(192, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(192, 32, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential()
+    ), weights=((192, 32, 1, 1), (192,), (192,), (192, 1, 3, 3), (192,), (192,), (32, 192, 1, 1), (32,), (32,)), parameters=14848
+    (6): Block_(
+      (conv1): Conv2d(32, 192, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(192, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(192, 192, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=192, bias=False)
+      (bn2): BatchNorm2d(192, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(192, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential()
+    ), weights=((192, 32, 1, 1), (192,), (192,), (192, 1, 3, 3), (192,), (192,), (64, 192, 1, 1), (64,), (64,)), parameters=21056
+    (7): Block_(
+      (conv1): Conv2d(64, 384, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(384, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=384, bias=False)
+      (bn2): BatchNorm2d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(384, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential()
+    ), weights=((384, 64, 1, 1), (384,), (384,), (384, 1, 3, 3), (384,), (384,), (64, 384, 1, 1), (64,), (64,)), parameters=54272
+    (8): Block_(
+      (conv1): Conv2d(64, 384, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(384, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=384, bias=False)
+      (bn2): BatchNorm2d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(384, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential()
+    ), weights=((384, 64, 1, 1), (384,), (384,), (384, 1, 3, 3), (384,), (384,), (64, 384, 1, 1), (64,), (64,)), parameters=54272
+    (9): Block_(
+      (conv1): Conv2d(64, 384, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(384, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=384, bias=False)
+      (bn2): BatchNorm2d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(384, 64, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential()
+    ), weights=((384, 64, 1, 1), (384,), (384,), (384, 1, 3, 3), (384,), (384,), (64, 384, 1, 1), (64,), (64,)), parameters=54272
+    (10): Block_(
+      (conv1): Conv2d(64, 384, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(384, 384, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=384, bias=False)
+      (bn2): BatchNorm2d(384, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(384, 96, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential(
+        (0): Conv2d(64, 96, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (1): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+    ), weights=((384, 64, 1, 1), (384,), (384,), (384, 1, 3, 3), (384,), (384,), (96, 384, 1, 1), (96,), (96,), (96, 64, 1, 1), (96,), (96,)), parameters=72960
+    (11): Block_(
+      (conv1): Conv2d(96, 576, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(576, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(576, 576, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=576, bias=False)
+      (bn2): BatchNorm2d(576, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(576, 96, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential()
+    ), weights=((576, 96, 1, 1), (576,), (576,), (576, 1, 3, 3), (576,), (576,), (96, 576, 1, 1), (96,), (96,)), parameters=118272
+    (12): Block_(
+      (conv1): Conv2d(96, 576, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(576, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(576, 576, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=576, bias=False)
+      (bn2): BatchNorm2d(576, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(576, 96, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(96, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential()
+    ), weights=((576, 96, 1, 1), (576,), (576,), (576, 1, 3, 3), (576,), (576,), (96, 576, 1, 1), (96,), (96,)), parameters=118272
+    (13): Block_(
+      (conv1): Conv2d(96, 576, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(576, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(576, 576, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), groups=576, bias=False)
+      (bn2): BatchNorm2d(576, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(576, 160, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(160, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential()
+    ), weights=((576, 96, 1, 1), (576,), (576,), (576, 1, 3, 3), (576,), (576,), (160, 576, 1, 1), (160,), (160,)), parameters=155264
+    (14): Block_(
+      (conv1): Conv2d(160, 960, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(960, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(960, 960, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=960, bias=False)
+      (bn2): BatchNorm2d(960, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(960, 160, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(160, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential()
+    ), weights=((960, 160, 1, 1), (960,), (960,), (960, 1, 3, 3), (960,), (960,), (160, 960, 1, 1), (160,), (160,)), parameters=320000
+    (15): Block_(
+      (conv1): Conv2d(160, 960, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(960, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(960, 960, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=960, bias=False)
+      (bn2): BatchNorm2d(960, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(960, 160, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(160, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential()
+    ), weights=((960, 160, 1, 1), (960,), (960,), (960, 1, 3, 3), (960,), (960,), (160, 960, 1, 1), (160,), (160,)), parameters=320000
+    (16): Block_(
+      (conv1): Conv2d(160, 960, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn1): BatchNorm2d(960, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv2): Conv2d(960, 960, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), groups=960, bias=False)
+      (bn2): BatchNorm2d(960, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (conv3): Conv2d(960, 320, kernel_size=(1, 1), stride=(1, 1), bias=False)
+      (bn3): BatchNorm2d(320, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      (shortcut): Sequential(
+        (0): Conv2d(160, 320, kernel_size=(1, 1), stride=(1, 1), bias=False)
+        (1): BatchNorm2d(320, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+      )
+    ), weights=((960, 160, 1, 1), (960,), (960,), (960, 1, 3, 3), (960,), (960,), (320, 960, 1, 1), (320,), (320,), (320, 160, 1, 1), (320,), (320,)), parameters=525760
+  ), weights=((32, 32, 1, 1), (32,), (32,), (32, 1, 3, 3), (32,), (32,), (16, 32, 1, 1), (16,), (16,), (16, 32, 1, 1), (16,), (16,), (96, 16, 1, 1), (96,), (96,), (96, 1, 3, 3), (96,), (96,), (24, 96, 1, 1), (24,), (24,), (24, 16, 1, 1), (24,), (24,), (144, 24, 1, 1), (144,), (144,), (144, 1, 3, 3), (144,), (144,), (24, 144, 1, 1), (24,), (24,), (144, 24, 1, 1), (144,), (144,), (144, 1, 3, 3), (144,), (144,), (32, 144, 1, 1), (32,), (32,), (192, 32, 1, 1), (192,), (192,), (192, 1, 3, 3), (192,), (192,), (32, 192, 1, 1), (32,), (32,), (192, 32, 1, 1), (192,), (192,), (192, 1, 3, 3), (192,), (192,), (32, 192, 1, 1), (32,), (32,), (192, 32, 1, 1), (192,), (192,), (192, 1, 3, 3), (192,), (192,), (64, 192, 1, 1), (64,), (64,), (384, 64, 1, 1), (384,), (384,), (384, 1, 3, 3), (384,), (384,), (64, 384, 1, 1), (64,), (64,), (384, 64, 1, 1), (384,), (384,), (384, 1, 3, 3), (384,), (384,), (64, 384, 1, 1), (64,), (64,), (384, 64, 1, 1), (384,), (384,), (384, 1, 3, 3), (384,), (384,), (64, 384, 1, 1), (64,), (64,), (384, 64, 1, 1), (384,), (384,), (384, 1, 3, 3), (384,), (384,), (96, 384, 1, 1), (96,), (96,), (96, 64, 1, 1), (96,), (96,), (576, 96, 1, 1), (576,), (576,), (576, 1, 3, 3), (576,), (576,), (96, 576, 1, 1), (96,), (96,), (576, 96, 1, 1), (576,), (576,), (576, 1, 3, 3), (576,), (576,), (96, 576, 1, 1), (96,), (96,), (576, 96, 1, 1), (576,), (576,), (576, 1, 3, 3), (576,), (576,), (160, 576, 1, 1), (160,), (160,), (960, 160, 1, 1), (960,), (960,), (960, 1, 3, 3), (960,), (960,), (160, 960, 1, 1), (160,), (160,), (960, 160, 1, 1), (960,), (960,), (960, 1, 3, 3), (960,), (960,), (160, 960, 1, 1), (160,), (160,), (960, 160, 1, 1), (960,), (960,), (960, 1, 3, 3), (960,), (960,), (320, 960, 1, 1), (320,), (320,), (320, 160, 1, 1), (320,), (320,)), parameters=1871024
+  (conv2): Conv2d(320, 1280, kernel_size=(1, 1), stride=(1, 1), bias=False), weights=((1280, 320, 1, 1),), parameters=409600
+  (bn2): BatchNorm2d(1280, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True), weights=((1280,), (1280,)), parameters=2560
+  (linear): Linear(in_features=1280, out_features=10, bias=True), weights=((10, 1280), (10,)), parameters=12810
+) 
+
+
+
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+ OVERALL STATISTICS 
+$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+
+ BSD~1230
+
+                        0
+TRAIN [ACC1]   64.642000
+VAL [ACC1]     66.610000
+TRAIN LOSS      0.994052
+TRAIN ENTROPY   0.974082
+VAL ENTROPY     0.748051
+CPU TIME [MS]  78.198597
+GPU TIME [MS]   2.790698
+
+        TRAIN [ACC1]  VAL [ACC1]  TRAIN LOSS  TRAIN ENTROPY  VAL ENTROPY  CPU TIME [MS]  GPU TIME [MS]
+count         1.000        1.00    1.000000       1.000000     1.000000       1.000000       1.000000
+mean         64.642       66.61    0.994052       0.974082     0.748051      78.198597       2.790698
+std             NaN         NaN         NaN            NaN          NaN            NaN            NaN
+min          64.642       66.61    0.994052       0.974082     0.748051      78.198597       2.790698
+25%          64.642       66.61    0.994052       0.974082     0.748051      78.198597       2.790698
+50%          64.642       66.61    0.994052       0.974082     0.748051      78.198597       2.790698
+75%          64.642       66.61    0.994052       0.974082     0.748051      78.198597       2.790698
+max          64.642       66.61    0.994052       0.974082     0.748051      78.198597       2.790698
+
+
+
+

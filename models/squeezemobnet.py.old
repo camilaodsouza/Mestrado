@@ -6,10 +6,10 @@ from collections import OrderedDict
 __all__ = ['SqueezeMobNet', 'squeezemobnet', 'squeezemobnet1_0', 'squeezemobnet1_1']
 
 
-class Block(nn.Module):
+class Block_(nn.Module):
     """Depthwise conv + Pointwise conv"""
     def __init__(self, in_planes, out_planes, stride=1):
-        super(Block, self).__init__()
+        super(Block_, self).__init__()
 
         self.mob = nn.Sequential(
             OrderedDict([
@@ -52,7 +52,7 @@ class Fire(nn.Module):
 
         self.group3 = nn.Sequential(
             OrderedDict([
-                ('expand3x3', Block(squeeze_planes, expand3x3_planes))  # ,
+                ('expand3x3', Block_(squeeze_planes, expand3x3_planes))  # ,
                 # ('BatchNorm', nn.BatchNorm2d(expand3x3_planes)),
                 # ('expand3x3_activation', nn.ReLU(inplace=True))
             ])

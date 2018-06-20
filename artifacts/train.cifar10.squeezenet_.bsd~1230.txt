@@ -180,30 +180,30 @@ MODEL: SqueezeNet_(
 ######## EPOCH: 1 OF 2 ########
 
 LEARNING RATE:	 0.05
-Train Epoch: [1][16/391]	Data 0.000977	Time 0.042335	Loss 2.2494	Entropy 2.2635		Acc1 17.72	Acc5 59.18
-Train Epoch: [1][32/391]	Data 0.000743	Time 0.042259	Loss 2.1957	Entropy 2.2437		Acc1 20.46	Acc5 67.29
-Train Epoch: [1][48/391]	Data 0.000735	Time 0.042289	Loss 2.1455	Entropy 2.2271		Acc1 22.38	Acc5 71.60
-Train Epoch: [1][64/391]	Data 0.000947	Time 0.042243	Loss 2.0941	Entropy 2.1994		Acc1 24.38	Acc5 74.41
-Train Epoch: [1][80/391]	Data 0.000915	Time 0.042187	Loss 2.0439	Entropy 2.1645		Acc1 26.51	Acc5 76.70
-Train Epoch: [1][96/391]	Data 0.000931	Time 0.042476	Loss 2.0051	Entropy 2.1301		Acc1 27.91	Acc5 77.93
-Train Epoch: [1][112/391]	Data 0.001012	Time 0.042329	Loss 1.9640	Entropy 2.0937		Acc1 29.26	Acc5 79.31
-Train Epoch: [1][128/391]	Data 0.000908	Time 0.042366	Loss 1.9302	Entropy 2.0623		Acc1 30.43	Acc5 80.49
-Train Epoch: [1][144/391]	Data 0.000783	Time 0.042264	Loss 1.8977	Entropy 2.0301		Acc1 31.67	Acc5 81.38
-Train Epoch: [1][160/391]	Data 0.000811	Time 0.042258	Loss 1.8675	Entropy 2.0018		Acc1 32.71	Acc5 82.18
-Train Epoch: [1][176/391]	Data 0.000735	Time 0.042379	Loss 1.8421	Entropy 1.9758		Acc1 33.41	Acc5 82.95
-Train Epoch: [1][192/391]	Data 0.000890	Time 0.042290	Loss 1.8165	Entropy 1.9499		Acc1 34.27	Acc5 83.63
-Train Epoch: [1][208/391]	Data 0.000777	Time 0.042522	Loss 1.7943	Entropy 1.9260		Acc1 35.02	Acc5 84.19
-Train Epoch: [1][224/391]	Data 0.000902	Time 0.042770	Loss 1.7742	Entropy 1.9043		Acc1 35.72	Acc5 84.67
-Train Epoch: [1][240/391]	Data 0.000785	Time 0.042212	Loss 1.7543	Entropy 1.8829		Acc1 36.42	Acc5 85.15
-Train Epoch: [1][256/391]	Data 0.000925	Time 0.042569	Loss 1.7345	Entropy 1.8625		Acc1 37.09	Acc5 85.61
-Train Epoch: [1][272/391]	Data 0.000938	Time 0.042416	Loss 1.7168	Entropy 1.8426		Acc1 37.77	Acc5 85.97
-Train Epoch: [1][288/391]	Data 0.000746	Time 0.042563	Loss 1.7003	Entropy 1.8260		Acc1 38.35	Acc5 86.36
-Train Epoch: [1][304/391]	Data 0.000737	Time 0.042543	Loss 1.6858	Entropy 1.8089		Acc1 38.93	Acc5 86.68
-Train Epoch: [1][320/391]	Data 0.001034	Time 0.042506	Loss 1.6733	Entropy 1.7937		Acc1 39.43	Acc5 86.95
-Train Epoch: [1][336/391]	Data 0.000953	Time 0.042564	Loss 1.6589	Entropy 1.7783		Acc1 39.98	Acc5 87.25
-Train Epoch: [1][352/391]	Data 0.000842	Time 0.042613	Loss 1.6446	Entropy 1.7632		Acc1 40.48	Acc5 87.53
-Train Epoch: [1][368/391]	Data 0.000901	Time 0.042548	Loss 1.6308	Entropy 1.7490		Acc1 40.99	Acc5 87.80
-Train Epoch: [1][384/391]	Data 0.000903	Time 0.042409	Loss 1.6170	Entropy 1.7355		Acc1 41.57	Acc5 88.05
+Train Epoch: [1][16/391]	Data 0.000760	Time 0.042382	Loss 2.2494	Entropy 2.2635		Acc1 17.72	Acc5 59.18
+Train Epoch: [1][32/391]	Data 0.000883	Time 0.042373	Loss 2.1957	Entropy 2.2437		Acc1 20.46	Acc5 67.29
+Train Epoch: [1][48/391]	Data 0.000948	Time 0.042318	Loss 2.1455	Entropy 2.2271		Acc1 22.38	Acc5 71.60
+Train Epoch: [1][64/391]	Data 0.000968	Time 0.042329	Loss 2.0941	Entropy 2.1994		Acc1 24.38	Acc5 74.41
+Train Epoch: [1][80/391]	Data 0.001061	Time 0.042240	Loss 2.0439	Entropy 2.1645		Acc1 26.51	Acc5 76.70
+Train Epoch: [1][96/391]	Data 0.000827	Time 0.042359	Loss 2.0051	Entropy 2.1301		Acc1 27.91	Acc5 77.93
+Train Epoch: [1][112/391]	Data 0.000986	Time 0.042306	Loss 1.9640	Entropy 2.0937		Acc1 29.26	Acc5 79.31
+Train Epoch: [1][128/391]	Data 0.000831	Time 0.042553	Loss 1.9302	Entropy 2.0623		Acc1 30.43	Acc5 80.49
+Train Epoch: [1][144/391]	Data 0.000855	Time 0.042272	Loss 1.8977	Entropy 2.0301		Acc1 31.67	Acc5 81.38
+Train Epoch: [1][160/391]	Data 0.001029	Time 0.042249	Loss 1.8675	Entropy 2.0018		Acc1 32.71	Acc5 82.18
+Train Epoch: [1][176/391]	Data 0.000840	Time 0.042325	Loss 1.8421	Entropy 1.9758		Acc1 33.41	Acc5 82.95
+Train Epoch: [1][192/391]	Data 0.000937	Time 0.042286	Loss 1.8165	Entropy 1.9499		Acc1 34.27	Acc5 83.63
+Train Epoch: [1][208/391]	Data 0.000993	Time 0.042189	Loss 1.7943	Entropy 1.9260		Acc1 35.02	Acc5 84.19
+Train Epoch: [1][224/391]	Data 0.000998	Time 0.042357	Loss 1.7742	Entropy 1.9043		Acc1 35.72	Acc5 84.67
+Train Epoch: [1][240/391]	Data 0.001011	Time 0.042334	Loss 1.7543	Entropy 1.8829		Acc1 36.42	Acc5 85.15
+Train Epoch: [1][256/391]	Data 0.000921	Time 0.043228	Loss 1.7345	Entropy 1.8625		Acc1 37.09	Acc5 85.61
+Train Epoch: [1][272/391]	Data 0.000867	Time 0.042374	Loss 1.7168	Entropy 1.8426		Acc1 37.77	Acc5 85.97
+Train Epoch: [1][288/391]	Data 0.000915	Time 0.042307	Loss 1.7003	Entropy 1.8260		Acc1 38.35	Acc5 86.36
+Train Epoch: [1][304/391]	Data 0.000948	Time 0.042579	Loss 1.6858	Entropy 1.8089		Acc1 38.93	Acc5 86.68
+Train Epoch: [1][320/391]	Data 0.000801	Time 0.043447	Loss 1.6733	Entropy 1.7937		Acc1 39.43	Acc5 86.95
+Train Epoch: [1][336/391]	Data 0.000803	Time 0.043487	Loss 1.6589	Entropy 1.7783		Acc1 39.98	Acc5 87.25
+Train Epoch: [1][352/391]	Data 0.000815	Time 0.042648	Loss 1.6446	Entropy 1.7632		Acc1 40.48	Acc5 87.53
+Train Epoch: [1][368/391]	Data 0.000853	Time 0.043257	Loss 1.6308	Entropy 1.7490		Acc1 40.99	Acc5 87.80
+Train Epoch: [1][384/391]	Data 0.000866	Time 0.042530	Loss 1.6170	Entropy 1.7355		Acc1 41.57	Acc5 88.05
 
 CONFUSION:
  [[0.4142 0.0656 0.0422 0.0232 0.0240 0.0286 0.0212 0.0306 0.2704 0.0800]
@@ -220,10 +220,10 @@ CONFUSION:
 #### TRAIN: 41.732
 
 
-Valid Epoch: [1][16/79]	Data 0.001168	Time 0.014817	Entropy 1.2985		Acc1 52.69	Acc5 94.04
-Valid Epoch: [1][32/79]	Data 0.001095	Time 0.014722	Entropy 1.2908		Acc1 52.00	Acc5 94.12
-Valid Epoch: [1][48/79]	Data 0.000850	Time 0.014509	Entropy 1.2991		Acc1 52.15	Acc5 94.25
-Valid Epoch: [1][64/79]	Data 0.000746	Time 0.014392	Entropy 1.2989		Acc1 51.99	Acc5 94.04
+Valid Epoch: [1][16/79]	Data 0.000722	Time 0.014375	Entropy 1.2985		Acc1 52.69	Acc5 94.04
+Valid Epoch: [1][32/79]	Data 0.000709	Time 0.014355	Entropy 1.2908		Acc1 52.00	Acc5 94.12
+Valid Epoch: [1][48/79]	Data 0.000732	Time 0.014361	Entropy 1.2991		Acc1 52.15	Acc5 94.25
+Valid Epoch: [1][64/79]	Data 0.000697	Time 0.014335	Entropy 1.2989		Acc1 51.99	Acc5 94.04
 
 CONFUSION:
  [[0.7060 0.0220 0.0970 0.0120 0.0100 0.0080 0.0070 0.0180 0.1130 0.0070]
@@ -247,30 +247,30 @@ CONFUSION:
 ######## EPOCH: 2 OF 2 ########
 
 LEARNING RATE:	 0.05
-Train Epoch: [2][16/391]	Data 0.001000	Time 0.042583	Loss 1.2581	Entropy 1.3547		Acc1 55.66	Acc5 94.73
-Train Epoch: [2][32/391]	Data 0.000775	Time 0.042716	Loss 1.2719	Entropy 1.3687		Acc1 54.83	Acc5 94.68
-Train Epoch: [2][48/391]	Data 0.000811	Time 0.041808	Loss 1.2740	Entropy 1.3696		Acc1 54.80	Acc5 94.89
-Train Epoch: [2][64/391]	Data 0.000818	Time 0.043229	Loss 1.2697	Entropy 1.3653		Acc1 54.99	Acc5 94.75
-Train Epoch: [2][80/391]	Data 0.000795	Time 0.042600	Loss 1.2672	Entropy 1.3595		Acc1 54.94	Acc5 94.77
-Train Epoch: [2][96/391]	Data 0.000829	Time 0.042594	Loss 1.2643	Entropy 1.3531		Acc1 55.14	Acc5 94.77
-Train Epoch: [2][112/391]	Data 0.000948	Time 0.041686	Loss 1.2572	Entropy 1.3459		Acc1 55.46	Acc5 94.69
-Train Epoch: [2][128/391]	Data 0.000911	Time 0.042662	Loss 1.2537	Entropy 1.3409		Acc1 55.63	Acc5 94.68
-Train Epoch: [2][144/391]	Data 0.000786	Time 0.043654	Loss 1.2435	Entropy 1.3338		Acc1 56.00	Acc5 94.75
-Train Epoch: [2][160/391]	Data 0.000945	Time 0.044748	Loss 1.2352	Entropy 1.3251		Acc1 56.26	Acc5 94.83
-Train Epoch: [2][176/391]	Data 0.000965	Time 0.046053	Loss 1.2314	Entropy 1.3190		Acc1 56.33	Acc5 94.84
-Train Epoch: [2][192/391]	Data 0.000906	Time 0.046474	Loss 1.2237	Entropy 1.3118		Acc1 56.61	Acc5 94.89
-Train Epoch: [2][208/391]	Data 0.000917	Time 0.046642	Loss 1.2180	Entropy 1.3057		Acc1 56.85	Acc5 94.96
-Train Epoch: [2][224/391]	Data 0.000945	Time 0.046369	Loss 1.2132	Entropy 1.3006		Acc1 57.03	Acc5 94.95
-Train Epoch: [2][240/391]	Data 0.000915	Time 0.046590	Loss 1.2048	Entropy 1.2923		Acc1 57.37	Acc5 95.02
-Train Epoch: [2][256/391]	Data 0.000912	Time 0.046388	Loss 1.2009	Entropy 1.2857		Acc1 57.53	Acc5 95.07
-Train Epoch: [2][272/391]	Data 0.000772	Time 0.046256	Loss 1.1960	Entropy 1.2807		Acc1 57.68	Acc5 95.15
-Train Epoch: [2][288/391]	Data 0.000977	Time 0.046380	Loss 1.1886	Entropy 1.2755		Acc1 57.93	Acc5 95.22
-Train Epoch: [2][304/391]	Data 0.000923	Time 0.046327	Loss 1.1818	Entropy 1.2687		Acc1 58.15	Acc5 95.26
-Train Epoch: [2][320/391]	Data 0.000739	Time 0.046365	Loss 1.1742	Entropy 1.2611		Acc1 58.44	Acc5 95.31
-Train Epoch: [2][336/391]	Data 0.001017	Time 0.046252	Loss 1.1694	Entropy 1.2567		Acc1 58.60	Acc5 95.35
-Train Epoch: [2][352/391]	Data 0.000853	Time 0.046301	Loss 1.1651	Entropy 1.2513		Acc1 58.78	Acc5 95.38
-Train Epoch: [2][368/391]	Data 0.000963	Time 0.046373	Loss 1.1611	Entropy 1.2469		Acc1 58.90	Acc5 95.42
-Train Epoch: [2][384/391]	Data 0.000709	Time 0.046360	Loss 1.1560	Entropy 1.2410		Acc1 59.12	Acc5 95.46
+Train Epoch: [2][16/391]	Data 0.000888	Time 0.042638	Loss 1.2581	Entropy 1.3547		Acc1 55.66	Acc5 94.73
+Train Epoch: [2][32/391]	Data 0.000939	Time 0.042596	Loss 1.2719	Entropy 1.3687		Acc1 54.83	Acc5 94.68
+Train Epoch: [2][48/391]	Data 0.000971	Time 0.042617	Loss 1.2740	Entropy 1.3696		Acc1 54.80	Acc5 94.89
+Train Epoch: [2][64/391]	Data 0.000882	Time 0.042723	Loss 1.2697	Entropy 1.3653		Acc1 54.99	Acc5 94.75
+Train Epoch: [2][80/391]	Data 0.000844	Time 0.042689	Loss 1.2672	Entropy 1.3595		Acc1 54.94	Acc5 94.77
+Train Epoch: [2][96/391]	Data 0.000844	Time 0.042584	Loss 1.2643	Entropy 1.3531		Acc1 55.14	Acc5 94.77
+Train Epoch: [2][112/391]	Data 0.001129	Time 0.042573	Loss 1.2572	Entropy 1.3459		Acc1 55.46	Acc5 94.69
+Train Epoch: [2][128/391]	Data 0.000829	Time 0.043066	Loss 1.2537	Entropy 1.3409		Acc1 55.63	Acc5 94.68
+Train Epoch: [2][144/391]	Data 0.000867	Time 0.042974	Loss 1.2435	Entropy 1.3338		Acc1 56.00	Acc5 94.75
+Train Epoch: [2][160/391]	Data 0.000822	Time 0.044374	Loss 1.2352	Entropy 1.3251		Acc1 56.26	Acc5 94.83
+Train Epoch: [2][176/391]	Data 0.000896	Time 0.046085	Loss 1.2314	Entropy 1.3190		Acc1 56.33	Acc5 94.84
+Train Epoch: [2][192/391]	Data 0.000874	Time 0.046308	Loss 1.2237	Entropy 1.3118		Acc1 56.61	Acc5 94.89
+Train Epoch: [2][208/391]	Data 0.000991	Time 0.045264	Loss 1.2180	Entropy 1.3057		Acc1 56.85	Acc5 94.96
+Train Epoch: [2][224/391]	Data 0.000791	Time 0.046799	Loss 1.2132	Entropy 1.3006		Acc1 57.03	Acc5 94.95
+Train Epoch: [2][240/391]	Data 0.000795	Time 0.046368	Loss 1.2048	Entropy 1.2923		Acc1 57.37	Acc5 95.02
+Train Epoch: [2][256/391]	Data 0.000800	Time 0.046303	Loss 1.2009	Entropy 1.2857		Acc1 57.53	Acc5 95.07
+Train Epoch: [2][272/391]	Data 0.000833	Time 0.046311	Loss 1.1960	Entropy 1.2807		Acc1 57.68	Acc5 95.15
+Train Epoch: [2][288/391]	Data 0.000978	Time 0.046352	Loss 1.1886	Entropy 1.2755		Acc1 57.93	Acc5 95.22
+Train Epoch: [2][304/391]	Data 0.000890	Time 0.046584	Loss 1.1818	Entropy 1.2687		Acc1 58.15	Acc5 95.26
+Train Epoch: [2][320/391]	Data 0.000961	Time 0.046299	Loss 1.1742	Entropy 1.2611		Acc1 58.44	Acc5 95.31
+Train Epoch: [2][336/391]	Data 0.001117	Time 0.046232	Loss 1.1694	Entropy 1.2567		Acc1 58.60	Acc5 95.35
+Train Epoch: [2][352/391]	Data 0.000757	Time 0.045811	Loss 1.1651	Entropy 1.2513		Acc1 58.78	Acc5 95.38
+Train Epoch: [2][368/391]	Data 0.000759	Time 0.046164	Loss 1.1611	Entropy 1.2469		Acc1 58.90	Acc5 95.42
+Train Epoch: [2][384/391]	Data 0.000832	Time 0.046346	Loss 1.1560	Entropy 1.2410		Acc1 59.12	Acc5 95.46
 
 CONFUSION:
  [[0.6262 0.0452 0.0724 0.0218 0.0130 0.0118 0.0126 0.0192 0.1294 0.0484]
@@ -287,10 +287,10 @@ CONFUSION:
 #### TRAIN: 59.224
 
 
-Valid Epoch: [2][16/79]	Data 0.000806	Time 0.015468	Entropy 1.0387		Acc1 55.62	Acc5 94.53
-Valid Epoch: [2][32/79]	Data 0.000862	Time 0.015495	Entropy 1.0427		Acc1 55.22	Acc5 95.04
-Valid Epoch: [2][48/79]	Data 0.000819	Time 0.015472	Entropy 1.0432		Acc1 55.16	Acc5 95.00
-Valid Epoch: [2][64/79]	Data 0.000846	Time 0.015388	Entropy 1.0497		Acc1 54.77	Acc5 95.00
+Valid Epoch: [2][16/79]	Data 0.000746	Time 0.015312	Entropy 1.0387		Acc1 55.62	Acc5 94.53
+Valid Epoch: [2][32/79]	Data 0.000738	Time 0.015292	Entropy 1.0427		Acc1 55.22	Acc5 95.04
+Valid Epoch: [2][48/79]	Data 0.000758	Time 0.015279	Entropy 1.0432		Acc1 55.16	Acc5 95.00
+Valid Epoch: [2][64/79]	Data 0.000738	Time 0.015285	Entropy 1.0497		Acc1 54.77	Acc5 95.00
 
 CONFUSION:
  [[0.4440 0.0590 0.2200 0.0040 0.0730 0.0000 0.0130 0.0970 0.0690 0.0210]
@@ -317,8 +317,8 @@ COMPUTING INFERENCE TIME: CPU
 
 COMPUTING INFERENCE TIME: GPU
 
-MEAN CPU INFERENCE TIME (MILISECONDS):	5.7100
-MEAN GPU INFERENCE TIME (MILISECONDS):	1.7123
+MEAN CPU INFERENCE TIME (MILISECONDS):	5.6305
+MEAN GPU INFERENCE TIME (MILISECONDS):	1.6984
 
 NUMBER OF WEIGHTS, BIAS AND PARAMETERS:
 SqueezeNet_ (
@@ -489,18 +489,18 @@ VAL [ACC1]     54.840000
 TRAIN LOSS      1.154116
 TRAIN ENTROPY   1.238427
 VAL ENTROPY     1.051619
-CPU TIME [MS]   5.709994
-GPU TIME [MS]   1.712263
+CPU TIME [MS]   5.630540
+GPU TIME [MS]   1.698415
 
         TRAIN [ACC1]  VAL [ACC1]  TRAIN LOSS  TRAIN ENTROPY  VAL ENTROPY  CPU TIME [MS]  GPU TIME [MS]
-count         1.000        1.00    1.000000       1.000000     1.000000       1.000000       1.000000
-mean         59.224       54.84    1.154116       1.238427     1.051619       5.709994       1.712263
+count         1.000        1.00    1.000000       1.000000     1.000000        1.00000       1.000000
+mean         59.224       54.84    1.154116       1.238427     1.051619        5.63054       1.698415
 std             NaN         NaN         NaN            NaN          NaN            NaN            NaN
-min          59.224       54.84    1.154116       1.238427     1.051619       5.709994       1.712263
-25%          59.224       54.84    1.154116       1.238427     1.051619       5.709994       1.712263
-50%          59.224       54.84    1.154116       1.238427     1.051619       5.709994       1.712263
-75%          59.224       54.84    1.154116       1.238427     1.051619       5.709994       1.712263
-max          59.224       54.84    1.154116       1.238427     1.051619       5.709994       1.712263
+min          59.224       54.84    1.154116       1.238427     1.051619        5.63054       1.698415
+25%          59.224       54.84    1.154116       1.238427     1.051619        5.63054       1.698415
+50%          59.224       54.84    1.154116       1.238427     1.051619        5.63054       1.698415
+75%          59.224       54.84    1.154116       1.238427     1.051619        5.63054       1.698415
+max          59.224       54.84    1.154116       1.238427     1.051619        5.63054       1.698415
 
 
 

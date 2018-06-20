@@ -65,19 +65,19 @@ parser.add_argument('-lm', '--local-model', metavar='MODEL', default=None, choic
                     help='model to be used: ' + ' | '.join(local_model_names))
 parser.add_argument('-rm', '--remote-model', metavar='MODEL', default=None, choices=remote_model_names,
                     help='model to be used: ' + ' | '.join(remote_model_names))
-#parser.add_argument('-w', '--workers', default=4, type=int, metavar='N',
-#                    help='number of data loading workers (default: 4)')
 parser.add_argument('-w', '--workers', default=4, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
-parser.add_argument('-e', '--epochs', default=100, type=int, metavar='N',
+parser.add_argument('-e', '--epochs', default=150, type=int, metavar='N',
                     help='number of total epochs to run')
 parser.add_argument('-bs', '--batch-size', default=128, type=int, metavar='N',
                     help='mini-batch size (default: 128)')
 parser.add_argument('-tss', '--train-set-split', default=None, type=float, metavar='TSS',
                     help='fraction of trainset to be used to validation')
-parser.add_argument('-lr', '--original-learning-rate', default=0.05, type=float, metavar='LR',
+#parser.add_argument('-lr', '--original-learning-rate', default=0.05, type=float, metavar='LR',
+#                    help='initial learning rate')
+parser.add_argument('-lr', '--original-learning-rate', default=0.1, type=float, metavar='LR',
                     help='initial learning rate')
-parser.add_argument('-lrdr', '--learning-rate-decay-rate', default=0.1, type=float, metavar='LRDR',
+parser.add_argument('-lrdr', '--learning-rate-decay-rate', default=0.2, type=float, metavar='LRDR',
                     help='learning rate decay rate')
 parser.add_argument('-lrdp', '--learning-rate-decay-period', default=30, type=int, metavar='LRDP',
                     help='learning rate decay period')
@@ -428,8 +428,8 @@ def validate(val_loader, model, epoch, writer):
     # switch to evaluate mode
     model.eval()
 
-    correct = 0
-    total = 0
+    #correct = 0
+    #total = 0
 
     # Start timer...
     val_batch_start_time = time.time()
@@ -573,8 +573,7 @@ def create_model():
     return model
 
 
-def extract_logits_from_file(model_file, model, number_of_classes, path,
-                             train_loader, val_loader, test_loader, suffix):
+def extract_logits_from_file(model_file, model, number_of_classes, path, train_loader, val_loader, test_loader, suffix):
 
     # Loading best model...
     if os.path.isfile(model_file):
