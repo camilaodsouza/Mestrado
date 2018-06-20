@@ -3,6 +3,7 @@ import torch.nn.functional as F
 import math
 
 __all__ = ['MobileNetV2_', 'mobilenetv2_']
+__all__ += ['MobileNetV2', 'mobilenetv2']
 
 
 class Block_(nn.Module):
@@ -144,7 +145,7 @@ class InvertedResidual(nn.Module):
 
 
 class MobileNetV2(nn.Module):
-    def __init__(self, n_class=1000, input_size=224, width_mult=1.):
+    def __init__(self, num_classes=1000, input_size=224, width_mult=1.):
         super(MobileNetV2, self).__init__()
         # setting of inverted residual blocks
         self.interverted_residual_setting = [
@@ -174,14 +175,15 @@ class MobileNetV2(nn.Module):
                 input_channel = output_channel
         # building last several layers
         self.features.append(conv_1x1_bn(input_channel, self.last_channel))
-        self.features.append(nn.AvgPool2d(input_size/32))
+        ##self.features.append(nn.AvgPool2d(input_size/32))
+        self.features.append(nn.AvgPool2d(input_size//32))
         # make it nn.Sequential
         self.features = nn.Sequential(*self.features)
 
         # building classifier
         self.classifier = nn.Sequential(
             nn.Dropout(),
-            nn.Linear(self.last_channel, n_class),
+            nn.Linear(self.last_channel, num_classes),
         )
 
         self._initialize_weights()

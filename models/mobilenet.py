@@ -2,6 +2,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 __all__ = ['MobileNet_', 'mobilenet_']
+__all__ += ['MobileNet', 'mobilenet']
 
 
 class Block_(nn.Module):

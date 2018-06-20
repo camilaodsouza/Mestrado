@@ -73,10 +73,10 @@ parser.add_argument('-bs', '--batch-size', default=128, type=int, metavar='N',
                     help='mini-batch size (default: 128)')
 parser.add_argument('-tss', '--train-set-split', default=None, type=float, metavar='TSS',
                     help='fraction of trainset to be used to validation')
-#parser.add_argument('-lr', '--original-learning-rate', default=0.05, type=float, metavar='LR',
-#                    help='initial learning rate')
-parser.add_argument('-lr', '--original-learning-rate', default=0.1, type=float, metavar='LR',
+parser.add_argument('-lr', '--original-learning-rate', default=0.05, type=float, metavar='LR',
                     help='initial learning rate')
+#parser.add_argument('-lr', '--original-learning-rate', default=0.1, type=float, metavar='LR',
+#                    help='initial learning rate')
 parser.add_argument('-lrdr', '--learning-rate-decay-rate', default=0.2, type=float, metavar='LRDR',
                     help='learning rate decay rate')
 parser.add_argument('-lrdp', '--learning-rate-decay-period', default=30, type=int, metavar='LRDP',
