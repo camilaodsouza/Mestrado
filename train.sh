@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+export run=train
+
 export dataset=cifar10
 for model in alexnet_ squeezenet_ squeezemobnet_ mobilenet_ mobilenetv2_
 do
