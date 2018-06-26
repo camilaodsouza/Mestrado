@@ -1,4 +1,4 @@
-#from .lenet import *
+from .lenet import *
 from .alexnet import *
 #from .vgg import *
 #from .resnet import *

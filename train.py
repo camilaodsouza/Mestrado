@@ -67,21 +67,21 @@ parser.add_argument('-rm', '--remote-model', metavar='MODEL', default=None, choi
                     help='model to be used: ' + ' | '.join(remote_model_names))
 parser.add_argument('-w', '--workers', default=4, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
-parser.add_argument('-e', '--epochs', default=150, type=int, metavar='N',
+parser.add_argument('-e', '--epochs', default=100, type=int, metavar='N',
                     help='number of total epochs to run')
 parser.add_argument('-bs', '--batch-size', default=128, type=int, metavar='N',
                     help='mini-batch size (default: 128)')
 parser.add_argument('-tss', '--train-set-split', default=None, type=float, metavar='TSS',
                     help='fraction of trainset to be used to validation')
-parser.add_argument('-lr', '--original-learning-rate', default=0.05, type=float, metavar='LR',
-                    help='initial learning rate')
-#parser.add_argument('-lr', '--original-learning-rate', default=0.1, type=float, metavar='LR',
+#parser.add_argument('-lr', '--original-learning-rate', default=0.05, type=float, metavar='LR',
 #                    help='initial learning rate')
-parser.add_argument('-lrdr', '--learning-rate-decay-rate', default=0.2, type=float, metavar='LRDR',
+parser.add_argument('-lr', '--original-learning-rate', default=0.1, type=float, metavar='LR',
+                    help='initial learning rate')
+parser.add_argument('-lrdr', '--learning-rate-decay-rate', default=0.1, type=float, metavar='LRDR',
                     help='learning rate decay rate')
 parser.add_argument('-lrdp', '--learning-rate-decay-period', default=30, type=int, metavar='LRDP',
                     help='learning rate decay period')
-parser.add_argument('-lrde', '--learning-rate-decay-epochs', default="60 80 90", metavar='LRDE',
+parser.add_argument('-lrde', '--learning-rate-decay-epochs', default="40 70 90", metavar='LRDE',
                     help='learning rate decay epochs')
 parser.add_argument('-exps', '--experiments', default="baseline", type=str, metavar='EXPERIMENTS',
                     help='Experiments to be performed')
@@ -239,11 +239,10 @@ def execute():
     #optimizer = torch.optim.Adam(model.parameters(), lr=0.01)  # , weight_decay=5e-4)
 
     # define scheduler...
-    # scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'max', patience=10, factor=0.2, verbose=True)
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=10, factor=0.2, verbose=True,
-                                                           threshold=0.05, threshold_mode='rel')
-    #scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=10, factor=0.1, verbose=True,
-    #                                                       threshold=0.05, threshold_mode='abs')
+    #scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=10, factor=0.2, verbose=True,
+    #                                                       threshold=0.05, threshold_mode='rel')
+    scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=args.learning_rate_decay_epochs,
+                                                     gamma=args.learning_rate_decay_rate)
 
     # model.initialize_parameters() ####### It works for AlexNet_, LeNet and VGG...
     # initialize_parameters(model)
@@ -291,7 +290,7 @@ def train_val(train_loader, val_loader, model, criterion, optimizer, scheduler,
         print("\n######## EPOCH:", epoch, "OF", total_epochs, "########")
 
         # Adjusting learning rate (if not using reduce on plateau)...
-        # scheduler.step()
+        scheduler.step()
 
         # Print current learning rate...
         for param_group in optimizer.param_groups:
@@ -323,8 +322,8 @@ def train_val(train_loader, val_loader, model, criterion, optimizer, scheduler,
         print('!$$$$ BEST: {0:.3f}\n'.format(best_model_val_acc1))
 
         # Adjusting learning rate (if using reduce on plateau)...
-        # scheduler.step(val_acc1)
-        scheduler.step(train_loss)
+        #### scheduler.step(val_acc1)
+        #scheduler.step(train_loss)
 
     return (best_model_train_acc1, best_model_val_acc1, best_model_train_loss,
             best_model_train_entropy, best_model_val_entropy)
