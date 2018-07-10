@@ -6,19 +6,19 @@ export run=train
 #for model in alexnet_ squeezenet_ squeezemobnet_ mobilenet_ mobilenetv2_
 #do
 #  export exps="baseline"
-#  python $run.py -d $dataset -lm $model -exps $exps | tee artifacts/$run.$dataset.$model.$exps.txt
+#  python $run.py -d $dataset -lm $model -exps $exps -x 5 -e 200 -lr 0.05 -lrdr 0.2 -lrde "80 140 180" #| tee artifacts/$run.$dataset.$model.$exps.txt
 #done
 
 #export dataset=cifar100
 #for model in alexnet_ squeezenet_ squeezemobnet_ mobilenet_ mobilenetv2_
 #do
 #  export exps="baseline"
-#  python $run.py -d $dataset -lm $model -exps $exps | tee artifacts/$run.$dataset.$model.$exps.txt
+#  python $run.py -d $dataset -lm $model -exps $exps -x 5 -e 200 -lr 0.05 -lrdr 0.2 -lrde "80 140 180" #| tee artifacts/$run.$dataset.$model.$exps.txt
 #done
 
 export dataset=imagenet2012
-for model in alexnet squeezenet1_1 squeezemobnet1_1 mobilenet mobilenetv2
+for model in squeezenet1_1 squeezemobnet1_1 mobilenet mobilenetv2 #alexnet
 do
   export exps="baseline"
-  python $run.py -d $dataset -lm $model -exps $exps -x 1 | tee artifacts/$run.$dataset.$model.$exps.txt
+  python $run.py -d $dataset -lm $model -exps $exps -x 1 -e 100 -lr 0.05 -lrdr 0.2 -lrde "40 70 90" #| tee artifacts/$run.$dataset.$model.$exps.txt
 done

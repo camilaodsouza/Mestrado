@@ -13,11 +13,9 @@ class Block_(nn.Module):
 
         self.mob = nn.Sequential(
             OrderedDict([
-                 #('Dropout', nn.Dropout()),
                  ('pointwise', nn.Conv2d(in_planes, in_planes, kernel_size=3, stride=stride, padding=1, groups=in_planes, bias=False)),
                  #('BatchNorm', nn.BatchNorm2d(in_planes)),
                  ('activation', nn.ReLU(inplace=True)),
-                 #('BatchNorm', nn.BatchNorm2d(in_planes)),
                  ('depthwise', nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=1, bias=False)),
                  ('BatchNorm', nn.BatchNorm2d(out_planes)),
                  ('activation', nn.ReLU(inplace=True))
