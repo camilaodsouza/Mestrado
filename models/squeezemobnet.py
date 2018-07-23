@@ -14,7 +14,7 @@ class Block_(nn.Module):
         self.mob = nn.Sequential(
             OrderedDict([
                  ('pointwise', nn.Conv2d(in_planes, in_planes, kernel_size=3, stride=stride, padding=1, groups=in_planes, bias=False)),
-                 #('BatchNorm', nn.BatchNorm2d(in_planes)),
+                 # ('BatchNorm', nn.BatchNorm2d(in_planes)),
                  ('activation', nn.ReLU(inplace=True)),
                  ('depthwise', nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=1, bias=False)),
                  ('BatchNorm', nn.BatchNorm2d(out_planes)),
@@ -75,6 +75,7 @@ class SqueezeMobNet_(nn.Module):
             # Model to ImageNet dataset...
             self.features = nn.Sequential(
                 nn.Conv2d(3, 96, kernel_size=7, stride=2),
+                # nn.BatchNorm2d(96),
                 nn.ReLU(inplace=True),
                 nn.MaxPool2d(kernel_size=3, stride=2, ceil_mode=True),
                 Fire_(96, 16, 64, 64),
@@ -92,6 +93,7 @@ class SqueezeMobNet_(nn.Module):
             # Model to ImageNet dataset...
             self.features = nn.Sequential(
                 nn.Conv2d(3, 64, kernel_size=3, stride=2),
+                nn.BatchNorm2d(64),  # <<== New Line...
                 nn.ReLU(inplace=True),
                 nn.MaxPool2d(kernel_size=3, stride=2, ceil_mode=True),
                 Fire_(64, 16, 64, 64),
@@ -108,6 +110,7 @@ class SqueezeMobNet_(nn.Module):
         elif version == "cifar":
             self.features = nn.Sequential(  # 32x32x3
                 nn.Conv2d(3, 96, kernel_size=3, stride=1, padding=1),  # 32x32x64
+                # nn.BatchNorm2d(96),
                 nn.ReLU(inplace=True),
                 nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True),  # 16x16x64
                 Fire_(96, 32, 64, 64),  # 16x16x128

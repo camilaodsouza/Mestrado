@@ -67,22 +67,20 @@ parser.add_argument('-rm', '--remote-model', metavar='MODEL', default=None, choi
                     help='model to be used: ' + ' | '.join(remote_model_names))
 parser.add_argument('-w', '--workers', default=4, type=int, metavar='N',
                     help='number of data loading workers (default: 4)')
-parser.add_argument('-e', '--epochs', default=100, type=int, metavar='N',
+parser.add_argument('-e', '--epochs', default=120, type=int, metavar='N',
                     help='number of total epochs to run')
 parser.add_argument('-bs', '--batch-size', default=128, type=int, metavar='N',
                     help='mini-batch size (default: 128)')
 parser.add_argument('-tss', '--train-set-split', default=None, type=float, metavar='TSS',
                     help='fraction of trainset to be used to validation')
-#parser.add_argument('-lr', '--original-learning-rate', default=0.05, type=float, metavar='LR',
-#                    help='initial learning rate')
 parser.add_argument('-lr', '--original-learning-rate', default=0.05, type=float, metavar='LR',
                     help='initial learning rate')
 parser.add_argument('-lrdr', '--learning-rate-decay-rate', default=0.2, type=float, metavar='LRDR',
                     help='learning rate decay rate')
+parser.add_argument('-lrde', '--learning-rate-decay-epochs', default="60 90 110", metavar='LRDE',
+                    help='learning rate decay epochs')
 parser.add_argument('-lrdp', '--learning-rate-decay-period', default=30, type=int, metavar='LRDP',
                     help='learning rate decay period')
-parser.add_argument('-lrde', '--learning-rate-decay-epochs', default="40 70 90", metavar='LRDE',
-                    help='learning rate decay epochs')
 parser.add_argument('-exps', '--experiments', default="baseline", type=str, metavar='EXPERIMENTS',
                     help='Experiments to be performed')
 parser.add_argument('-mm', '--momentum', default=0.9, type=float, metavar='M',
@@ -193,6 +191,16 @@ def execute():
     if not os.path.exists(args.execution_path):
         os.makedirs(args.execution_path)
 
+    # Needed to train squeeze on ImageNet???
+    if args.arch.startswith("squeeze"):
+        args.original_learning_rate = 0.01
+        args.weight_decay = 2*1e-4
+
+    # Needed to train squeeze on ImageNet???
+    if args.arch.startswith("mobile"):
+        args.original_learning_rate = 0.05
+        args.weight_decay = 4*1e-5
+
     # Printing args...
     print("\nARGUMENTS: ", vars(args))
 
@@ -234,15 +242,15 @@ def execute():
     criterion = nn.CrossEntropyLoss().cuda()
 
     # define optimizer...
-    optimizer = torch.optim.SGD(model.parameters(), lr=args.original_learning_rate, momentum=args.momentum,
-                                weight_decay=args.weight_decay, nesterov=True)
-    #optimizer = torch.optim.Adam(model.parameters(), lr=0.01)  # , weight_decay=5e-4)
+    optimizer = torch.optim.SGD(model.parameters(), lr=args.original_learning_rate, momentum=args.momentum, weight_decay=args.weight_decay)
+    #optimizer = torch.optim.Adam(model.parameters())  # , lr=0.01)  # , weight_decay=2e-4)
 
     # define scheduler...
     #scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=10, factor=0.2, verbose=True,
     #                                                       threshold=0.05, threshold_mode='rel')
     scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, milestones=args.learning_rate_decay_epochs,
                                                      gamma=args.learning_rate_decay_rate)
+    #scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.98, last_epoch=-1)
 
     # model.initialize_parameters() ####### It works for AlexNet_, LeNet and VGG...
     # initialize_parameters(model)

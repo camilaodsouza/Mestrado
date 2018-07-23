@@ -54,6 +54,7 @@ class SqueezeNet_(nn.Module):
         if version == "cifar":
             self.features = nn.Sequential(  # 32x32x3
                 nn.Conv2d(3, 96, kernel_size=3, stride=1, padding=1),  # 32x32x96
+                # nn.BatchNorm2d(96),
                 nn.ReLU(inplace=True),
                 nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True),  # 16x16x96
                 Fire_(96, 32, 64, 64),  # 16x16x128
@@ -126,24 +127,27 @@ def squeezenet_(**kwargs):
 
 class Fire(nn.Module):
 
-    def __init__(self, inplanes, squeeze_planes,
-                 expand1x1_planes, expand3x3_planes):
+    def __init__(self, inplanes, squeeze_planes, expand1x1_planes, expand3x3_planes):
         super(Fire, self).__init__()
         self.inplanes = inplanes
         self.squeeze = nn.Conv2d(inplanes, squeeze_planes, kernel_size=1)
+        self.squeeze_bn = nn.BatchNorm2d(squeeze_planes)  # <<== New Line...
         self.squeeze_activation = nn.ReLU(inplace=True)
-        self.expand1x1 = nn.Conv2d(squeeze_planes, expand1x1_planes,
-                                   kernel_size=1)
+        self.expand1x1 = nn.Conv2d(squeeze_planes, expand1x1_planes, kernel_size=1)
+        self.expand1x1_bn = nn.BatchNorm2d(expand1x1_planes)  # <<== New Line...
         self.expand1x1_activation = nn.ReLU(inplace=True)
-        self.expand3x3 = nn.Conv2d(squeeze_planes, expand3x3_planes,
-                                   kernel_size=3, padding=1)
+        self.expand3x3 = nn.Conv2d(squeeze_planes, expand3x3_planes, kernel_size=3, padding=1)
+        self.expand3x3_bn = nn.BatchNorm2d(expand3x3_planes)  # <<== New Line...
         self.expand3x3_activation = nn.ReLU(inplace=True)
 
     def forward(self, x):
-        x = self.squeeze_activation(self.squeeze(x))
+        # x = self.squeeze_activation(self.squeeze(x))
+        x = self.squeeze_activation(self.squeeze_bn(self.squeeze(x)))
         return torch.cat([
-            self.expand1x1_activation(self.expand1x1(x)),
-            self.expand3x3_activation(self.expand3x3(x))
+            # self.expand1x1_activation(self.expand1x1(x)),
+            self.expand1x1_activation(self.expand1x1_bn(self.expand1x1(x))),
+            # self.expand3x3_activation(self.expand3x3(x))
+            self.expand3x3_activation(self.expand3x3_bn(self.expand3x3(x)))
         ], 1)
 
 
@@ -158,6 +162,7 @@ class SqueezeNet(nn.Module):
         if version == 1.0:
             self.features = nn.Sequential(
                 nn.Conv2d(3, 96, kernel_size=7, stride=2),
+                # nn.BatchNorm2d(96),
                 nn.ReLU(inplace=True),
                 nn.MaxPool2d(kernel_size=3, stride=2, ceil_mode=True),
                 Fire(96, 16, 64, 64),
@@ -174,6 +179,7 @@ class SqueezeNet(nn.Module):
         else:
             self.features = nn.Sequential(
                 nn.Conv2d(3, 64, kernel_size=3, stride=2),
+                nn.BatchNorm2d(64),  # <<== New Line...
                 nn.ReLU(inplace=True),
                 nn.MaxPool2d(kernel_size=3, stride=2, ceil_mode=True),
                 Fire(64, 16, 64, 64),
@@ -218,6 +224,15 @@ class SqueezeNet(nn.Module):
                     init.kaiming_uniform_(m.weight)
                 if m.bias is not None:
                     init.constant_(m.bias, 0)
+            elif isinstance(module, nn.BatchNorm1d):
+                nn.init.constant_(module.weight, 1)
+                nn.init.constant_(module.bias, 0)
+            elif isinstance(module, nn.BatchNorm2d):
+                nn.init.constant_(module.weight, 1)
+                nn.init.constant_(module.bias, 0)
+            elif isinstance(module, nn.Linear):
+                nn.init.normal_(module.weight, mean=0, std=1e-3)
+                nn.init.constant_(module.bias, 0)
         """
 
     def forward(self, x):
