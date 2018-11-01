@@ -174,7 +174,7 @@ def execute():
             args.weight_decay = 2 * 1e-4
         if args.arch.startswith("squeezemobnet"):
             args.original_learning_rate = 0.01
-            args.weight_decay = 4 * 1e-4
+            args.weight_decay = 2 * 1e-4
         if args.arch.startswith("mobile"):
             args.original_learning_rate = 0.05
             args.weight_decay = 4 * 1e-5
