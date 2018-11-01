@@ -1,6 +1,7 @@
 import math
 import torch
 import torch.nn as nn
+import torch.nn.init as init
 from collections import OrderedDict
 
 __all__ = ['SqueezeNet_', 'squeezenet_']
@@ -17,7 +18,7 @@ class Fire_(nn.Module):
         self.group1 = nn.Sequential(
             OrderedDict([
                 ('squeeze', nn.Conv2d(inplanes, squeeze_planes, kernel_size=1)),
-                ('BatchNorm', nn.BatchNorm2d(squeeze_planes)),
+                #('BatchNorm', nn.BatchNorm2d(squeeze_planes)),
                 ('squeeze_activation', nn.ReLU(inplace=True))
             ])
         )
@@ -25,7 +26,7 @@ class Fire_(nn.Module):
         self.group2 = nn.Sequential(
             OrderedDict([
                 ('expand1x1', nn.Conv2d(squeeze_planes, expand1x1_planes, kernel_size=1)),
-                ('BatchNorm', nn.BatchNorm2d(expand1x1_planes)),
+                #('BatchNorm', nn.BatchNorm2d(expand1x1_planes)),
                 ('expand1x1_activation', nn.ReLU(inplace=True))
             ])
         )
@@ -33,7 +34,7 @@ class Fire_(nn.Module):
         self.group3 = nn.Sequential(
             OrderedDict([
                 ('expand3x3', nn.Conv2d(squeeze_planes, expand3x3_planes, kernel_size=3, padding=1)),
-                ('BatchNorm', nn.BatchNorm2d(expand3x3_planes)),
+                #('BatchNorm', nn.BatchNorm2d(expand3x3_planes)),
                 ('expand3x3_activation', nn.ReLU(inplace=True))
             ])
         )
@@ -72,13 +73,23 @@ class SqueezeNet_(nn.Module):
         # Final convolution is initialized differently form the rest
         final_conv = nn.Conv2d(512, num_classes, kernel_size=1)
         self.classifier = nn.Sequential(
-            # nn.Dropout(p=0.5),
+            nn.Dropout(p=0.5),
             final_conv,  # 4x4x10 for cifar10
-            nn.BatchNorm2d(num_classes),
+            #nn.BatchNorm2d(num_classes),
             nn.ReLU(inplace=True),
             nn.AvgPool2d(4)  # 1x1x10 for cifar10
         )
 
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                if m is final_conv:
+                    init.normal_(m.weight, mean=0.0, std=0.01)
+                else:
+                    init.kaiming_uniform_(m.weight)
+                if m.bias is not None:
+                    init.constant_(m.bias, 0)
+
+        """
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 gain = 2.0
@@ -90,6 +101,7 @@ class SqueezeNet_(nn.Module):
                     m.weight.data.uniform_(-u, u)
                 if m.bias is not None:
                     m.bias.data.zero_()
+        """
 
         """
         for module in self.modules():
@@ -131,23 +143,23 @@ class Fire(nn.Module):
         super(Fire, self).__init__()
         self.inplanes = inplanes
         self.squeeze = nn.Conv2d(inplanes, squeeze_planes, kernel_size=1)
-        self.squeeze_bn = nn.BatchNorm2d(squeeze_planes)  # <<== New Line...
+        #self.squeeze_bn = nn.BatchNorm2d(squeeze_planes)  # <<== New Line...
         self.squeeze_activation = nn.ReLU(inplace=True)
         self.expand1x1 = nn.Conv2d(squeeze_planes, expand1x1_planes, kernel_size=1)
-        self.expand1x1_bn = nn.BatchNorm2d(expand1x1_planes)  # <<== New Line...
+        #self.expand1x1_bn = nn.BatchNorm2d(expand1x1_planes)  # <<== New Line...
         self.expand1x1_activation = nn.ReLU(inplace=True)
         self.expand3x3 = nn.Conv2d(squeeze_planes, expand3x3_planes, kernel_size=3, padding=1)
-        self.expand3x3_bn = nn.BatchNorm2d(expand3x3_planes)  # <<== New Line...
+        #self.expand3x3_bn = nn.BatchNorm2d(expand3x3_planes)  # <<== New Line...
         self.expand3x3_activation = nn.ReLU(inplace=True)
 
     def forward(self, x):
-        # x = self.squeeze_activation(self.squeeze(x))
-        x = self.squeeze_activation(self.squeeze_bn(self.squeeze(x)))
+        x = self.squeeze_activation(self.squeeze(x))
+        #x = self.squeeze_activation(self.squeeze_bn(self.squeeze(x)))
         return torch.cat([
-            # self.expand1x1_activation(self.expand1x1(x)),
-            self.expand1x1_activation(self.expand1x1_bn(self.expand1x1(x))),
-            # self.expand3x3_activation(self.expand3x3(x))
-            self.expand3x3_activation(self.expand3x3_bn(self.expand3x3(x)))
+            self.expand1x1_activation(self.expand1x1(x)),
+            #self.expand1x1_activation(self.expand1x1_bn(self.expand1x1(x))),
+            self.expand3x3_activation(self.expand3x3(x))
+            #self.expand3x3_activation(self.expand3x3_bn(self.expand3x3(x)))
         ], 1)
 
 
@@ -179,7 +191,7 @@ class SqueezeNet(nn.Module):
         else:
             self.features = nn.Sequential(
                 nn.Conv2d(3, 64, kernel_size=3, stride=2),
-                nn.BatchNorm2d(64),  # <<== New Line...
+                #nn.BatchNorm2d(64),  # <<== New Line...
                 nn.ReLU(inplace=True),
                 nn.MaxPool2d(kernel_size=3, stride=2, ceil_mode=True),
                 Fire(64, 16, 64, 64),
@@ -196,13 +208,23 @@ class SqueezeNet(nn.Module):
         # Final convolution is initialized differently form the rest
         final_conv = nn.Conv2d(512, self.num_classes, kernel_size=1)
         self.classifier = nn.Sequential(
-            # nn.Dropout(p=0.5),
+            nn.Dropout(p=0.5),
             final_conv,
-            nn.BatchNorm2d(num_classes),
+            #nn.BatchNorm2d(num_classes),
             nn.ReLU(inplace=True),
             nn.AvgPool2d(13, stride=1)
         )
 
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                if m is final_conv:
+                    init.normal_(m.weight, mean=0.0, std=0.01)
+                else:
+                    init.kaiming_uniform_(m.weight)
+                if m.bias is not None:
+                    init.constant_(m.bias, 0)
+
+        """
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 gain = 2.0
@@ -214,6 +236,7 @@ class SqueezeNet(nn.Module):
                     m.weight.data.uniform_(-u, u)
                 if m.bias is not None:
                     m.bias.data.zero_()
+        """
 
         """
         for m in self.modules():

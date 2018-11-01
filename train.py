@@ -167,10 +167,23 @@ def execute():
     else:
         args.number_of_dataset_classes = 1000
         args.number_of_model_classes = args.number_of_model_classes if args.number_of_model_classes else 1000
+
+        # Relevant for training on ImageNet...
+        if args.arch.startswith("squeezenet"):
+            args.original_learning_rate = 0.01
+            args.weight_decay = 2 * 1e-4
+        if args.arch.startswith("squeezemobnet"):
+            args.original_learning_rate = 0.01
+            args.weight_decay = 4 * 1e-4
+        if args.arch.startswith("mobile"):
+            args.original_learning_rate = 0.05
+            args.weight_decay = 4 * 1e-5
+
         if args.arch.startswith('inception'):
             size = (299, 299)
         else:
             size = (224, 256)
+
         normalize = transforms.Normalize((0.485, 0.456, 0.406), (0.229, 0.224, 0.225))
         train_transform = transforms.Compose(
             [transforms.RandomResizedCrop(size[0]),  # 224 , 299
@@ -190,16 +203,6 @@ def execute():
     args.execution_path = os.path.join(args.experiment_path, "exec" + str(args.execution))
     if not os.path.exists(args.execution_path):
         os.makedirs(args.execution_path)
-
-    # Needed to train squeeze on ImageNet???
-    if args.arch.startswith("squeeze"):
-        args.original_learning_rate = 0.01
-        args.weight_decay = 2*1e-4
-
-    # Needed to train squeeze on ImageNet???
-    if args.arch.startswith("mobile"):
-        args.original_learning_rate = 0.05
-        args.weight_decay = 4*1e-5
 
     # Printing args...
     print("\nARGUMENTS: ", vars(args))

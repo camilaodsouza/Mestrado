@@ -17,7 +17,8 @@ export run=train
 #done
 
 export dataset=imagenet2012
-for model in squeezenet1_1 squeezemobnet1_1 mobilenet mobilenetv2 #alexnet
+#for model in squeezenet1_1 mobilenet mobilenetv2 alexnet
+for model in squeezemobnet1_1
 do
   export exps="baseline"
   python $run.py -d $dataset -lm $model -exps $exps -x 1 | tee artifacts/$run.$dataset.$model.$exps.txt
