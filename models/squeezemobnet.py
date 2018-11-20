@@ -128,10 +128,7 @@ class SqueezeMobNet_(nn.Module):
         elif version == "special":
             # Model to ImageNet dataset with our modifications...
             self.features = nn.Sequential(
-                #nn.Conv2d(3, 64, kernel_size=3, stride=2),
-                ###########################################
-                nn.Conv2d(3, 64, kernel_size=3, stride=2, dilation=2, padding=1),
-                ###########################################
+                nn.Conv2d(3, 64, kernel_size=3, stride=2),
                 #nn.BatchNorm2d(64),  # <<== New Line...
                 nn.ReLU(inplace=True),
                 nn.MaxPool2d(kernel_size=3, stride=2, ceil_mode=True),
