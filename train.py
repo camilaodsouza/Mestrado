@@ -89,7 +89,7 @@ parser.add_argument('-wd', '--weight-decay', default=5*1e-4, type=float, metavar
                     help='weight decay (default: 5*1e-4)')
 parser.add_argument('-pf', '--print-freq', default=16, type=int, metavar='N',
                     help='print frequency (default: 16)')
-parser.add_argument('-gpu', '--gpu-id', default='1', type=str,
+parser.add_argument('-gpu', '--gpu-id', default='0', type=str,
                     help='id for CUDA_VISIBLE_DEVICES')
 
 args = parser.parse_args()

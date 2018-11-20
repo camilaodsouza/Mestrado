@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch.nn.init as init
 from collections import OrderedDict
 
-__all__ = ['SqueezeMobNet_', 'squeezemobnet_', 'squeezemobnet1_0', 'squeezemobnet1_1']
+__all__ = ['SqueezeMobNet_', 'squeezemobnet_', 'squeezemobnet1_0', 'squeezemobnet1_1', 'squeezemobnet']
 
 
 class Block_(nn.Module):
@@ -68,7 +68,7 @@ class SqueezeMobNet_(nn.Module):
 
     def __init__(self, version=None, num_classes=10):
         super(SqueezeMobNet_, self).__init__()
-        if version not in [1.0, 1.1, "cifar"]:
+        if version not in [1.0, 1.1, "cifar", "special"]:
             raise ValueError("Unsupported SqueezeMobNet_ version {version}:"
                              "1.0, 1.1 or cifar expected".format(version=version))
         self.num_classes = num_classes
@@ -125,9 +125,30 @@ class SqueezeMobNet_(nn.Module):
                 nn.MaxPool2d(kernel_size=2, stride=2, ceil_mode=True),  # 4x4x512
                 Fire_(512, 64, 256, 256),  # 4x4x512
             )
+        elif version == "special":
+            # Model to ImageNet dataset with our modifications...
+            self.features = nn.Sequential(
+                #nn.Conv2d(3, 64, kernel_size=3, stride=2),
+                ###########################################
+                nn.Conv2d(3, 64, kernel_size=3, stride=2, dilation=2, padding=1),
+                ###########################################
+                #nn.BatchNorm2d(64),  # <<== New Line...
+                nn.ReLU(inplace=True),
+                nn.MaxPool2d(kernel_size=3, stride=2, ceil_mode=True),
+                Fire_(64, 16, 64, 64),
+                Fire_(128, 16, 64, 64),
+                nn.MaxPool2d(kernel_size=3, stride=2, ceil_mode=True),
+                Fire_(128, 32, 128, 128),
+                Fire_(256, 32, 128, 128),
+                nn.MaxPool2d(kernel_size=3, stride=2, ceil_mode=True),
+                Fire_(256, 48, 192, 192),
+                Fire_(384, 48, 192, 192),
+                Fire_(384, 64, 256, 256),
+                Fire_(512, 64, 256, 256),
+            )
         # Final convolution is initialized differently form the rest
         final_conv = nn.Conv2d(512, num_classes, kernel_size=1)
-        if version in [1.0, 1.1]:
+        if version in [1.0, 1.1, "special"]:
             self.classifier = nn.Sequential(
                 nn.Dropout(p=0.5),
                 final_conv,
@@ -135,7 +156,7 @@ class SqueezeMobNet_(nn.Module):
                 nn.ReLU(inplace=True),
                 nn.AvgPool2d(13, stride=1)
             )
-        elif version == "cifar":
+        elif version in ["cifar"]:
             self.classifier = nn.Sequential(
                 nn.Dropout(p=0.5),
                 final_conv,  # 4x4x10 for cifar10
@@ -153,40 +174,6 @@ class SqueezeMobNet_(nn.Module):
                 if m.bias is not None:
                     init.constant_(m.bias, 0)
 
-        """
-        for m in self.modules():
-            if isinstance(m, nn.Conv2d):
-                gain = 2.0
-                if m is final_conv:
-                    m.weight.data.normal_(0, 0.01)
-                else:
-                    fan_in = m.kernel_size[0] * m.kernel_size[1] * m.in_channels
-                    u = math.sqrt(3.0 * gain / fan_in)
-                    m.weight.data.uniform_(-u, u)
-                if m.bias is not None:
-                    m.bias.data.zero_()
-        """
-
-        """
-        for module in self.modules():
-            if isinstance(module, nn.Conv2d):
-                if module is final_conv:
-                    nn.init.normal_(module.weight, mean=0.0, std=0.01)
-                else:
-                    nn.init.kaiming_uniform_(module.weight)
-                if module.bias is not None:
-                    nn.init.constant_(module.bias, 0)
-            elif isinstance(module, nn.BatchNorm1d):
-                nn.init.constant_(module.weight, 1)
-                nn.init.constant_(module.bias, 0)
-            elif isinstance(module, nn.BatchNorm2d):
-                nn.init.constant_(module.weight, 1)
-                nn.init.constant_(module.bias, 0)
-            elif isinstance(module, nn.Linear):
-                nn.init.normal_(module.weight, mean=0, std=1e-3)
-                nn.init.constant_(module.bias, 0)
-        """
-
     def forward(self, x):
         x = self.features(x)
         x = self.classifier(x)
@@ -198,7 +185,7 @@ def squeezemobnet_(**kwargs):
     return model
 
 
-#### ImageNet Model ####
+#### ImageNet Models ####
 
 
 def squeezemobnet1_0(**kwargs):
@@ -209,4 +196,9 @@ def squeezemobnet1_0(**kwargs):
 
 def squeezemobnet1_1(**kwargs):
     model = SqueezeMobNet_(version=1.1, **kwargs)
+    return model
+
+
+def squeezemobnet(**kwargs):
+    model = SqueezeMobNet_(version="special", **kwargs)
     return model
